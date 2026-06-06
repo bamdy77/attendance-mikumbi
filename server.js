@@ -20,7 +20,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'badilisha-hii-kwa-neno-la-siri-imara-2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'kubadilisha-hii-kwa-neno-la-siri-imara-2026';
 
 // ============================================================
 // CONFIGURATION 
@@ -111,15 +111,15 @@ db.serialize(() => {
 
   // kuongeza walimu wa demo
   const teachers = [
-    ['DEOGRATIUS', 'ROBERT', 'MUZO', 'History', 'Mwalimu'],
+    ['DEOGRATIUS', 'ROBERT', 'MUZO', 'History', 'Mhasibu'],
     ['OCTAVIAN', 'CONRAD', 'MILLANZI', 'Geography', 'Mkuu wa shule'],
     ['TEOFRID', 'TIMOTEO', 'KWENGA', 'Economics', 'Mwalimu'],
-    ['LINUS', 'SAMORA', 'MADAMA', 'Mathematics', 'Mwalimu'],
-    ['ENOCK', 'SOSPETER', 'MATHAYO', 'Physics', 'Mwalimu'],
-    ['IGNATIO', 'BEYANGA', 'EZEKIEL', 'Biology', 'Mwalimu'],
-    ['CHRISTOM', 'KASIAN', 'KOMBA', 'English', 'Mwalimu'],
-    ['FELISTA', 'DONALD', 'MOHAMED', 'Chemistry', 'Mwalimu'],
-    ['AHMAD', 'MOHAMED', 'VINDILI', 'Chemistry', 'Mwalimu'],
+    ['LINUS', 'SAMORA', 'MADAMA', 'Mathematics', 'Mtaaluma Msaidizi'],
+    ['ENOCK', 'SOSPETER', 'MATHAYO', 'Physics', 'Mwalimu wa Nidhamu'],
+    ['IGNATIO', 'BEYANGA', 'EZEKIEL', 'Biology', 'Makamu wa Shule'],
+    ['CHRISTOM', 'KASIAN', 'KOMBA', 'English', 'Mtaaluma Mwandamizi'],
+    ['FELISTA', 'DONALD', 'MOHAMED', 'Chemistry', 'Mwalimu wa afya'],
+    ['AHMAD', 'MOHAMED', 'VINDILI', 'Chemistry', 'Mwalimu wa Michezo'],
   ];
 
   teachers.forEach(([fn, mn, ln, sub, role]) => {
