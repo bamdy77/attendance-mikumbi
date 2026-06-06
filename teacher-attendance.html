@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a3d62">
+<title>Mfumo wa Mahudhurio - Walimu</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --primary: #0a3d62;
+    --primary-light: #1a5276;
+    --accent: #27ae60;
+    --accent-dark: #1e8449;
+    --danger: #c0392b;
+    --warning: #e67e22;
+    --gold: #f39c12;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1a2a3a;
+    --muted: #6b7a8d;
+    --border: #dde4ed;
+    --success-bg: #d5f5e3;
+    --error-bg: #fadbd8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0a3d62 0%, #1a5276 60%, #154360 100%);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo-area { display: flex; align-items: center; gap: 10px; }
+
+  .logo-box {
+    width: 54px; height: 54px;
+    background: transparent; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: none; overflow: hidden;
+  }
+
+  .logo-box img {
+    width: 54px; height: 54px;
+    object-fit: contain; border-radius: 50%; background: transparent;
+  }
+
+  .header-title { text-align: center; flex: 1; }
+
+  .header-title h1 {
+    font-size: 14px; font-weight: 800; color: white; line-height: 1.2;
+  }
+
+  .header-title p { font-size: 10px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+
+  .time-display { text-align: right; }
+
+  .time-display .time { font-size: 18px; font-weight: 700; color: white; }
+  .time-display .date { font-size: 9px; color: rgba(255,255,255,0.7); }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    background: var(--primary-light);
+    padding: 6px 16px;
+    display: flex; gap: 12px;
+    justify-content: center; flex-wrap: wrap;
+  }
+
+  .status-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: rgba(255,255,255,0.85);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%; background: #666; transition: background 0.3s;
+  }
+
+  .status-dot.active { background: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.7); }
+  .status-dot.warning { background: #f39c12; }
+  .status-dot.error { background: #e74c3c; }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1; padding: 16px;
+    max-width: 480px; margin: 0 auto; width: 100%;
+  }
+
+  /* ── DEADLINE ── */
+  .deadline-notice {
+    background: linear-gradient(135deg, #1a5276, #2980b9);
+    color: white; border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .deadline-icon { font-size: 24px; flex-shrink: 0; }
+  .deadline-text h3 { font-size: 13px; font-weight: 700; }
+  .deadline-text p { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+  .deadline-countdown {
+    margin-left: auto; text-align: center;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px; padding: 6px 10px;
+    min-width: 70px; flex-shrink: 0;
+  }
+
+  .deadline-countdown .cd-time { font-size: 18px; font-weight: 800; }
+  .deadline-countdown .cd-label { font-size: 9px; opacity: 0.8; }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--card); border-radius: 16px;
+    padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 16px; border: 1px solid var(--border);
+  }
+
+  .form-card h2 {
+    font-size: 16px; font-weight: 800; color: var(--primary);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .form-group { margin-bottom: 14px; }
+
+  .form-group label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--muted); margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  /* Input with icon wrapper */
+  .input-wrap { position: relative; }
+
+  .input-wrap input {
+    width: 100%; padding: 12px 44px 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
+    color: var(--text); background: #f8fafd;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .input-wrap input:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(10,61,98,0.1); background: white;
+  }
+
+  .input-wrap input[type="password"] { letter-spacing: 3px; font-size: 18px; }
+
+  .toggle-pw {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; padding: 4px;
+    cursor: pointer; color: var(--muted);
+    display: flex; align-items: center;
+    transition: color 0.2s;
+  }
+
+  .toggle-pw:hover { color: var(--primary); }
+
+  /* ── REQUIREMENTS ── */
+  .requirements {
+    background: #f8fafd; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 16px; border: 1px solid var(--border);
+  }
+
+  .requirements h4 {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .req-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted);
+    margin-bottom: 5px; transition: color 0.3s;
+  }
+
+  .req-item .req-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0; transition: all 0.3s;
+  }
+
+  .req-item.ok { color: var(--accent); }
+  .req-item.ok .req-icon { background: var(--accent); border-color: var(--accent); color: white; }
+  .req-item.fail { color: var(--danger); }
+  .req-item.fail .req-icon { background: var(--danger); border-color: var(--danger); color: white; }
+
+  /* ── BUTTONS ── */
+  .btn-submit {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #0a3d62, #1a5276);
+    color: white; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(10,61,98,0.35);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  .btn-submit:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(10,61,98,0.3); }
+  .btn-submit:disabled { background: #a0b0c0; box-shadow: none; cursor: not-allowed; }
+
+  .btn-reset {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 24px;
+    background: transparent; border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 14px; font-weight: 600;
+    color: var(--muted); cursor: pointer; margin-top: 12px;
+    font-family: 'Inter', Arial, sans-serif; transition: all 0.2s;
+  }
+
+  .btn-reset:hover { border-color: var(--primary); color: var(--primary); }
+
+  .btn-link {
+    background: none; border: none; padding: 0;
+    color: var(--primary); font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: underline;
+    font-family: 'Inter', Arial, sans-serif;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  /* ── RESULT SCREENS ── */
+  .result-screen {
+    display: none; background: var(--card);
+    border-radius: 16px; padding: 30px 20px; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 16px;
+  }
+
+  .result-screen.show { display: block; }
+
+  .result-icon { font-size: 60px; margin-bottom: 12px; animation: bounceIn 0.5s ease; }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .result-screen h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .result-screen.success h2 { color: var(--accent); }
+  .result-screen.late h2 { color: var(--warning); }
+  .result-screen.error h2 { color: var(--danger); }
+
+  .result-screen p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+
+  .result-badge {
+    display: inline-block; padding: 8px 20px;
+    border-radius: 20px; font-size: 14px; font-weight: 700; margin-bottom: 16px;
+  }
+
+  .badge-ontime { background: var(--success-bg); color: #1e8449; }
+  .badge-late { background: #fef9e7; color: #d68910; border: 1.5px solid #f0c040; }
+
+  .result-details {
+    background: #f8fafd; border-radius: 10px;
+    padding: 12px 14px; text-align: left; font-size: 13px;
+  }
+
+  .result-details .detail-row {
+    display: flex; justify-content: space-between;
+    padding: 4px 0; border-bottom: 1px solid var(--border);
+  }
+
+  .result-details .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--muted); }
+  .detail-value { font-weight: 600; color: var(--text); }
+
+  /* ── GPS LOADING ── */
+  .gps-loading {
+    display: none; text-align: center; padding: 30px 20px;
+    background: var(--card); border-radius: 16px;
+    margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .gps-loading.show { display: block; }
+
+  .spinner {
+    width: 50px; height: 50px;
+    border: 4px solid var(--border); border-top-color: var(--primary);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .gps-loading p { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+  .gps-loading .gps-label { font-size: 16px; font-weight: 700; color: var(--primary); }
+
+  /* ── ALERT ── */
+  .alert {
+    border-radius: 10px; padding: 12px 14px; font-size: 13px;
+    margin-bottom: 14px; display: flex;
+    align-items: flex-start; gap: 10px; line-height: 1.5;
+  }
+
+  .alert-info { background: #e8f4fd; color: #1a5276; border: 1px solid #a9cce3; }
+  .alert-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── HISTORY ── */
+  .history-card {
+    background: var(--card); border-radius: 16px;
+    padding: 16px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+  }
+
+  .history-card h3 {
+    font-size: 14px; font-weight: 800; color: var(--primary);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+  }
+
+  .history-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 16px 0; }
+
+  .history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+  .hi-date { color: var(--muted); }
+  .hi-name { font-weight: 600; color: var(--text); }
+
+  .hi-badge {
+    padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 10px;
+  }
+
+  .hi-ontime { background: #d5f5e3; color: #1e8449; }
+  .hi-late { background: #fef9e7; color: #d68910; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--primary); color: rgba(255,255,255,0.5);
+    text-align: center; padding: 12px; font-size: 10px;
+  }
+
+  /* ── OVERLAY ── */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,61,98,0.8); z-index: 200;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+
+  .overlay.show { display: flex; }
+
+  .overlay-spinner {
+    width: 60px; height: 60px;
+    border: 5px solid rgba(255,255,255,0.2);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .overlay p { color: white; font-size: 15px; font-weight: 600; }
+
+  /* ── RESET PASSWORD MODAL ── */
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 300;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-backdrop.show { display: flex; }
+
+  .modal {
+    background: white; border-radius: 16px; padding: 24px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .modal h3 {
+    font-size: 18px; font-weight: 800; color: var(--primary);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .modal .modal-sub {
+    font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5;
+  }
+
+  .modal-field { margin-bottom: 14px; }
+
+  .modal-field label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 5px;
+  }
+
+  .modal-field .input-wrap input {
+    padding: 12px 44px 12px 14px;
+    font-size: 14px;
+  }
+
+  .modal-steps {
+    display: flex; gap: 6px; margin-bottom: 20px;
+  }
+
+  .modal-step {
+    flex: 1; height: 3px; border-radius: 2px; background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .modal-step.active { background: var(--primary); }
+  .modal-step.done { background: var(--accent); }
+
+  .modal-footer {
+    display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+  }
+
+  .btn-modal-cancel {
+    padding: 10px 18px; background: transparent;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-weight: 600; color: var(--muted);
+    cursor: pointer; font-family: 'Inter', Arial, sans-serif;
+  }
+
+  .btn-modal-next {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0a3d62, #1a5276);
+    color: white; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: 'Inter', Arial, sans-serif;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-modal-next:disabled { background: #a0b0c0; cursor: not-allowed; }
+
+  .modal-alert {
+    border-radius: 8px; padding: 10px 12px; font-size: 13px;
+    margin-bottom: 14px; display: none; align-items: center; gap: 8px;
+  }
+
+  .modal-alert.show { display: flex; }
+  .modal-alert.error { background: #fadbd8; color: #922b21; }
+  .modal-alert.success { background: #d5f5e3; color: #1e8449; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-area">
+    <div class="logo-box">
+      <img src="govt-logo.png" alt="Serikali">
+    </div>
+  </div>
+
+  <div class="header-title">
+    <h1>Mfumo wa Mahudhurio ya Walimu</h1>
+    <p>&middot; Shule ya Sekondari Mikumbi</p>
+  </div>
+
+  <div style="display:flex; flex-direction:row-reverse; align-items:center; gap:8px;">
+    <div class="logo-box">
+      <img src="school-logo.png" alt="Shule">
+    </div>
+    <div class="time-display" style="margin-right:6px;">
+      <div class="time" id="clock">--:--</div>
+      <div class="date" id="dateDisplay">---</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item">
+    <div class="status-dot" id="dot-gps"></div>
+    <span id="lbl-gps">GPS: Haijulikani</span>
+  </div>
+  <div class="status-item">
+    <div class="status-dot" id="dot-wifi"></div>
+    <span id="lbl-wifi">WiFi: Inaangalia...</span>
+  </div>
+  <div class="status-item">
+    <div class="status-dot" id="dot-zone"></div>
+    <span id="lbl-zone">Eneo: Haijulikani</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DEADLINE -->
+  <div class="deadline-notice">
+    <div class="deadline-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="deadline-text">
+      <h3>Muda wa Kusajili</h3>
+      <p>Sahihi inakubaliwa hadi Saa 1:30 Asubuhi</p>
+    </div>
+    <div class="deadline-countdown">
+      <div class="cd-time" id="countdown">--:--</div>
+      <div class="cd-label">Time remained</div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card" id="formCard">
+    <h2>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Weka Mahudhurio
+    </h2>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Unahitaji kuwa <strong>ndani ya mita 50</strong> kutoka shuleni na <strong>kuunganishwa na WiFi ya shule</strong> kusajili mahudhurio.</span>
+    </div>
+
+    <div class="form-group">
+      <label>Jina la Kwanza</label>
+      <div class="input-wrap">
+        <input type="text" id="firstName" placeholder="Andika jina lako la kwanza" autocomplete="given-name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Jina la Pili</label>
+      <div class="input-wrap">
+        <input type="text" id="middleName" placeholder="Andika jina la kati" autocomplete="additional-name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Jina la Familia</label>
+      <div class="input-wrap">
+        <input type="text" id="lastName" placeholder="Andika jina la ukoo" autocomplete="family-name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Neno la Siri</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        <button class="toggle-pw" type="button" onclick="togglePw('password','eyePw','eyeOffPw')" tabindex="-1">
+          <svg id="eyePw" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeOffPw" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Reset Password Link -->
+    <div style="text-align:right; margin-top:-8px; margin-bottom:14px;">
+      <button class="btn-link" onclick="openResetModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Forgot Password?
+      </button>
+    </div>
+
+    <div class="requirements" id="reqPanel">
+      <h4>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Masharti ya Kujisajili & kuweka Mahudhurio
+      </h4>
+      <div class="req-item" id="req-names">
+        <div class="req-icon">?</div>
+        <span>Majina matatu yameandikwa</span>
+      </div>
+      <div class="req-item" id="req-pass">
+        <div class="req-icon">?</div>
+        <span>Neno la siri limeandikwa</span>
+      </div>
+      <div class="req-item" id="req-wifi">
+        <div class="req-icon">?</div>
+        <span>Umeunganishwa na WiFi ya Shule</span>
+      </div>
+      <div class="req-item" id="req-gps">
+        <div class="req-icon">?</div>
+        <span>GPS imewashwa</span>
+      </div>
+      <div class="req-item" id="req-zone">
+        <div class="req-icon">?</div>
+        <span>Uko ndani ya eneo la shule (mita 50)</span>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btnSubmit" onclick="startAttendance()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Weka Mahudhurio
+    </button>
+  </div>
+
+  <!-- GPS LOADING -->
+  <div class="gps-loading" id="gpsLoading">
+    <div class="spinner"></div>
+    <p class="gps-label">Searching your location...</p>
+    <p>Tafadhali ruhusu GPS kwenye simu yako</p>
+    <p id="gpsStatus">Please wait...</p>
+  </div>
+
+  <!-- RESULT: ON TIME -->
+  <div class="result-screen success" id="resultOnTime">
+    <div class="result-icon">&#10003;</div>
+    <h2>Successfully!</h2>
+    <div class="result-badge badge-ontime">ON TIME</div>
+    <div class="result-details" id="detailsOnTime"></div>
+    <button class="btn-reset" onclick="resetForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Go back
+    </button>
+  </div>
+
+  <!-- RESULT: LATE -->
+  <div class="result-screen late" id="resultLate">
+    <div class="result-icon">&#9888;</div>
+    <h2>Attendance successfully submitted &mdash; You are late!</h2>
+    <div class="result-badge badge-late">LATE</div>
+    <div class="result-details" id="detailsLate"></div>
+    <button class="btn-reset" onclick="resetForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Go back
+    </button>
+  </div>
+
+  <!-- RESULT: ERROR -->
+  <div class="result-screen error" id="resultError">
+    <div class="result-icon">&#10007;</div>
+    <h2 id="errorTitle">Imeshindwa!</h2>
+    <p id="errorMsg">Kuna tatizo. Jaribu tena.</p>
+    <button class="btn-reset" onclick="resetForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Try Again
+    </button>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-card">
+    <h3>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Historia ya Mahudhurio (Leo)
+    </h3>
+    <div id="historyList">
+      <div class="history-empty">Hakuna rekodi za leo bado</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Mfumo wa Mahudhurio v1.0 &middot; Shule ye Sekondari Mikumbi &middot; &copy; 2026
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="loadingOverlay">
+  <div class="overlay-spinner"></div>
+  <p id="overlayMsg">Inasajili...</p>
+</div>
+
+
+<!-- ════════════════════════════════════
+     RESET PASSWORD MODAL
+════════════════════════════════════ -->
+<div class="modal-backdrop" id="resetModal">
+  <div class="modal">
+
+    <!-- Step indicators -->
+    <div class="modal-steps">
+      <div class="modal-step active" id="step1bar"></div>
+      <div class="modal-step" id="step2bar"></div>
+      <div class="modal-step" id="step3bar"></div>
+    </div>
+
+    <!-- STEP 1: Thibitisha Utambulisho -->
+    <div id="resetStep1">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Badilisha Neno la Siri
+      </h3>
+      <p class="modal-sub">Hatua 1 ya 3 — Thibitisha jina lako ili kuendelea</p>
+
+      <div class="modal-alert error" id="resetErr1">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="resetErr1Msg">Jina halipatikani. Jaribu tena.</span>
+      </div>
+
+      <div class="modal-field">
+        <label>Jina la Kwanza</label>
+        <div class="input-wrap"><input type="text" id="rFN" placeholder="Jina la kwanza"></div>
+      </div>
+      <div class="modal-field">
+        <label>Jina la Pili</label>
+        <div class="input-wrap"><input type="text" id="rMN" placeholder="Jina la kati"></div>
+      </div>
+      <div class="modal-field">
+        <label>Jina la Familia</label>
+        <div class="input-wrap"><input type="text" id="rLN" placeholder="Jina la ukoo"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeResetModal()">Ghairi</button>
+        <button class="btn-modal-next" onclick="resetStep1Next()">
+          Endelea
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Weka Neno Jipya -->
+    <div id="resetStep2" style="display:none;">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Neno Jipya la Siri
+      </h3>
+      <p class="modal-sub">Hatua 2 ya 3 — Weka neno jipya la siri</p>
+
+      <div class="modal-alert error" id="resetErr2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="resetErr2Msg">Maneno ya siri hayafanani.</span>
+      </div>
+
+      <div class="modal-field">
+        <label>Neno Jipya la Siri</label>
+        <div class="input-wrap">
+          <input type="password" id="rNewPass" placeholder="Angalau herufi 4">
+          <button class="toggle-pw" type="button" onclick="togglePw('rNewPass','eyeR1','eyeOffR1')" tabindex="-1">
+            <svg id="eyeR1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeOffR1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>Thibitisha Neno la Siri</label>
+        <div class="input-wrap">
+          <input type="password" id="rConfPass" placeholder="Rudia neno jipya">
+          <button class="toggle-pw" type="button" onclick="togglePw('rConfPass','eyeR2','eyeOffR2')" tabindex="-1">
+            <svg id="eyeR2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeOffR2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="resetGoBack()">Rudi</button>
+        <button class="btn-modal-next" onclick="resetStep2Next()">
+          Hifadhi
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Imefanikiwa -->
+    <div id="resetStep3" style="display:none; text-align:center; padding: 10px 0;">
+      <div style="font-size:56px; margin-bottom:14px;">&#10003;</div>
+      <h3 style="justify-content:center; color:var(--accent); margin-bottom:8px;">Imebadilishwa!</h3>
+      <p class="modal-sub" style="margin-bottom:20px;">Neno lako jipya la siri limehifadhiwa. Sasa unaweza kuingia ukitumia neno jipya.</p>
+      <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Sawa, Nielewe
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const CONFIG = {
+  SCHOOL_LAT: -3.3086295,
+  SCHOOL_LNG: 37.3333310,
+  SCHOOL_RADIUS_M: 50,
+  DEADLINE_HOUR: 7,
+  DEADLINE_MIN: 30,
+  SCHOOL_WIFI_SSID: "m2pa49",
+  SCHOOL_WIFI_MAC: "d8:93:d4:2a:ac:bc",
+  API_URL: "http://10.234.149.82:3000/api/attendance",
+};
+
+// ============================================================
+// WALIMU DATA
+// ============================================================
+let TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify([
+  { id:1, firstName:"DEOGRATIUS",  middleName:"ROBERT",  lastName:"MUZO", password:"1234", subject:"History" },
+  { id:2, firstName:"OCTAVIAN",  middleName:"CONRAD", lastName:"MILLANZI",  password:"5678", subject:"Geography" },
+  { id:3, firstName:"TEOFRID'", middleName:"TIMOTEO",   lastName:"KWENGA",   password:"9012", subject:"Economics" },
+  { id:4, firstName:"LINUS", middleName:"SAMORA",    lastName:"MADAMA", password:"1111", subject:"Mathematics" },
+  { id:5, firstName:"ENOCK", middleName:"SOSPETER",  lastName:"MATHAYO",  password:"2222", subject:"Physics" },
+  { id:6, firstName:"IGNATIO", middleName:"BEYANGA",  lastName:"EZEKIEL",  password:"2233", subject:"Biology" },
+  { id:7, firstName:"CHRISTOM", middleName:"KASIAN",  lastName:"KOMBA",  password:"4242", subject:"English" },
+  { id:8, firstName:"FELISTA", middleName:"DONALD",  lastName:"MOHAMED",  password:"3456", subject:"Chemistry" },
+  { id:9, firstName:"AHMADI", middleName:"MOHAMED",  lastName:"VINDILI",  password:"2468", subject:"Chemistry" },
+]));
+
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ago','Sep','Okt','Nov','Des'];
+  document.getElementById('dateDisplay').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  updateCountdown(now);
+}
+
+function updateCountdown(now) {
+  const deadline = new Date(now);
+  deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  const diff = deadline - now;
+  if (diff <= 0) {
+    document.getElementById('countdown').textContent = 'Imekwisha';
+    document.getElementById('countdown').style.color = '#e74c3c';
+    return;
+  }
+  const hh = Math.floor(diff / 3600000);
+  const mm = Math.floor((diff % 3600000) / 60000);
+  const ss = Math.floor((diff % 60000) / 1000);
+  document.getElementById('countdown').textContent =
+    `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// ============================================================
+// TOGGLE PASSWORD VISIBILITY
+// ============================================================
+function togglePw(inputId, eyeId, eyeOffId) {
+  const inp = document.getElementById(inputId);
+  const on  = document.getElementById(eyeId);
+  const off = document.getElementById(eyeOffId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    on.style.display  = 'none';
+    off.style.display = 'block';
+  } else {
+    inp.type = 'password';
+    on.style.display  = 'block';
+    off.style.display = 'none';
+  }
+}
+
+// ============================================================
+// WIFI CHECK
+// ============================================================
+let wifiStatus = false;
+let wifiSSID   = null;
+
+async function checkWifi() {
+  if (navigator.onLine) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      await fetch('/api/wifi-check', { method:'GET', signal: controller.signal }).catch(()=>null);
+      clearTimeout(timeout);
+      wifiStatus = true;
+      wifiSSID = CONFIG.SCHOOL_WIFI_SSID;
+    } catch(e) {
+      wifiStatus = true;
+      wifiSSID = "Demo_School_WiFi";
+    }
+  } else {
+    wifiStatus = false;
+  }
+  updateWifiUI();
+}
+
+function updateWifiUI() {
+  const dot = document.getElementById('dot-wifi');
+  const lbl = document.getElementById('lbl-wifi');
+  if (wifiStatus) {
+    dot.className = 'status-dot active';
+    lbl.textContent = `WiFi: ${wifiSSID || 'Imeunganishwa'}`;
+  } else {
+    dot.className = 'status-dot error';
+    lbl.textContent = 'WiFi: Haijapatikana';
+  }
+  updateRequirements();
+}
+
+// ============================================================
+// GPS & DISTANCE
+// ============================================================
+let gpsStatus = false;
+let userLat = null;
+let userLng = null;
+let distanceFromSchool = null;
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function checkGPS() {
+  if (!navigator.geolocation) { setGPSStatus(false,'GPS haifanyi kazi kwenye kivinjari hiki'); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      distanceFromSchool = haversineDistance(userLat, userLng, CONFIG.SCHOOL_LAT, CONFIG.SCHOOL_LNG);
+      gpsStatus = true;
+      document.getElementById('dot-gps').className = 'status-dot active';
+      document.getElementById('lbl-gps').textContent = 'GPS: Imepatikana';
+      const inside = distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M;
+      document.getElementById('dot-zone').className = `status-dot ${inside?'active':'error'}`;
+      document.getElementById('lbl-zone').textContent = `Eneo: ${inside?'Ndani':'Nje'} (${Math.round(distanceFromSchool)}m)`;
+      updateRequirements();
+    },
+    err => {
+      gpsStatus = false;
+      let msg = 'GPS: Imeshindwa';
+      if (err.code === 1) msg = 'GPS: Ruhusu imekataliwa';
+      setGPSStatus(false, msg);
+    },
+    { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }
+  );
+}
+
+function setGPSStatus(status, label) {
+  document.getElementById('dot-gps').className = `status-dot ${status?'active':'error'}`;
+  document.getElementById('lbl-gps').textContent = label;
+  gpsStatus = status;
+  updateRequirements();
+}
+
+// ============================================================
+// REQUIREMENTS
+// ============================================================
+function updateRequirements() {
+  const fn = document.getElementById('firstName').value.trim();
+  const mn = document.getElementById('middleName').value.trim();
+  const ln = document.getElementById('lastName').value.trim();
+  const pw = document.getElementById('password').value.trim();
+  setReq('req-names', fn && mn && ln);
+  setReq('req-pass', pw.length > 0);
+  setReq('req-wifi', wifiStatus);
+  setReq('req-gps', gpsStatus);
+  setReq('req-zone', gpsStatus && distanceFromSchool !== null && distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M);
+}
+
+function setReq(id, ok) {
+  const el = document.getElementById(id);
+  if (ok === null) { el.className='req-item'; el.querySelector('.req-icon').textContent='?'; }
+  else if (ok) { el.className='req-item ok'; el.querySelector('.req-icon').textContent='✓'; }
+  else { el.className='req-item fail'; el.querySelector('.req-icon').textContent='✗'; }
+}
+
+['firstName','middleName','lastName','password'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateRequirements)
+);
+
+// ============================================================
+// MAIN ATTENDANCE
+// ============================================================
+async function startAttendance() {
+  const fn = document.getElementById('firstName').value.trim().toUpperCase();
+  const mn = document.getElementById('middleName').value.trim().toUpperCase();
+  const ln = document.getElementById('lastName').value.trim().toUpperCase();
+  const pw = document.getElementById('password').value.trim();
+
+  if (!fn || !mn || !ln) { showError('Jina Halikamilika','Tafadhali andika majina yako yote matatu.'); return; }
+  if (!pw) { showError('Neno la Siri Linakosekana','Tafadhali andika neno lako la siri.'); return; }
+
+  showOverlay('Inaangalia masharti...');
+  await checkWifi();
+
+  if (!wifiStatus) {
+    hideOverlay();
+    showError('WiFi ya Shule Haijapatikana','Wewe hujaunganishwa na WiFi ya shule. Unganisha kwenye WiFi ya shule na ujaribu tena.');
+    return;
+  }
+
+  showOverlay('Inatafuta mahali pako...');
+  await new Promise(resolve => {
+    if (!navigator.geolocation) {
+      hideOverlay(); showError('GPS Haifanyi Kazi','Simu yako haina GPS au GPS imezimwa.'); return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+        distanceFromSchool = haversineDistance(userLat, userLng, CONFIG.SCHOOL_LAT, CONFIG.SCHOOL_LNG);
+        gpsStatus = true; resolve();
+      },
+      err => {
+        hideOverlay();
+        let msg = 'GPS imeshindwa. ';
+        if (err.code===1) msg += 'Tafadhali ruhusu GPS kwenye simu yako.';
+        else if (err.code===2) msg += 'Mahali hazipatikani. Jaribu nje.';
+        else msg += 'Muda umeisha. Jaribu tena.';
+        showError('GPS Imeshindwa', msg); resolve();
+      },
+      { enableHighAccuracy:true, timeout:15000 }
+    );
+  });
+
+  if (!gpsStatus) return;
+
+  if (distanceFromSchool > CONFIG.SCHOOL_RADIUS_M) {
+    hideOverlay();
+    showError('Uko Nje ya Eneo la Shule',
+      `Wewe uko umbali wa mita ${Math.round(distanceFromSchool)} kutoka shuleni. Mfumo unakubali tu ndani ya mita ${CONFIG.SCHOOL_RADIUS_M}. Tafadhali fika shuleni kwanza.`);
+    return;
+  }
+
+  showOverlay('Inakagua akaunti yako...');
+  TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
+  const teacher = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln && t.password===pw);
+
+  if (!teacher) {
+    hideOverlay();
+    showError('Akaunti Haipatikani','Jina au neno la siri si sahihi. Angalia tena na ujaribu.');
+    return;
+  }
+
+  showOverlay('Inasajili mahudhurio yako...');
+  const now = new Date();
+  const deadline = new Date(now);
+  deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  const isLate = now > deadline;
+
+  const record = {
+    teacherId: teacher.id, teacherName:`${fn} ${mn} ${ln}`, subject: teacher.subject,
+    timestamp: now.toISOString(), timeStr: formatTime(now), dateStr: formatDate(now),
+    isLate, lat: userLat, lng: userLng, distanceM: Math.round(distanceFromSchool),
+    wifi: wifiSSID, deviceInfo: navigator.userAgent.substring(0,50)
+  };
+
+  saveAttendanceRecord(record);
+  hideOverlay();
+
+  const detailsHTML = `
+    <div class="detail-row"><span class="detail-label">Jina</span><span class="detail-value">${record.teacherName}</span></div>
+    <div class="detail-row"><span class="detail-label">Somo</span><span class="detail-value">${teacher.subject}</span></div>
+    <div class="detail-row"><span class="detail-label">Tarehe</span><span class="detail-value">${record.dateStr}</span></div>
+    <div class="detail-row"><span class="detail-label">Muda</span><span class="detail-value">${record.timeStr}</span></div>
+    <div class="detail-row"><span class="detail-label">Umbali</span><span class="detail-value">Mita ${record.distanceM} kutoka shuleni</span></div>
+    <div class="detail-row"><span class="detail-label">WiFi</span><span class="detail-value">${record.wifi}</span></div>
+  `;
+
+  if (isLate) {
+    document.getElementById('detailsLate').innerHTML = detailsHTML;
+    showResult('resultLate');
+  } else {
+    document.getElementById('detailsOnTime').innerHTML = detailsHTML;
+    showResult('resultOnTime');
+  }
+  updateHistory();
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showResult(id) {
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('gpsLoading').className = 'gps-loading';
+  ['resultOnTime','resultLate','resultError'].forEach(r => {
+    document.getElementById(r).classList.remove('show');
+  });
+  document.getElementById(id).classList.add('show');
+}
+
+function showError(title, msg) {
+  document.getElementById('errorTitle').textContent = title;
+  document.getElementById('errorMsg').textContent   = msg;
+  document.getElementById('formCard').style.display = 'none';
+  showResult('resultError');
+}
+
+function resetForm() {
+  document.getElementById('formCard').style.display = 'block';
+  ['resultOnTime','resultLate','resultError'].forEach(r => {
+    document.getElementById(r).classList.remove('show');
+  });
+  ['firstName','middleName','lastName','password'].forEach(id => document.getElementById(id).value = '');
+  checkGPS(); checkWifi();
+}
+
+function showOverlay(msg) {
+  document.getElementById('overlayMsg').textContent = msg;
+  document.getElementById('loadingOverlay').className = 'overlay show';
+}
+
+function hideOverlay() { document.getElementById('loadingOverlay').className = 'overlay'; }
+
+// ============================================================
+// HISTORY
+// ============================================================
+function saveAttendanceRecord(record) {
+  const key = 'attendance_' + new Date().toDateString();
+  const existing = JSON.parse(localStorage.getItem(key) || '[]');
+  existing.push(record);
+  localStorage.setItem(key, JSON.stringify(existing));
+}
+
+function updateHistory() {
+  const key = 'attendance_' + new Date().toDateString();
+  const records = JSON.parse(localStorage.getItem(key) || '[]');
+  const container = document.getElementById('historyList');
+  if (records.length === 0) {
+    container.innerHTML = '<div class="history-empty">Hakuna rekodi za leo bado</div>';
+    return;
+  }
+  container.innerHTML = records.slice(-5).reverse().map(r => `
+    <div class="history-item">
+      <div>
+        <div class="hi-name">${r.teacherName}</div>
+        <div class="hi-date">${r.timeStr}</div>
+      </div>
+      <div class="hi-badge ${r.isLate?'hi-late':'hi-ontime'}">${r.isLate?'AMECHELEWA':'ON TIME'}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// FORMAT HELPERS
+// ============================================================
+function formatTime(d) {
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+}
+
+function formatDate(d) {
+  const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
+  const months = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ============================================================
+// RESET PASSWORD MODAL
+// ============================================================
+let resetTeacherFound = null;
+
+function openResetModal() {
+  resetTeacherFound = null;
+  ['rFN','rMN','rLN','rNewPass','rConfPass'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('resetErr1').className = 'modal-alert error';
+  document.getElementById('resetErr2').className = 'modal-alert error';
+  document.getElementById('resetStep1').style.display = 'block';
+  document.getElementById('resetStep2').style.display = 'none';
+  document.getElementById('resetStep3').style.display = 'none';
+  document.getElementById('step1bar').className = 'modal-step active';
+  document.getElementById('step2bar').className = 'modal-step';
+  document.getElementById('step3bar').className = 'modal-step';
+  document.getElementById('resetModal').className = 'modal-backdrop show';
+}
+
+function closeResetModal() {
+  document.getElementById('resetModal').className = 'modal-backdrop';
+}
+
+function resetGoBack() {
+  document.getElementById('resetStep2').style.display = 'none';
+  document.getElementById('resetStep1').style.display = 'block';
+  document.getElementById('step1bar').className = 'modal-step active';
+  document.getElementById('step2bar').className = 'modal-step';
+}
+
+function resetStep1Next() {
+  const fn = document.getElementById('rFN').value.trim().toUpperCase();
+  const mn = document.getElementById('rMN').value.trim().toUpperCase();
+  const ln = document.getElementById('rLN').value.trim().toUpperCase();
+
+  if (!fn || !mn || !ln) {
+    document.getElementById('resetErr1Msg').textContent = 'Tafadhali jaza majina yako yote matatu.';
+    document.getElementById('resetErr1').className = 'modal-alert error show';
+    return;
+  }
+
+  TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
+  const found = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln);
+
+  if (!found) {
+    document.getElementById('resetErr1Msg').textContent = 'Jina halipatikani kwenye mfumo. Angalia tahajia.';
+    document.getElementById('resetErr1').className = 'modal-alert error show';
+    return;
+  }
+
+  resetTeacherFound = found;
+  document.getElementById('resetErr1').className = 'modal-alert error';
+  document.getElementById('resetStep1').style.display = 'none';
+  document.getElementById('resetStep2').style.display = 'block';
+  document.getElementById('step1bar').className = 'modal-step done';
+  document.getElementById('step2bar').className = 'modal-step active';
+}
+
+function resetStep2Next() {
+  const np = document.getElementById('rNewPass').value.trim();
+  const cp = document.getElementById('rConfPass').value.trim();
+
+  if (np.length < 4) {
+    document.getElementById('resetErr2Msg').textContent = 'Neno la siri liwe na angalau herufi 4.';
+    document.getElementById('resetErr2').className = 'modal-alert error show';
+    return;
+  }
+
+  if (np !== cp) {
+    document.getElementById('resetErr2Msg').textContent = 'Maneno ya siri hayafanani. Jaribu tena.';
+    document.getElementById('resetErr2').className = 'modal-alert error show';
+    return;
+  }
+
+  // Save new password
+  TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
+  const idx = TEACHERS.findIndex(t => t.id === resetTeacherFound.id);
+  if (idx !== -1) {
+    TEACHERS[idx].password = np;
+    localStorage.setItem('teachers_db', JSON.stringify(TEACHERS));
+  }
+
+  document.getElementById('resetErr2').className = 'modal-alert error';
+  document.getElementById('resetStep2').style.display = 'none';
+  document.getElementById('resetStep3').style.display = 'block';
+  document.getElementById('step2bar').className = 'modal-step done';
+  document.getElementById('step3bar').className = 'modal-step done';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  checkGPS();
+  checkWifi();
+  updateHistory();
+  setInterval(checkGPS, 30000);
+  setInterval(checkWifi, 15000);
+});
+</script>
+</body>
+</html>
