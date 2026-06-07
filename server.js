@@ -28,7 +28,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'kubadilisha-hii-kwa-neno-la-siri-i
 const CONFIG = {
   SCHOOL_LAT: -10.561915,        // ← Latitude ya shule
   SCHOOL_LNG: 39.178560,         // ← Longitude ya shule
-  SCHOOL_RADIUS_M: 50,           // Mita 50
+  SCHOOL_RADIUS_M: 70,           // Mita 70
   DEADLINE_HOUR: 7,              // 7:30 AM = Saa 1:30 asubuhi
   DEADLINE_MIN: 30,
   SCHOOL_WIFI_MAC: 'd8:93:d4:2a:ac:bc', // ← MAC address ya router
