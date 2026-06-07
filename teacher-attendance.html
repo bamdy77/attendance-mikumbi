@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a3d62">
-<title>Attendance System - S.S. Mikumbi</title>
+<title>Attendance System - Mikumbi Secondary School</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -525,7 +525,7 @@
 
     <div class="header-title">
       <h1>Teachers Attendance System</h1>
-      <p>S.S. Mikumbi &nbsp;&middot;&nbsp; Newala</p>
+      <p>Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala</p>
     </div>
 
     <div style="display:flex; flex-direction:row-reverse; align-items:center; gap:8px;">
@@ -565,7 +565,7 @@
     </div>
     <div class="deadline-text">
       <h3>Registration Window</h3>
-      <p>Opens 12:00 AM &nbsp;&bull;&nbsp; Closes 7:30 AM</p>
+      <p>Opens 6:00 AM &nbsp;&bull;&nbsp; Closes 7:30 AM</p>
     </div>
     <div class="deadline-countdown">
       <div class="cd-time" id="countdown">--:--</div>
@@ -646,7 +646,7 @@
       </div>
       <div class="req-item" id="req-time">
         <div class="req-icon">?</div>
-        <span>Within registration window (12:00 AM – 7:30 AM)</span>
+        <span>Within registration window (6:00 AM – 7:30 AM)</span>
       </div>
       <div class="req-item" id="req-wifi">
         <div class="req-icon">?</div>
@@ -858,12 +858,12 @@ const CONFIG = {
   SCHOOL_RADIUS_M: 70,
   DEADLINE_HOUR: 7,
   DEADLINE_MIN: 30,
-  START_HOUR: 0,
+  START_HOUR: 6,
   START_MIN: 0,
   SCHOOL_WIFI_SSID: 'm2pa49',
   SCHOOL_WIFI_MAC: 'd8:93:d4:2a:ac:bc',
   SCHOOL_SUBNET: '10.234.149',
-  API_URL: '/api/attendance',
+  API_URL: 'https://attendance-mikumbi-production.up.railway.app/api/attendance',
 };
 
 // ============================================================
