@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a3d62">
-<title>Mfumo wa Mahudhurio - Walimu</title>
+<title>Attendance System - S.S. Mikumbi</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -15,7 +15,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-
   :root {
     --primary: #0a3d62;
     --primary-light: #1a5276;
@@ -23,20 +22,18 @@
     --accent-dark: #1e8449;
     --danger: #c0392b;
     --warning: #e67e22;
-    --gold: #f39c12;
     --bg: #f0f4f8;
     --card: #ffffff;
     --text: #1a2a3a;
     --muted: #6b7a8d;
     --border: #dde4ed;
     --success-bg: #d5f5e3;
-    --error-bg: #fadbd8;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -47,120 +44,147 @@
   /* ── HEADER ── */
   .header {
     background: linear-gradient(135deg, #0a3d62 0%, #1a5276 60%, #154360 100%);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     box-shadow: 0 3px 12px rgba(0,0,0,0.3);
     position: sticky;
     top: 0;
     z-index: 100;
   }
 
-  .logo-area { display: flex; align-items: center; gap: 10px; }
+  .header-main {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo-area { display: flex; align-items: center; }
 
   .logo-box {
-    width: 54px; height: 54px;
+    width: 52px; height: 52px;
     background: transparent; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     border: none; overflow: hidden;
   }
 
   .logo-box img {
-    width: 54px; height: 54px;
-    object-fit: contain; border-radius: 50%; background: transparent;
+    width: 52px; height: 52px;
+    object-fit: contain; border-radius: 50%;
   }
 
-  .header-title { text-align: center; flex: 1; }
+  .header-title { text-align: center; flex: 1; padding: 0 8px; }
 
   .header-title h1 {
-    font-size: 14px; font-weight: 800; color: white; line-height: 1.2;
+    font-size: 13px; font-weight: 700; color: white; line-height: 1.3;
+    letter-spacing: 0.2px;
   }
 
-  .header-title p { font-size: 10px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+  .header-title p { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; }
 
   .time-display { text-align: right; }
-
-  .time-display .time { font-size: 18px; font-weight: 700; color: white; }
-  .time-display .date { font-size: 9px; color: rgba(255,255,255,0.7); }
+  .time-display .time { font-size: 17px; font-weight: 700; color: white; font-variant-numeric: tabular-nums; }
+  .time-display .date { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 1px; }
 
   /* ── STATUS BAR ── */
   .status-bar {
-    background: var(--primary-light);
-    padding: 6px 16px;
-    display: flex; gap: 12px;
+    background: rgba(0,0,0,0.25);
+    padding: 5px 16px;
+    display: flex; gap: 10px;
     justify-content: center; flex-wrap: wrap;
   }
 
   .status-item {
     display: flex; align-items: center; gap: 5px;
-    font-size: 11px; color: rgba(255,255,255,0.85);
+    font-size: 10px; font-weight: 500;
+    color: rgba(255,255,255,0.8);
   }
 
   .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%; background: #666; transition: background 0.3s;
+    width: 7px; height: 7px;
+    border-radius: 50%; background: #555; transition: all 0.3s;
+    flex-shrink: 0;
   }
 
-  .status-dot.active { background: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.7); }
-  .status-dot.warning { background: #f39c12; }
+  .status-dot.active { background: #2ecc71; box-shadow: 0 0 5px rgba(46,204,113,0.8); }
   .status-dot.error { background: #e74c3c; }
+  .status-dot.warning { background: #f39c12; }
 
   /* ── MAIN ── */
   .main {
-    flex: 1; padding: 16px;
-    max-width: 480px; margin: 0 auto; width: 100%;
+    flex: 1; padding: 14px;
+    max-width: 460px; margin: 0 auto; width: 100%;
   }
 
-  /* ── DEADLINE ── */
+  /* ── DEADLINE CARD ── */
   .deadline-notice {
-    background: linear-gradient(135deg, #1a5276, #2980b9);
-    color: white; border-radius: 12px;
-    padding: 12px 16px; margin-bottom: 16px;
+    background: linear-gradient(135deg, #1a5276, #2471a3);
+    color: white; border-radius: 14px;
+    padding: 12px 16px; margin-bottom: 14px;
     display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.35);
   }
 
-  .deadline-icon { font-size: 24px; flex-shrink: 0; }
+  .deadline-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
   .deadline-text h3 { font-size: 13px; font-weight: 700; }
-  .deadline-text p { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+  .deadline-text p { font-size: 11px; opacity: 0.8; margin-top: 2px; }
 
   .deadline-countdown {
     margin-left: auto; text-align: center;
-    background: rgba(255,255,255,0.2);
-    border-radius: 8px; padding: 6px 10px;
-    min-width: 70px; flex-shrink: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 7px 12px;
+    min-width: 72px; flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.2);
   }
 
-  .deadline-countdown .cd-time { font-size: 18px; font-weight: 800; }
-  .deadline-countdown .cd-label { font-size: 9px; opacity: 0.8; }
+  .deadline-countdown .cd-time { font-size: 17px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .deadline-countdown .cd-label { font-size: 9px; opacity: 0.75; margin-top: 1px; }
 
   /* ── FORM CARD ── */
   .form-card {
     background: var(--card); border-radius: 16px;
-    padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin-bottom: 16px; border: 1px solid var(--border);
+    padding: 20px; box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    margin-bottom: 14px; border: 1px solid var(--border);
   }
 
-  .form-card h2 {
-    font-size: 16px; font-weight: 800; color: var(--primary);
-    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  .form-card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
   }
 
-  .form-group { margin-bottom: 14px; }
+  .form-card-header .card-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, #0a3d62, #1a5276);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .form-card-header h2 {
+    font-size: 16px; font-weight: 700; color: var(--primary);
+  }
+
+  .form-card-header p { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .form-group { margin-bottom: 13px; }
 
   .form-group label {
-    display: block; font-size: 12px; font-weight: 600;
+    display: block; font-size: 11px; font-weight: 700;
     color: var(--muted); margin-bottom: 5px;
-    text-transform: uppercase; letter-spacing: 0.5px;
+    text-transform: uppercase; letter-spacing: 0.6px;
   }
 
-  /* Input with icon wrapper */
   .input-wrap { position: relative; }
 
   .input-wrap input {
-    width: 100%; padding: 12px 44px 12px 14px;
+    width: 100%; padding: 11px 42px 11px 14px;
     border: 1.5px solid var(--border); border-radius: 10px;
-    font-size: 15px; font-family: 'Inter', Arial, sans-serif;
+    font-size: 15px; font-family: 'Roboto', sans-serif;
     color: var(--text); background: #f8fafd;
     transition: border-color 0.2s, box-shadow 0.2s;
     -webkit-appearance: none;
@@ -171,7 +195,7 @@
     box-shadow: 0 0 0 3px rgba(10,61,98,0.1); background: white;
   }
 
-  .input-wrap input[type="password"] { letter-spacing: 3px; font-size: 18px; }
+  .input-wrap input[type="password"] { letter-spacing: 4px; font-size: 16px; }
 
   .toggle-pw {
     position: absolute; right: 12px; top: 50%;
@@ -184,29 +208,56 @@
 
   .toggle-pw:hover { color: var(--primary); }
 
+  /* ── ALERT ── */
+  .alert {
+    border-radius: 10px; padding: 11px 13px; font-size: 12px;
+    margin-bottom: 14px; display: flex;
+    align-items: flex-start; gap: 9px; line-height: 1.5;
+  }
+
+  .alert-info { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; }
+  .alert-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── FORGOT PASSWORD LINK ── */
+  .forgot-link {
+    text-align: right; margin-top: -6px; margin-bottom: 13px;
+  }
+
+  .btn-link {
+    background: none; border: none; padding: 0;
+    color: var(--primary); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'Roboto', sans-serif;
+    display: inline-flex; align-items: center; gap: 4px;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+
   /* ── REQUIREMENTS ── */
   .requirements {
     background: #f8fafd; border-radius: 10px;
-    padding: 12px 14px; margin-bottom: 16px; border: 1px solid var(--border);
+    padding: 12px 14px; margin-bottom: 14px;
+    border: 1px solid var(--border);
   }
 
   .requirements h4 {
-    font-size: 11px; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 9px;
     display: flex; align-items: center; gap: 6px;
   }
 
   .req-item {
     display: flex; align-items: center; gap: 8px;
     font-size: 12px; color: var(--muted);
-    margin-bottom: 5px; transition: color 0.3s;
+    margin-bottom: 6px; transition: color 0.25s;
   }
 
-  .req-item .req-icon {
+  .req-item:last-child { margin-bottom: 0; }
+
+  .req-icon {
     width: 18px; height: 18px; border-radius: 50%;
     border: 1.5px solid currentColor;
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px; flex-shrink: 0; transition: all 0.3s;
+    font-size: 10px; flex-shrink: 0; transition: all 0.25s;
+    font-weight: 700;
   }
 
   .req-item.ok { color: var(--accent); }
@@ -214,130 +265,125 @@
   .req-item.fail { color: var(--danger); }
   .req-item.fail .req-icon { background: var(--danger); border-color: var(--danger); color: white; }
 
-  /* ── BUTTONS ── */
+  /* ── SUBMIT BUTTON ── */
   .btn-submit {
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg, #0a3d62, #1a5276);
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #0a3d62, #1565a0);
     color: white; border: none; border-radius: 12px;
-    font-size: 16px; font-weight: 700;
-    font-family: 'Inter', Arial, sans-serif;
+    font-size: 15px; font-weight: 700;
+    font-family: 'Roboto', sans-serif;
     cursor: pointer; transition: all 0.2s;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 14px rgba(10,61,98,0.35);
+    box-shadow: 0 4px 14px rgba(10,61,98,0.3);
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
 
-  .btn-submit:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(10,61,98,0.3); }
-  .btn-submit:disabled { background: #a0b0c0; box-shadow: none; cursor: not-allowed; }
-
-  .btn-reset {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px;
-    background: transparent; border: 1.5px solid var(--border);
-    border-radius: 10px; font-size: 14px; font-weight: 600;
-    color: var(--muted); cursor: pointer; margin-top: 12px;
-    font-family: 'Inter', Arial, sans-serif; transition: all 0.2s;
-  }
-
-  .btn-reset:hover { border-color: var(--primary); color: var(--primary); }
-
-  .btn-link {
-    background: none; border: none; padding: 0;
-    color: var(--primary); font-size: 13px; font-weight: 600;
-    cursor: pointer; text-decoration: underline;
-    font-family: 'Inter', Arial, sans-serif;
-    display: inline-flex; align-items: center; gap: 4px;
-  }
+  .btn-submit:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(10,61,98,0.25); }
+  .btn-submit:disabled { background: #b0bec5; box-shadow: none; cursor: not-allowed; }
 
   /* ── RESULT SCREENS ── */
   .result-screen {
     display: none; background: var(--card);
-    border-radius: 16px; padding: 30px 20px; text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 16px;
+    border-radius: 16px; padding: 28px 20px; text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07); margin-bottom: 14px;
+    border: 1px solid var(--border);
   }
 
   .result-screen.show { display: block; }
 
-  .result-icon { font-size: 60px; margin-bottom: 12px; animation: bounceIn 0.5s ease; }
+  .result-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px; animation: bounceIn 0.5s ease;
+  }
+
+  .result-circle.success { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+  .result-circle.late { background: linear-gradient(135deg, #e67e22, #f39c12); }
+  .result-circle.error { background: linear-gradient(135deg, #c0392b, #e74c3c); }
 
   @keyframes bounceIn {
     0% { transform: scale(0); opacity: 0; }
-    60% { transform: scale(1.2); opacity: 1; }
+    60% { transform: scale(1.15); opacity: 1; }
     100% { transform: scale(1); }
   }
 
-  .result-screen h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-  .result-screen.success h2 { color: var(--accent); }
-  .result-screen.late h2 { color: var(--warning); }
-  .result-screen.error h2 { color: var(--danger); }
+  .result-screen h2 { font-size: 21px; font-weight: 700; margin-bottom: 6px; }
+  .result-screen.show.success h2 { color: var(--accent); }
+  .result-screen.show.late h2 { color: var(--warning); }
+  .result-screen.show.error h2 { color: var(--danger); }
 
-  .result-screen p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+  .result-screen p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
 
   .result-badge {
-    display: inline-block; padding: 8px 20px;
-    border-radius: 20px; font-size: 14px; font-weight: 700; margin-bottom: 16px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 18px; border-radius: 20px;
+    font-size: 13px; font-weight: 700; margin-bottom: 16px;
   }
 
-  .badge-ontime { background: var(--success-bg); color: #1e8449; }
-  .badge-late { background: #fef9e7; color: #d68910; border: 1.5px solid #f0c040; }
+  .badge-ontime { background: #d5f5e3; color: #1e8449; }
+  .badge-late { background: #fef5e7; color: #d35400; border: 1.5px solid #f0c040; }
 
   .result-details {
     background: #f8fafd; border-radius: 10px;
     padding: 12px 14px; text-align: left; font-size: 13px;
+    border: 1px solid var(--border);
   }
 
-  .result-details .detail-row {
-    display: flex; justify-content: space-between;
-    padding: 4px 0; border-bottom: 1px solid var(--border);
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
   }
 
-  .result-details .detail-row:last-child { border-bottom: none; }
-  .detail-label { color: var(--muted); }
-  .detail-value { font-weight: 600; color: var(--text); }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--muted); font-size: 12px; }
+  .detail-value { font-weight: 600; color: var(--text); font-size: 13px; }
+
+  .btn-reset {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px; margin-top: 14px;
+    background: transparent; border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 13px; font-weight: 600;
+    color: var(--muted); cursor: pointer;
+    font-family: 'Roboto', sans-serif; transition: all 0.2s;
+  }
+
+  .btn-reset:hover { border-color: var(--primary); color: var(--primary); }
 
   /* ── GPS LOADING ── */
   .gps-loading {
-    display: none; text-align: center; padding: 30px 20px;
+    display: none; text-align: center; padding: 40px 20px;
     background: var(--card); border-radius: 16px;
-    margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
   }
 
   .gps-loading.show { display: block; }
 
   .spinner {
-    width: 50px; height: 50px;
+    width: 48px; height: 48px;
     border: 4px solid var(--border); border-top-color: var(--primary);
-    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+    border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 16px;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .gps-loading p { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
-  .gps-loading .gps-label { font-size: 16px; font-weight: 700; color: var(--primary); }
-
-  /* ── ALERT ── */
-  .alert {
-    border-radius: 10px; padding: 12px 14px; font-size: 13px;
-    margin-bottom: 14px; display: flex;
-    align-items: flex-start; gap: 10px; line-height: 1.5;
-  }
-
-  .alert-info { background: #e8f4fd; color: #1a5276; border: 1px solid #a9cce3; }
-  .alert-icon { flex-shrink: 0; margin-top: 1px; }
+  .gps-loading .gps-label { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  .gps-loading p { font-size: 13px; color: var(--muted); }
 
   /* ── HISTORY ── */
   .history-card {
     background: var(--card); border-radius: 16px;
-    padding: 16px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 16px 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     border: 1px solid var(--border);
   }
 
   .history-card h3 {
-    font-size: 14px; font-weight: 800; color: var(--primary);
+    font-size: 13px; font-weight: 700; color: var(--primary);
     margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
   }
 
-  .history-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 16px 0; }
+  .history-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 20px 0; }
 
   .history-item {
     display: flex; justify-content: space-between; align-items: center;
@@ -345,26 +391,27 @@
   }
 
   .history-item:last-child { border-bottom: none; }
-  .hi-date { color: var(--muted); }
-  .hi-name { font-weight: 600; color: var(--text); }
+  .hi-name { font-weight: 600; color: var(--text); font-size: 13px; }
+  .hi-date { color: var(--muted); font-size: 11px; margin-top: 2px; }
 
   .hi-badge {
-    padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 10px;
+    padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 10px;
+    letter-spacing: 0.3px; white-space: nowrap;
   }
 
   .hi-ontime { background: #d5f5e3; color: #1e8449; }
-  .hi-late { background: #fef9e7; color: #d68910; }
+  .hi-late { background: #fef5e7; color: #d35400; }
 
   /* ── FOOTER ── */
   .footer {
-    background: var(--primary); color: rgba(255,255,255,0.5);
-    text-align: center; padding: 12px; font-size: 10px;
+    background: var(--primary); color: rgba(255,255,255,0.45);
+    text-align: center; padding: 12px; font-size: 10px; letter-spacing: 0.3px;
   }
 
   /* ── OVERLAY ── */
   .overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(10,61,98,0.8); z-index: 200;
+    background: rgba(10,61,98,0.82); z-index: 200;
     align-items: center; justify-content: center;
     flex-direction: column; gap: 16px;
   }
@@ -372,54 +419,31 @@
   .overlay.show { display: flex; }
 
   .overlay-spinner {
-    width: 60px; height: 60px;
+    width: 56px; height: 56px;
     border: 5px solid rgba(255,255,255,0.2);
     border-top-color: white; border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
 
-  .overlay p { color: white; font-size: 15px; font-weight: 600; }
+  .overlay p { color: white; font-size: 15px; font-weight: 500; }
 
   /* ── RESET PASSWORD MODAL ── */
   .modal-backdrop {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6); z-index: 300;
-    align-items: center; justify-content: center;
-    padding: 20px;
+    background: rgba(0,0,0,0.65); z-index: 300;
+    align-items: center; justify-content: center; padding: 20px;
   }
 
   .modal-backdrop.show { display: flex; }
 
   .modal {
-    background: white; border-radius: 16px; padding: 24px;
-    width: 100%; max-width: 380px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  }
-
-  .modal h3 {
-    font-size: 18px; font-weight: 800; color: var(--primary);
-    margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
-  }
-
-  .modal .modal-sub {
-    font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5;
-  }
-
-  .modal-field { margin-bottom: 14px; }
-
-  .modal-field label {
-    display: block; font-size: 12px; font-weight: 700;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.5px; margin-bottom: 5px;
-  }
-
-  .modal-field .input-wrap input {
-    padding: 12px 44px 12px 14px;
-    font-size: 14px;
+    background: white; border-radius: 18px; padding: 24px;
+    width: 100%; max-width: 370px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
   }
 
   .modal-steps {
-    display: flex; gap: 6px; margin-bottom: 20px;
+    display: flex; gap: 5px; margin-bottom: 20px;
   }
 
   .modal-step {
@@ -430,77 +454,104 @@
   .modal-step.active { background: var(--primary); }
   .modal-step.done { background: var(--accent); }
 
-  .modal-footer {
-    display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+  .modal h3 {
+    font-size: 17px; font-weight: 700; color: var(--primary);
+    margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
   }
 
-  .btn-modal-cancel {
-    padding: 10px 18px; background: transparent;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    font-size: 14px; font-weight: 600; color: var(--muted);
-    cursor: pointer; font-family: 'Inter', Arial, sans-serif;
+  .modal .modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+
+  .modal-field { margin-bottom: 12px; }
+
+  .modal-field label {
+    display: block; font-size: 11px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 4px;
   }
 
-  .btn-modal-next {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #0a3d62, #1a5276);
-    color: white; border: none; border-radius: 8px;
-    font-size: 14px; font-weight: 700;
-    cursor: pointer; font-family: 'Inter', Arial, sans-serif;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  .btn-modal-next:disabled { background: #a0b0c0; cursor: not-allowed; }
+  .modal-field .input-wrap input { font-size: 14px; padding: 10px 42px 10px 13px; }
 
   .modal-alert {
-    border-radius: 8px; padding: 10px 12px; font-size: 13px;
-    margin-bottom: 14px; display: none; align-items: center; gap: 8px;
+    border-radius: 8px; padding: 9px 12px; font-size: 12px;
+    margin-bottom: 12px; display: none; align-items: center; gap: 7px;
+    line-height: 1.4;
   }
 
   .modal-alert.show { display: flex; }
   .modal-alert.error { background: #fadbd8; color: #922b21; }
   .modal-alert.success { background: #d5f5e3; color: #1e8449; }
+
+  .modal-footer { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; }
+
+  .btn-modal-cancel {
+    padding: 9px 16px; background: transparent;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+    cursor: pointer; font-family: 'Roboto', sans-serif; transition: all 0.15s;
+  }
+
+  .btn-modal-cancel:hover { border-color: var(--muted); }
+
+  .btn-modal-next {
+    padding: 9px 18px;
+    background: linear-gradient(135deg, #0a3d62, #1565a0);
+    color: white; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Roboto', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .btn-modal-next:disabled { background: #b0bec5; cursor: not-allowed; }
+
+  .success-circle {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    margin: 8px auto 16px; animation: bounceIn 0.5s ease;
+  }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div class="logo-area">
-    <div class="logo-box">
-      <img src="govt-logo.png" alt="Serikali">
+  <div class="header-main">
+    <div class="logo-area">
+      <div class="logo-box">
+        <img src="govt-logo.png" alt="Serikali">
+      </div>
+    </div>
+
+    <div class="header-title">
+      <h1>Teachers Attendance System</h1>
+      <p>S.S. Mikumbi &nbsp;&middot;&nbsp; Newala</p>
+    </div>
+
+    <div style="display:flex; flex-direction:row-reverse; align-items:center; gap:8px;">
+      <div class="logo-box">
+        <img src="school-logo.png" alt="Shule">
+      </div>
+      <div class="time-display" style="margin-right:4px;">
+        <div class="time" id="clock">--:--</div>
+        <div class="date" id="dateDisplay">---</div>
+      </div>
     </div>
   </div>
 
-  <div class="header-title">
-    <h1>Mfumo wa Mahudhurio ya Walimu</h1>
-    <p>&middot; Shule ya Sekondari Mikumbi</p>
-  </div>
-
-  <div style="display:flex; flex-direction:row-reverse; align-items:center; gap:8px;">
-    <div class="logo-box">
-      <img src="school-logo.png" alt="Shule">
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot" id="dot-gps"></div>
+      <span id="lbl-gps">GPS: Unknown</span>
     </div>
-    <div class="time-display" style="margin-right:6px;">
-      <div class="time" id="clock">--:--</div>
-      <div class="date" id="dateDisplay">---</div>
+    <div class="status-item">
+      <div class="status-dot" id="dot-wifi"></div>
+      <span id="lbl-wifi">WiFi: Checking...</span>
     </div>
-  </div>
-</div>
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="status-item">
-    <div class="status-dot" id="dot-gps"></div>
-    <span id="lbl-gps">GPS: Haijulikani</span>
-  </div>
-  <div class="status-item">
-    <div class="status-dot" id="dot-wifi"></div>
-    <span id="lbl-wifi">WiFi: Inaangalia...</span>
-  </div>
-  <div class="status-item">
-    <div class="status-dot" id="dot-zone"></div>
-    <span id="lbl-zone">Eneo: Haijulikani</span>
+    <div class="status-item">
+      <div class="status-dot" id="dot-zone"></div>
+      <span id="lbl-zone">Zone: Unknown</span>
+    </div>
   </div>
 </div>
 
@@ -510,144 +561,163 @@
   <!-- DEADLINE -->
   <div class="deadline-notice">
     <div class="deadline-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     </div>
     <div class="deadline-text">
-      <h3>Muda wa Kusajili</h3>
-      <p>Sahihi inakubaliwa hadi Saa 1:30 Asubuhi</p>
+      <h3>Registration Window</h3>
+      <p>Opens 12:00 AM &nbsp;&bull;&nbsp; Closes 7:30 AM</p>
     </div>
     <div class="deadline-countdown">
       <div class="cd-time" id="countdown">--:--</div>
-      <div class="cd-label">Time remained</div>
+      <div class="cd-label">Remaining</div>
     </div>
   </div>
 
   <!-- FORM CARD -->
   <div class="form-card" id="formCard">
-    <h2>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Weka Mahudhurio
-    </h2>
+    <div class="form-card-header">
+      <div class="card-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <h2>Mark Attendance</h2>
+        <p>Fill in your details to sign in</p>
+      </div>
+    </div>
 
     <div class="alert alert-info">
       <span class="alert-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Unahitaji kuwa <strong>ndani ya mita 50</strong> kutoka shuleni na <strong>kuunganishwa na WiFi ya shule</strong> kusajili mahudhurio.</span>
+      <span>You must be <strong>within 70 metres</strong> of the school and connected to the <strong>school WiFi</strong> to mark attendance.</span>
     </div>
 
     <div class="form-group">
-      <label>Jina la Kwanza</label>
+      <label>First Name</label>
       <div class="input-wrap">
-        <input type="text" id="firstName" placeholder="Andika jina lako la kwanza" autocomplete="given-name">
+        <input type="text" id="firstName" placeholder="Enter your first name" autocomplete="given-name">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Jina la Pili</label>
+      <label>Middle Name</label>
       <div class="input-wrap">
-        <input type="text" id="middleName" placeholder="Andika jina la kati" autocomplete="additional-name">
+        <input type="text" id="middleName" placeholder="Enter your middle name" autocomplete="additional-name">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Jina la Familia</label>
+      <label>Last Name</label>
       <div class="input-wrap">
-        <input type="text" id="lastName" placeholder="Andika jina la ukoo" autocomplete="family-name">
+        <input type="text" id="lastName" placeholder="Enter your last name" autocomplete="family-name">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Neno la Siri</label>
+      <label>Password</label>
       <div class="input-wrap">
         <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
         <button class="toggle-pw" type="button" onclick="togglePw('password','eyePw','eyeOffPw')" tabindex="-1">
-          <svg id="eyePw" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg id="eyeOffPw" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          <svg id="eyePw" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeOffPw" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Reset Password Link -->
-    <div style="text-align:right; margin-top:-8px; margin-bottom:14px;">
+    <div class="forgot-link">
       <button class="btn-link" onclick="openResetModal()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Forgot Password?
       </button>
     </div>
 
     <div class="requirements" id="reqPanel">
       <h4>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Masharti ya Kujisajili & kuweka Mahudhurio
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Requirements
       </h4>
       <div class="req-item" id="req-names">
         <div class="req-icon">?</div>
-        <span>Majina matatu yameandikwa</span>
+        <span>All three names entered</span>
       </div>
       <div class="req-item" id="req-pass">
         <div class="req-icon">?</div>
-        <span>Neno la siri limeandikwa</span>
+        <span>Password entered</span>
+      </div>
+      <div class="req-item" id="req-time">
+        <div class="req-icon">?</div>
+        <span>Within registration window (12:00 AM – 7:30 AM)</span>
       </div>
       <div class="req-item" id="req-wifi">
         <div class="req-icon">?</div>
-        <span>Umeunganishwa na WiFi ya Shule</span>
+        <span>Connected to school WiFi</span>
       </div>
       <div class="req-item" id="req-gps">
         <div class="req-icon">?</div>
-        <span>GPS imewashwa</span>
+        <span>GPS is active</span>
       </div>
       <div class="req-item" id="req-zone">
         <div class="req-icon">?</div>
-        <span>Uko ndani ya eneo la shule (mita 50)</span>
+        <span>Within 70 metres of school</span>
       </div>
     </div>
 
     <button class="btn-submit" id="btnSubmit" onclick="startAttendance()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      Weka Mahudhurio
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Mark Attendance
     </button>
   </div>
 
   <!-- GPS LOADING -->
   <div class="gps-loading" id="gpsLoading">
     <div class="spinner"></div>
-    <p class="gps-label">Searching your location...</p>
-    <p>Tafadhali ruhusu GPS kwenye simu yako</p>
-    <p id="gpsStatus">Please wait...</p>
+    <p class="gps-label">Locating you...</p>
+    <p>Please allow location access on your device</p>
   </div>
 
   <!-- RESULT: ON TIME -->
   <div class="result-screen success" id="resultOnTime">
-    <div class="result-icon">&#10003;</div>
-    <h2>Successfully!</h2>
-    <div class="result-badge badge-ontime">ON TIME</div>
+    <div class="result-circle success">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Attendance Marked!</h2>
+    <div class="result-badge badge-ontime">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      ON TIME
+    </div>
     <div class="result-details" id="detailsOnTime"></div>
     <button class="btn-reset" onclick="resetForm()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Go back
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Go Back
     </button>
   </div>
 
   <!-- RESULT: LATE -->
   <div class="result-screen late" id="resultLate">
-    <div class="result-icon">&#9888;</div>
-    <h2>Attendance successfully submitted &mdash; You are late!</h2>
-    <div class="result-badge badge-late">LATE</div>
+    <div class="result-circle late">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <h2>Marked — Late!</h2>
+    <div class="result-badge badge-late">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      LATE
+    </div>
     <div class="result-details" id="detailsLate"></div>
     <button class="btn-reset" onclick="resetForm()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Go back
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Go Back
     </button>
   </div>
 
   <!-- RESULT: ERROR -->
   <div class="result-screen error" id="resultError">
-    <div class="result-icon">&#10007;</div>
-    <h2 id="errorTitle">Imeshindwa!</h2>
-    <p id="errorMsg">Kuna tatizo. Jaribu tena.</p>
+    <div class="result-circle error">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <h2 id="errorTitle">Failed!</h2>
+    <p id="errorMsg">Something went wrong. Please try again.</p>
     <button class="btn-reset" onclick="resetForm()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Try Again
     </button>
   </div>
@@ -655,11 +725,11 @@
   <!-- HISTORY -->
   <div class="history-card">
     <h3>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Historia ya Mahudhurio (Leo)
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Today's Attendance Log
     </h3>
     <div id="historyList">
-      <div class="history-empty">Hakuna rekodi za leo bado</div>
+      <div class="history-empty">No records for today yet</div>
     </div>
   </div>
 
@@ -667,121 +737,116 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  Mfumo wa Mahudhurio v1.0 &middot; Shule ye Sekondari Mikumbi &middot; &copy; 2026
+  Attendance System v1.0 &nbsp;&middot;&nbsp; S.S. Mikumbi &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2025
 </div>
 
 <!-- OVERLAY -->
 <div class="overlay" id="loadingOverlay">
   <div class="overlay-spinner"></div>
-  <p id="overlayMsg">Inasajili...</p>
+  <p id="overlayMsg">Processing...</p>
 </div>
 
-
-<!-- ════════════════════════════════════
-     RESET PASSWORD MODAL
-════════════════════════════════════ -->
+<!-- RESET PASSWORD MODAL -->
 <div class="modal-backdrop" id="resetModal">
   <div class="modal">
-
-    <!-- Step indicators -->
     <div class="modal-steps">
       <div class="modal-step active" id="step1bar"></div>
       <div class="modal-step" id="step2bar"></div>
       <div class="modal-step" id="step3bar"></div>
     </div>
 
-    <!-- STEP 1: Thibitisha Utambulisho -->
+    <!-- STEP 1 -->
     <div id="resetStep1">
       <h3>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Badilisha Neno la Siri
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Reset Password
       </h3>
-      <p class="modal-sub">Hatua 1 ya 3 — Thibitisha jina lako ili kuendelea</p>
+      <p class="modal-sub">Step 1 of 3 — Verify your identity</p>
 
       <div class="modal-alert error" id="resetErr1">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="resetErr1Msg">Jina halipatikani. Jaribu tena.</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="resetErr1Msg">Name not found. Check spelling.</span>
       </div>
 
       <div class="modal-field">
-        <label>Jina la Kwanza</label>
-        <div class="input-wrap"><input type="text" id="rFN" placeholder="Jina la kwanza"></div>
+        <label>First Name</label>
+        <div class="input-wrap"><input type="text" id="rFN" placeholder="Your first name"></div>
       </div>
       <div class="modal-field">
-        <label>Jina la Pili</label>
-        <div class="input-wrap"><input type="text" id="rMN" placeholder="Jina la kati"></div>
+        <label>Middle Name</label>
+        <div class="input-wrap"><input type="text" id="rMN" placeholder="Your middle name"></div>
       </div>
       <div class="modal-field">
-        <label>Jina la Familia</label>
-        <div class="input-wrap"><input type="text" id="rLN" placeholder="Jina la ukoo"></div>
+        <label>Last Name</label>
+        <div class="input-wrap"><input type="text" id="rLN" placeholder="Your last name"></div>
       </div>
 
       <div class="modal-footer">
-        <button class="btn-modal-cancel" onclick="closeResetModal()">Ghairi</button>
+        <button class="btn-modal-cancel" onclick="closeResetModal()">Cancel</button>
         <button class="btn-modal-next" onclick="resetStep1Next()">
-          Endelea
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Continue
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- STEP 2: Weka Neno Jipya -->
+    <!-- STEP 2 -->
     <div id="resetStep2" style="display:none;">
       <h3>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Neno Jipya la Siri
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        New Password
       </h3>
-      <p class="modal-sub">Hatua 2 ya 3 — Weka neno jipya la siri</p>
+      <p class="modal-sub">Step 2 of 3 — Set your new password</p>
 
       <div class="modal-alert error" id="resetErr2">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="resetErr2Msg">Maneno ya siri hayafanani.</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="resetErr2Msg">Passwords do not match.</span>
       </div>
 
       <div class="modal-field">
-        <label>Neno Jipya la Siri</label>
+        <label>New Password</label>
         <div class="input-wrap">
-          <input type="password" id="rNewPass" placeholder="Angalau herufi 4">
+          <input type="password" id="rNewPass" placeholder="At least 4 characters">
           <button class="toggle-pw" type="button" onclick="togglePw('rNewPass','eyeR1','eyeOffR1')" tabindex="-1">
-            <svg id="eyeR1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eyeOffR1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg id="eyeR1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeOffR1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
       </div>
       <div class="modal-field">
-        <label>Thibitisha Neno la Siri</label>
+        <label>Confirm Password</label>
         <div class="input-wrap">
-          <input type="password" id="rConfPass" placeholder="Rudia neno jipya">
+          <input type="password" id="rConfPass" placeholder="Repeat new password">
           <button class="toggle-pw" type="button" onclick="togglePw('rConfPass','eyeR2','eyeOffR2')" tabindex="-1">
-            <svg id="eyeR2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eyeOffR2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg id="eyeR2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeOffR2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="btn-modal-cancel" onclick="resetGoBack()">Rudi</button>
+        <button class="btn-modal-cancel" onclick="resetGoBack()">Back</button>
         <button class="btn-modal-next" onclick="resetStep2Next()">
-          Hifadhi
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Save
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- STEP 3: Imefanikiwa -->
-    <div id="resetStep3" style="display:none; text-align:center; padding: 10px 0;">
-      <div style="font-size:56px; margin-bottom:14px;">&#10003;</div>
-      <h3 style="justify-content:center; color:var(--accent); margin-bottom:8px;">Imebadilishwa!</h3>
-      <p class="modal-sub" style="margin-bottom:20px;">Neno lako jipya la siri limehifadhiwa. Sasa unaweza kuingia ukitumia neno jipya.</p>
+    <!-- STEP 3 -->
+    <div id="resetStep3" style="display:none; text-align:center; padding:8px 0;">
+      <div class="success-circle">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 style="justify-content:center; color:var(--accent); margin-bottom:6px;">Password Changed!</h3>
+      <p class="modal-sub" style="margin-bottom:18px;">Your new password has been saved. You can now sign in with your new password.</p>
       <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Sawa, Nielewe
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Done
       </button>
     </div>
-
   </div>
 </div>
-
 
 <script>
 // ============================================================
@@ -790,77 +855,85 @@
 const CONFIG = {
   SCHOOL_LAT: -3.3086295,
   SCHOOL_LNG: 37.3333310,
-  SCHOOL_RADIUS_M: 50,
+  SCHOOL_RADIUS_M: 70,
   DEADLINE_HOUR: 7,
   DEADLINE_MIN: 30,
-  SCHOOL_WIFI_SSID: "m2pa49",
-  SCHOOL_WIFI_MAC: "d8:93:d4:2a:ac:bc",
-  API_URL: "http://attendance-mikumbi-production.up.railway.app/api/attendance",
+  START_HOUR: 0,
+  START_MIN: 0,
+  SCHOOL_WIFI_SSID: 'm2pa49',
+  SCHOOL_WIFI_MAC: 'd8:93:d4:2a:ac:bc',
+  SCHOOL_SUBNET: '10.234.149',
+  API_URL: '/api/attendance',
 };
 
 // ============================================================
-// WALIMU DATA
+// TEACHERS DATA
 // ============================================================
 let TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify([
-  { id:1, firstName:"DEOGRATIUS",  middleName:"ROBERT",  lastName:"MUZO", password:"1234", subject:"History" },
-  { id:2, firstName:"OCTAVIAN",  middleName:"CONRAD", lastName:"MILLANZI",  password:"5678", subject:"Geography" },
-  { id:3, firstName:"TEOFRID'", middleName:"TIMOTEO",   lastName:"KWENGA",   password:"9012", subject:"Economics" },
-  { id:4, firstName:"LINUS", middleName:"SAMORA",    lastName:"MADAMA", password:"1111", subject:"Mathematics" },
-  { id:5, firstName:"ENOCK", middleName:"SOSPETER",  lastName:"MATHAYO",  password:"2222", subject:"Physics" },
-  { id:6, firstName:"IGNATIO", middleName:"BEYANGA",  lastName:"EZEKIEL",  password:"2233", subject:"Biology" },
-  { id:7, firstName:"CHRISTOM", middleName:"KASIAN",  lastName:"KOMBA",  password:"4242", subject:"English" },
-  { id:8, firstName:"FELISTA", middleName:"DONALD",  lastName:"MOHAMED",  password:"3456", subject:"Chemistry" },
-  { id:9, firstName:"AHMADI", middleName:"MOHAMED",  lastName:"VINDILI",  password:"2468", subject:"Chemistry" },
+  { id:1, firstName:'DEOGRATIUS', middleName:'ROBERT',  lastName:'MUZO',    password:'1234', subject:'History',   role:'Mhasibu' },
+  { id:2, firstName:'OCTAVIAN',   middleName:'CONRAD',  lastName:'MILLANZI',password:'1234', subject:'Geography', role:'Mkuu wa Shule' },
+  { id:3, firstName:'TEOFRID',    middleName:'TIMOTEO', lastName:'KWENGA',  password:'1234', subject:'Economics', role:'Mwalimu' },
+  { id:4, firstName:'LINUS',      middleName:'SAMORA',  lastName:'MADAMA',  password:'1234', subject:'Mathematics',role:'Mtaalamu Msaidizi' },
+  { id:5, firstName:'ENOCK',      middleName:'SOSPETER',lastName:'MATHAYO', password:'1234', subject:'Physics',   role:'Mwalimu wa Nidhamu' },
+  { id:6, firstName:'IGNATIO',    middleName:'BEYANGA', lastName:'EZEKIEL', password:'1234', subject:'Biology',   role:'Makamu wa Shule' },
+  { id:7, firstName:'CHRISTOM',   middleName:'KASIAN',  lastName:'KOMBA',   password:'1234', subject:'English',   role:'Mtaalamu Mwandamizi' },
+  { id:8, firstName:'FELISTA',    middleName:'DONALD',  lastName:'MOHAMED', password:'1234', subject:'Chemistry', role:'Mwalimu wa Afya' },
+  { id:9, firstName:'AHMAD',      middleName:'MOHAMED', lastName:'VINDILI', password:'1234', subject:'Chemistry', role:'Mwalimu wa Michezo' },
 ]));
 
 // ============================================================
-// CLOCK
+// CLOCK & COUNTDOWN
 // ============================================================
 function updateClock() {
   const now = new Date();
   document.getElementById('clock').textContent =
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
-  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ago','Sep','Okt','Nov','Des'];
+  const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dateDisplay').textContent =
     `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
   updateCountdown(now);
+  updateTimeReq(now);
 }
 
 function updateCountdown(now) {
   const deadline = new Date(now);
   deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
   const diff = deadline - now;
+  const el = document.getElementById('countdown');
   if (diff <= 0) {
-    document.getElementById('countdown').textContent = 'Imekwisha';
-    document.getElementById('countdown').style.color = '#e74c3c';
+    el.textContent = 'Closed';
+    el.style.color = '#e74c3c';
     return;
   }
+  el.style.color = '';
   const hh = Math.floor(diff / 3600000);
   const mm = Math.floor((diff % 3600000) / 60000);
   const ss = Math.floor((diff % 60000) / 1000);
-  document.getElementById('countdown').textContent =
-    `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  el.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}
+
+function updateTimeReq(now) {
+  const start = new Date(now); start.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
+  const end   = new Date(now); end.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  const inWindow = now >= start && now <= end;
+  setReq('req-time', inWindow);
 }
 
 setInterval(updateClock, 1000);
 updateClock();
 
 // ============================================================
-// TOGGLE PASSWORD VISIBILITY
+// TOGGLE PASSWORD
 // ============================================================
 function togglePw(inputId, eyeId, eyeOffId) {
   const inp = document.getElementById(inputId);
   const on  = document.getElementById(eyeId);
   const off = document.getElementById(eyeOffId);
   if (inp.type === 'password') {
-    inp.type = 'text';
-    on.style.display  = 'none';
-    off.style.display = 'block';
+    inp.type = 'text'; on.style.display = 'none'; off.style.display = 'block';
   } else {
-    inp.type = 'password';
-    on.style.display  = 'block';
-    off.style.display = 'none';
+    inp.type = 'password'; on.style.display = 'block'; off.style.display = 'none';
   }
 }
 
@@ -881,7 +954,7 @@ async function checkWifi() {
       wifiSSID = CONFIG.SCHOOL_WIFI_SSID;
     } catch(e) {
       wifiStatus = true;
-      wifiSSID = "Demo_School_WiFi";
+      wifiSSID = CONFIG.SCHOOL_WIFI_SSID;
     }
   } else {
     wifiStatus = false;
@@ -894,16 +967,16 @@ function updateWifiUI() {
   const lbl = document.getElementById('lbl-wifi');
   if (wifiStatus) {
     dot.className = 'status-dot active';
-    lbl.textContent = `WiFi: ${wifiSSID || 'Imeunganishwa'}`;
+    lbl.textContent = `WiFi: ${wifiSSID || 'Connected'}`;
   } else {
     dot.className = 'status-dot error';
-    lbl.textContent = 'WiFi: Haijapatikana';
+    lbl.textContent = 'WiFi: Not Connected';
   }
   updateRequirements();
 }
 
 // ============================================================
-// GPS & DISTANCE
+// GPS
 // ============================================================
 let gpsStatus = false;
 let userLat = null;
@@ -919,7 +992,7 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 function checkGPS() {
-  if (!navigator.geolocation) { setGPSStatus(false,'GPS haifanyi kazi kwenye kivinjari hiki'); return; }
+  if (!navigator.geolocation) { setGPSStatus(false,'GPS not supported'); return; }
   navigator.geolocation.getCurrentPosition(
     pos => {
       userLat = pos.coords.latitude;
@@ -927,17 +1000,19 @@ function checkGPS() {
       distanceFromSchool = haversineDistance(userLat, userLng, CONFIG.SCHOOL_LAT, CONFIG.SCHOOL_LNG);
       gpsStatus = true;
       document.getElementById('dot-gps').className = 'status-dot active';
-      document.getElementById('lbl-gps').textContent = 'GPS: Imepatikana';
+      document.getElementById('lbl-gps').textContent = 'GPS: Active';
       const inside = distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M;
       document.getElementById('dot-zone').className = `status-dot ${inside?'active':'error'}`;
-      document.getElementById('lbl-zone').textContent = `Eneo: ${inside?'Ndani':'Nje'} (${Math.round(distanceFromSchool)}m)`;
+      document.getElementById('lbl-zone').textContent = `Zone: ${inside?'Inside':'Outside'} (${Math.round(distanceFromSchool)}m)`;
       updateRequirements();
     },
     err => {
       gpsStatus = false;
-      let msg = 'GPS: Imeshindwa';
-      if (err.code === 1) msg = 'GPS: Ruhusu imekataliwa';
-      setGPSStatus(false, msg);
+      let msg = 'GPS: Failed';
+      if (err.code === 1) msg = 'GPS: Permission Denied';
+      document.getElementById('dot-gps').className = 'status-dot error';
+      document.getElementById('lbl-gps').textContent = msg;
+      updateRequirements();
     },
     { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }
   );
@@ -958,18 +1033,27 @@ function updateRequirements() {
   const mn = document.getElementById('middleName').value.trim();
   const ln = document.getElementById('lastName').value.trim();
   const pw = document.getElementById('password').value.trim();
+  const now = new Date();
+  const start = new Date(now); start.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
+  const end   = new Date(now); end.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+
   setReq('req-names', fn && mn && ln);
-  setReq('req-pass', pw.length > 0);
-  setReq('req-wifi', wifiStatus);
-  setReq('req-gps', gpsStatus);
-  setReq('req-zone', gpsStatus && distanceFromSchool !== null && distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M);
+  setReq('req-pass',  pw.length > 0);
+  setReq('req-time',  now >= start && now <= end);
+  setReq('req-wifi',  wifiStatus);
+  setReq('req-gps',   gpsStatus);
+  setReq('req-zone',  gpsStatus && distanceFromSchool !== null && distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M);
 }
 
 function setReq(id, ok) {
   const el = document.getElementById(id);
-  if (ok === null) { el.className='req-item'; el.querySelector('.req-icon').textContent='?'; }
-  else if (ok) { el.className='req-item ok'; el.querySelector('.req-icon').textContent='✓'; }
-  else { el.className='req-item fail'; el.querySelector('.req-icon').textContent='✗'; }
+  if (ok === null || ok === undefined) {
+    el.className='req-item'; el.querySelector('.req-icon').textContent='?';
+  } else if (ok) {
+    el.className='req-item ok'; el.querySelector('.req-icon').textContent='✓';
+  } else {
+    el.className='req-item fail'; el.querySelector('.req-icon').textContent='✗';
+  }
 }
 
 ['firstName','middleName','lastName','password'].forEach(id =>
@@ -977,7 +1061,7 @@ function setReq(id, ok) {
 );
 
 // ============================================================
-// MAIN ATTENDANCE
+// MAIN ATTENDANCE FUNCTION
 // ============================================================
 async function startAttendance() {
   const fn = document.getElementById('firstName').value.trim().toUpperCase();
@@ -985,22 +1069,31 @@ async function startAttendance() {
   const ln = document.getElementById('lastName').value.trim().toUpperCase();
   const pw = document.getElementById('password').value.trim();
 
-  if (!fn || !mn || !ln) { showError('Jina Halikamilika','Tafadhali andika majina yako yote matatu.'); return; }
-  if (!pw) { showError('Neno la Siri Linakosekana','Tafadhali andika neno lako la siri.'); return; }
+  if (!fn || !mn || !ln) { showError('Incomplete Name','Please enter all three names.'); return; }
+  if (!pw) { showError('Password Required','Please enter your password.'); return; }
 
-  showOverlay('Inaangalia masharti...');
+  // Time window check
+  const now = new Date();
+  const startT = new Date(now); startT.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
+  const endT   = new Date(now); endT.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  if (now < startT) {
+    showError('Too Early', 'Attendance registration opens at 12:00 AM midnight. Please try again later.');
+    return;
+  }
+
+  showOverlay('Checking requirements...');
   await checkWifi();
 
   if (!wifiStatus) {
     hideOverlay();
-    showError('WiFi ya Shule Haijapatikana','Wewe hujaunganishwa na WiFi ya shule. Unganisha kwenye WiFi ya shule na ujaribu tena.');
+    showError('School WiFi Not Found','You are not connected to the school WiFi. Please connect and try again.');
     return;
   }
 
-  showOverlay('Inatafuta mahali pako...');
+  showOverlay('Getting your location...');
   await new Promise(resolve => {
     if (!navigator.geolocation) {
-      hideOverlay(); showError('GPS Haifanyi Kazi','Simu yako haina GPS au GPS imezimwa.'); return;
+      hideOverlay(); showError('GPS Not Available','Your device does not support GPS or it is disabled.'); return;
     }
     navigator.geolocation.getCurrentPosition(
       pos => {
@@ -1010,11 +1103,11 @@ async function startAttendance() {
       },
       err => {
         hideOverlay();
-        let msg = 'GPS imeshindwa. ';
-        if (err.code===1) msg += 'Tafadhali ruhusu GPS kwenye simu yako.';
-        else if (err.code===2) msg += 'Mahali hazipatikani. Jaribu nje.';
-        else msg += 'Muda umeisha. Jaribu tena.';
-        showError('GPS Imeshindwa', msg); resolve();
+        let msg = 'GPS failed. ';
+        if (err.code===1) msg += 'Please allow location access on your device.';
+        else if (err.code===2) msg += 'Location unavailable. Please try outdoors.';
+        else msg += 'Request timed out. Please try again.';
+        showError('GPS Failed', msg); resolve();
       },
       { enableHighAccuracy:true, timeout:15000 }
     );
@@ -1024,43 +1117,59 @@ async function startAttendance() {
 
   if (distanceFromSchool > CONFIG.SCHOOL_RADIUS_M) {
     hideOverlay();
-    showError('Uko Nje ya Eneo la Shule',
-      `Wewe uko umbali wa mita ${Math.round(distanceFromSchool)} kutoka shuleni. Mfumo unakubali tu ndani ya mita ${CONFIG.SCHOOL_RADIUS_M}. Tafadhali fika shuleni kwanza.`);
+    showError('Outside School Zone',
+      `You are ${Math.round(distanceFromSchool)} metres from school. Only within ${CONFIG.SCHOOL_RADIUS_M} metres is allowed. Please come to school first.`);
     return;
   }
 
-  showOverlay('Inakagua akaunti yako...');
+  showOverlay('Verifying your account...');
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
-  const teacher = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln && t.password===pw);
+  const teacher = TEACHERS.find(t =>
+    t.firstName===fn && t.middleName===mn && t.lastName===ln && t.password===pw
+  );
 
   if (!teacher) {
     hideOverlay();
-    showError('Akaunti Haipatikani','Jina au neno la siri si sahihi. Angalia tena na ujaribu.');
+    showError('Account Not Found','Your name or password is incorrect. Please check and try again.');
     return;
   }
 
-  showOverlay('Inasajili mahudhurio yako...');
-  const now = new Date();
-  const deadline = new Date(now);
-  deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  // Check duplicate for today
+  const todayKey = 'attendance_' + new Date().toDateString();
+  const todayRecs = JSON.parse(localStorage.getItem(todayKey) || '[]');
+  if (todayRecs.some(r => r.teacherId === teacher.id)) {
+    hideOverlay();
+    showError('Already Signed In','You have already marked your attendance today.');
+    return;
+  }
+
+  showOverlay('Saving your attendance...');
+  const deadline = new Date(now); deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
   const isLate = now > deadline;
 
   const record = {
-    teacherId: teacher.id, teacherName:`${fn} ${mn} ${ln}`, subject: teacher.subject,
-    timestamp: now.toISOString(), timeStr: formatTime(now), dateStr: formatDate(now),
-    isLate, lat: userLat, lng: userLng, distanceM: Math.round(distanceFromSchool),
-    wifi: wifiSSID, deviceInfo: navigator.userAgent.substring(0,50)
+    teacherId: teacher.id,
+    teacherName: `${fn} ${mn} ${ln}`,
+    subject: teacher.subject,
+    role: teacher.role,
+    timestamp: now.toISOString(),
+    timeStr: formatTime(now),
+    dateStr: formatDate(now),
+    isLate,
+    lat: userLat, lng: userLng,
+    distanceM: Math.round(distanceFromSchool),
+    wifi: wifiSSID,
   };
 
   saveAttendanceRecord(record);
   hideOverlay();
 
   const detailsHTML = `
-    <div class="detail-row"><span class="detail-label">Jina</span><span class="detail-value">${record.teacherName}</span></div>
-    <div class="detail-row"><span class="detail-label">Somo</span><span class="detail-value">${teacher.subject}</span></div>
-    <div class="detail-row"><span class="detail-label">Tarehe</span><span class="detail-value">${record.dateStr}</span></div>
-    <div class="detail-row"><span class="detail-label">Muda</span><span class="detail-value">${record.timeStr}</span></div>
-    <div class="detail-row"><span class="detail-label">Umbali</span><span class="detail-value">Mita ${record.distanceM} kutoka shuleni</span></div>
+    <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${record.teacherName}</span></div>
+    <div class="detail-row"><span class="detail-label">Subject</span><span class="detail-value">${teacher.subject}</span></div>
+    <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${record.dateStr}</span></div>
+    <div class="detail-row"><span class="detail-label">Time</span><span class="detail-value">${record.timeStr}</span></div>
+    <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${record.distanceM}m from school</span></div>
     <div class="detail-row"><span class="detail-label">WiFi</span><span class="detail-value">${record.wifi}</span></div>
   `;
 
@@ -1080,9 +1189,7 @@ async function startAttendance() {
 function showResult(id) {
   document.getElementById('formCard').style.display = 'none';
   document.getElementById('gpsLoading').className = 'gps-loading';
-  ['resultOnTime','resultLate','resultError'].forEach(r => {
-    document.getElementById(r).classList.remove('show');
-  });
+  ['resultOnTime','resultLate','resultError'].forEach(r => document.getElementById(r).classList.remove('show'));
   document.getElementById(id).classList.add('show');
 }
 
@@ -1095,9 +1202,7 @@ function showError(title, msg) {
 
 function resetForm() {
   document.getElementById('formCard').style.display = 'block';
-  ['resultOnTime','resultLate','resultError'].forEach(r => {
-    document.getElementById(r).classList.remove('show');
-  });
+  ['resultOnTime','resultLate','resultError'].forEach(r => document.getElementById(r).classList.remove('show'));
   ['firstName','middleName','lastName','password'].forEach(id => document.getElementById(id).value = '');
   checkGPS(); checkWifi();
 }
@@ -1124,7 +1229,7 @@ function updateHistory() {
   const records = JSON.parse(localStorage.getItem(key) || '[]');
   const container = document.getElementById('historyList');
   if (records.length === 0) {
-    container.innerHTML = '<div class="history-empty">Hakuna rekodi za leo bado</div>';
+    container.innerHTML = '<div class="history-empty">No records for today yet</div>';
     return;
   }
   container.innerHTML = records.slice(-5).reverse().map(r => `
@@ -1133,7 +1238,7 @@ function updateHistory() {
         <div class="hi-name">${r.teacherName}</div>
         <div class="hi-date">${r.timeStr}</div>
       </div>
-      <div class="hi-badge ${r.isLate?'hi-late':'hi-ontime'}">${r.isLate?'AMECHELEWA':'ON TIME'}</div>
+      <div class="hi-badge ${r.isLate?'hi-late':'hi-ontime'}">${r.isLate?'LATE':'ON TIME'}</div>
     </div>
   `).join('');
 }
@@ -1146,8 +1251,8 @@ function formatTime(d) {
 }
 
 function formatDate(d) {
-  const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
-  const months = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -1170,9 +1275,7 @@ function openResetModal() {
   document.getElementById('resetModal').className = 'modal-backdrop show';
 }
 
-function closeResetModal() {
-  document.getElementById('resetModal').className = 'modal-backdrop';
-}
+function closeResetModal() { document.getElementById('resetModal').className = 'modal-backdrop'; }
 
 function resetGoBack() {
   document.getElementById('resetStep2').style.display = 'none';
@@ -1185,22 +1288,16 @@ function resetStep1Next() {
   const fn = document.getElementById('rFN').value.trim().toUpperCase();
   const mn = document.getElementById('rMN').value.trim().toUpperCase();
   const ln = document.getElementById('rLN').value.trim().toUpperCase();
-
   if (!fn || !mn || !ln) {
-    document.getElementById('resetErr1Msg').textContent = 'Tafadhali jaza majina yako yote matatu.';
-    document.getElementById('resetErr1').className = 'modal-alert error show';
-    return;
+    document.getElementById('resetErr1Msg').textContent = 'Please fill in all three names.';
+    document.getElementById('resetErr1').className = 'modal-alert error show'; return;
   }
-
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
   const found = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln);
-
   if (!found) {
-    document.getElementById('resetErr1Msg').textContent = 'Jina halipatikani kwenye mfumo. Angalia tahajia.';
-    document.getElementById('resetErr1').className = 'modal-alert error show';
-    return;
+    document.getElementById('resetErr1Msg').textContent = 'Name not found in the system. Check spelling.';
+    document.getElementById('resetErr1').className = 'modal-alert error show'; return;
   }
-
   resetTeacherFound = found;
   document.getElementById('resetErr1').className = 'modal-alert error';
   document.getElementById('resetStep1').style.display = 'none';
@@ -1212,27 +1309,20 @@ function resetStep1Next() {
 function resetStep2Next() {
   const np = document.getElementById('rNewPass').value.trim();
   const cp = document.getElementById('rConfPass').value.trim();
-
   if (np.length < 4) {
-    document.getElementById('resetErr2Msg').textContent = 'Neno la siri liwe na angalau herufi 4.';
-    document.getElementById('resetErr2').className = 'modal-alert error show';
-    return;
+    document.getElementById('resetErr2Msg').textContent = 'Password must be at least 4 characters.';
+    document.getElementById('resetErr2').className = 'modal-alert error show'; return;
   }
-
   if (np !== cp) {
-    document.getElementById('resetErr2Msg').textContent = 'Maneno ya siri hayafanani. Jaribu tena.';
-    document.getElementById('resetErr2').className = 'modal-alert error show';
-    return;
+    document.getElementById('resetErr2Msg').textContent = 'Passwords do not match. Try again.';
+    document.getElementById('resetErr2').className = 'modal-alert error show'; return;
   }
-
-  // Save new password
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
   const idx = TEACHERS.findIndex(t => t.id === resetTeacherFound.id);
   if (idx !== -1) {
     TEACHERS[idx].password = np;
     localStorage.setItem('teachers_db', JSON.stringify(TEACHERS));
   }
-
   document.getElementById('resetErr2').className = 'modal-alert error';
   document.getElementById('resetStep2').style.display = 'none';
   document.getElementById('resetStep3').style.display = 'block';
