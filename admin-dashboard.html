@@ -1384,12 +1384,12 @@ tr:nth-child(even)td{background:#f5f8fb;}
 .ontime{color:#27ae60;font-weight:700;}
 .footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}
 </style></head><body>
-<h1>Attendance Report &mdash; S.S. Mikumbi</h1>
+<h1>Attendance Report &mdash;Mikumbi Secondary school</h1>
 <p class="subtitle">Generated: ${now.toLocaleString()} &nbsp;&bull;&nbsp; Period: ${period}</p>
 <table><thead><tr><th>#</th><th>Full Name</th><th>Subject</th><th>Time</th><th>Status</th></tr></thead><tbody>
 ${records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.teacherName}</td><td>${r.subject||''}</td><td>${r.timeStr}</td><td class="${r.isLate?'late':'ontime'}">${r.isLate?'LATE':'ON TIME'}</td></tr>`).join('')}
 </tbody></table>
-<p class="footer">S.S. Mikumbi &bull; Newala &bull; Attendance Management System</p>
+<p class="footer">Mikumbi Secondary School &bull; Newala &bull; Attendance Management System</p>
 </body></html>`;
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.print();

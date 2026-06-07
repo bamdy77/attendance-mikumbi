@@ -26,8 +26,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'kubadilisha-hii-kwa-neno-la-siri-i
 // CONFIGURATION 
 // ============================================================
 const CONFIG = {
-  SCHOOL_LAT: -3.3086295,        // ← Latitude ya shule
-  SCHOOL_LNG: 37.3333310,         // ← Longitude ya shule
+  SCHOOL_LAT: -3.3085910,        // ← Latitude ya shule
+  SCHOOL_LNG: 37.3332877,         // ← Longitude ya shule
   SCHOOL_RADIUS_M: 50,           // Mita 50
   DEADLINE_HOUR: 7,              // 7:30 AM = Saa 1:30 asubuhi
   DEADLINE_MIN: 30,
