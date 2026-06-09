@@ -111,16 +111,20 @@ db.serialize(() => {
 
   // Ongeza walimu wa demo
   const teachers = [
-    ['JOHN', 'PETER', 'MWANGI', 'Hisabati', 'Mwalimu'],
-    ['MARY', 'JOSEPH', 'NJERI', 'Kiswahili', 'Mwalimu Mkuu'],
-    ['DAVID', 'PAUL', 'OUMA', 'Sayansi', 'Mwalimu'],
-    ['GRACE', 'ANN', 'WAMBUA', 'Historia', 'Mwalimu'],
-    ['PETER', 'JAMES', 'KAMAU', 'Jiografia', 'Mwalimu'],
+    ['DEOGRATIUS', 'ROBERT',  'MUZO',    'History',    'Mhasibu'],
+    ['OCTAVIAN',  'CONRAD',  'MILLANZI','Geography',  'Mkuu wa Shule'],
+    ['TEOFRID',   'TIMOTEO', 'KWENGA',  'Economics',  'Mwalimu'],
+    ['LINUS',     'SAMORA',  'MADAMA',  'Mathematics','Mtaalamu Msaidizi'],
+    ['ENOCK',     'SOSPETER','MATHAYO', 'Physics',    'Mwalimu wa Nidhamu'],
+    ['IGNATIO',   'BEYANGA', 'EZEKIEL', 'Biology',    'Makamu wa Shule'],
+    ['CHRISTOM',  'KASIAN',  'KOMBA',   'English',    'Mtaalamu Mwandamizi'],
+    ['FELISTA',   'DONALD',  'MOHAMED', 'Chemistry',  'Mwalimu wa Afya'],
+    ['AHMAD',     'MOHAMED', 'VINDILI', 'Chemistry',  'Mwalimu wa Michezo'],
   ];
 
   teachers.forEach(([fn, mn, ln, sub, role]) => {
     const hash = bcrypt.hashSync('1234', 10);
-    db.run(`INSERT OR IGNORE INTO teachers (first_name, middle_name, last_name, subject, role, password_hash) VALUES (?, ?, ?, ?, ?, ?)`,
+    db.run(`INSERT OR REPLACE INTO teachers (first_name, middle_name, last_name, subject, role, password_hash) VALUES (?, ?, ?, ?, ?, ?)`,
       [fn, mn, ln, sub, role, hash]);
   });
 });
