@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a3d62">
-<title>Admin-TAMS - Mikumbi S.S </title>
+<title>Admin-TAMS - Mikumbi Secondary School</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.ico">
@@ -1537,7 +1537,6 @@ async function exportToPDF(period) {
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.print();
   showToast('PDF ready to print','success');
-}
 }
 
 function downloadFile(content, filename, type) {
