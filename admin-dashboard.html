@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a3d62">
-<title>Admin Dashboard - S.S. Mikumbi</title>
+<title>Admin-TAMS - Mikumbi S.S </title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.ico">
@@ -1060,20 +1060,43 @@ function toggleField(inputId, eyeId, eyeOffId) {
   else { inp.type='password'; on.style.display='block'; off.style.display='none'; }
 }
 
-function doLogin() {
+async function doLogin() {
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value.trim();
   const errEl = document.getElementById('loginError');
-  ADMIN_CREDS.pass = localStorage.getItem('admin_password') || 'admin123';
-  if (u === ADMIN_CREDS.user && p === ADMIN_CREDS.pass) {
-    errEl.className = 'login-error';
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('dashboardPage').style.display = 'flex';
-    document.getElementById('adminName').textContent = 'Head of School';
-    initDashboard();
-  } else {
+  const btn   = document.querySelector('.btn-login');
+
+  if (!u || !p) { errEl.className = 'login-error show'; return; }
+
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      sessionStorage.setItem('admin_token', data.token);
+      sessionStorage.setItem('admin_name', data.name || 'Head of School');
+      errEl.className = 'login-error';
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboardPage').style.display = 'flex';
+      document.getElementById('adminName').textContent = data.name || 'Head of School';
+      initDashboard();
+    } else {
+      errEl.className = 'login-error show';
+    }
+  } catch(e) {
     errEl.className = 'login-error show';
   }
+
+  btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> LOGIN`;
+  btn.disabled = false;
 }
 
 function doLogout() {
@@ -1114,13 +1137,95 @@ function setTodayDates() {
 }
 
 // ============================================================
-// TODAY DATA
+// API BASE URL
+// ============================================================
+const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
+
+function getToken() {
+  return sessionStorage.getItem('admin_token') || '';
+}
+
+// ============================================================
+// TODAY DATA — from Railway API
 // ============================================================
 function getTodayAttendance() {
   return JSON.parse(localStorage.getItem('attendance_' + new Date().toDateString()) || '[]');
 }
 
-function refreshTodayData() {
+async function refreshTodayData() {
+  const token = getToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/attendance/today`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      // Token expired — fallback to localStorage
+      renderTodayFromLocal();
+      return;
+    }
+
+    const data = await res.json();
+    renderTodayFromAPI(data);
+
+  } catch(e) {
+    // Network error — fallback to localStorage
+    renderTodayFromLocal();
+  }
+}
+
+function renderTodayFromAPI(data) {
+  const total   = data.total || 0;
+  const present = data.present || 0;
+  const absent  = data.absent || 0;
+  const late    = data.late || 0;
+  const pct     = total > 0 ? Math.round(present / total * 100) : 0;
+
+  document.getElementById('statTotal').textContent      = total;
+  document.getElementById('statPresent').textContent    = present;
+  document.getElementById('statAbsent').textContent     = absent;
+  document.getElementById('statLate').textContent       = late;
+  document.getElementById('statPresentPct').textContent = `${pct}% of total`;
+  document.getElementById('statAbsentPct').textContent  = `${100-pct}% of total`;
+  document.getElementById('presentBar').style.width     = `${pct}%`;
+
+  const tbody = document.getElementById('todayTableBody');
+  if (!data.teachers || data.teachers.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No teachers registered yet</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.teachers.map((t, i) => {
+    if (t.present) {
+      const status = t.isLate
+        ? `<span class="badge badge-late">LATE</span>`
+        : `<span class="badge badge-present">ON TIME</span>`;
+      return `<tr>
+        <td>${i+1}</td>
+        <td><div class="teacher-name">${t.teacherName}</div><div class="teacher-subject">${t.subject}</div></td>
+        <td>${t.subject}</td>
+        <td>${status}</td>
+        <td><span class="time-badge">${t.timeStr}</span></td>
+        <td style="font-size:11px;color:var(--muted);">Present</td>
+        <td style="font-size:12px;color:var(--muted);">${t.distanceM ? t.distanceM+'m' : '—'}</td>
+      </tr>`;
+    } else {
+      return `<tr>
+        <td>${i+1}</td>
+        <td><div class="teacher-name">${t.teacherName}</div><div class="teacher-subject">${t.subject}</div></td>
+        <td>${t.subject}</td>
+        <td><span class="badge badge-absent">ABSENT</span></td>
+        <td><span style="color:var(--muted);font-size:12px;">—</span></td>
+        <td style="font-size:11px;color:var(--muted);">Not signed in</td>
+        <td style="font-size:12px;color:var(--muted);">—</td>
+      </tr>`;
+    }
+  }).join('');
+}
+
+function renderTodayFromLocal() {
   const records = getTodayAttendance();
   const total   = TEACHERS_DB.length;
   const presentIds = new Set(records.map(r => r.teacherId));
@@ -1168,115 +1273,153 @@ function refreshTodayData() {
 }
 
 // ============================================================
-// HISTORY
+// HISTORY — from Railway API
 // ============================================================
-function loadHistoryData() {
-  const from = document.getElementById('historyFrom').value;
-  const to   = document.getElementById('historyTo').value;
+async function loadHistoryData() {
+  const from          = document.getElementById('historyFrom').value;
+  const to            = document.getElementById('historyTo').value;
   const teacherFilter = document.getElementById('historyTeacher').value;
   const statusFilter  = document.getElementById('historyStatus').value;
+  const token         = getToken();
+  const tbody         = document.getElementById('historyTableBody');
 
-  let allRecords = [];
-  const fromDate = new Date(from);
-  const toDate   = new Date(to); toDate.setHours(23,59,59);
-  const d = new Date(fromDate);
-  while (d <= toDate) {
-    const r = JSON.parse(localStorage.getItem('attendance_' + d.toDateString()) || '[]');
-    allRecords = allRecords.concat(r.map(rec => ({ ...rec, dateKey: d.toDateString() })));
-    d.setDate(d.getDate()+1);
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>`;
+
+  try {
+    let url = API_BASE + '/api/attendance/range?from=' + from + '&to=' + to;
+    if (teacherFilter) url += '&teacher_id=' + teacherFilter;
+
+    const res = await fetch(url, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (!res.ok) throw new Error('API error');
+
+    let records = await res.json();
+
+    if (statusFilter === 'late')    records = records.filter(r => r.is_late);
+    else if (statusFilter === 'present') records = records.filter(r => !r.is_late);
+
+    if (records.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>No Records Found</h3><p>No attendance records for the selected period</p></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = records.map((r, i) => {
+      const badge = r.is_late
+        ? `<span class="badge badge-late">LATE</span>`
+        : `<span class="badge badge-ontime">ON TIME</span>`;
+      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td></tr>`;
+    }).join('');
+
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--danger);">Failed to load data. Check connection.</td></tr>`;
   }
-
-  if (teacherFilter) allRecords = allRecords.filter(r => r.teacherId == teacherFilter);
-  if (statusFilter === 'late')    allRecords = allRecords.filter(r => r.isLate);
-  else if (statusFilter === 'present') allRecords = allRecords.filter(r => !r.isLate);
-
-  const tbody = document.getElementById('historyTableBody');
-  if (allRecords.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6">
-      <div class="empty-state">
-        <div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <h3>No Records Found</h3><p>No attendance records match the selected criteria</p>
-      </div></td></tr>`;
-    return;
-  }
-
-  allRecords.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp));
-  tbody.innerHTML = allRecords.map((r,i) => {
-    const badge = r.isLate
-      ? `<span class="badge badge-late">LATE</span>`
-      : `<span class="badge badge-ontime">ON TIME</span>`;
-    return `<tr>
-      <td>${i+1}</td>
-      <td>${r.dateStr||r.dateKey}</td>
-      <td>${r.teacherName}</td>
-      <td>${r.subject||'—'}</td>
-      <td>${badge}</td>
-      <td><span class="time-badge">${r.timeStr}</span></td>
-    </tr>`;
-  }).join('');
 }
 
 // ============================================================
-// TEACHERS
+// TEACHERS — from Railway API
 // ============================================================
-function loadTeachersTable() {
-  document.getElementById('teacherCountLabel').textContent = `${TEACHERS_DB.length} teachers`;
+async function loadTeachersTable() {
+  const token = getToken();
   const tbody = document.getElementById('teachersTableBody');
-  tbody.innerHTML = TEACHERS_DB.map((t,i) => `
-    <tr>
-      <td>${i+1}</td>
-      <td><div class="teacher-name">${t.firstName} ${t.middleName} ${t.lastName}</div></td>
-      <td>${t.subject}</td>
-      <td>${t.role||'Teacher'}</td>
-      <td><span style="color:var(--accent);font-weight:700;">${getWeekAttendance(t.id)}/5</span></td>
-      <td>
-        <button class="btn btn-danger" style="padding:5px 10px;font-size:11px;" onclick="deleteTeacher(${t.id})">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          Delete
-        </button>
-      </td>
-    </tr>
-  `).join('');
-}
 
-function getWeekAttendance(teacherId) {
-  let count = 0;
-  const today = new Date();
-  for (let i=0; i<7; i++) {
-    const d = new Date(today); d.setDate(today.getDate()-i);
-    const r = JSON.parse(localStorage.getItem('attendance_'+d.toDateString())||'[]');
-    if (r.some(rec => rec.teacherId === teacherId)) count++;
+  try {
+    const res = await fetch(`${API_BASE}/api/teachers`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error('API error');
+    const teachers = await res.json();
+
+    TEACHERS_DB = teachers.map(t => ({
+      id: t.id,
+      firstName: t.first_name,
+      middleName: t.middle_name,
+      lastName: t.last_name,
+      subject: t.subject,
+      role: t.role
+    }));
+
+    document.getElementById('teacherCountLabel').textContent = `${teachers.length} teachers`;
+
+    tbody.innerHTML = teachers.map((t, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><div class="teacher-name">${t.first_name} ${t.middle_name} ${t.last_name}</div></td>
+        <td>${t.subject}</td>
+        <td>${t.role || 'Teacher'}</td>
+        <td><span style="color:var(--accent);font-weight:700;">—</span></td>
+        <td>
+          <button class="btn btn-danger" style="padding:5px 10px;font-size:11px;" onclick="deleteTeacher(${t.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Delete
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    populateTeacherSelects();
+
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--danger);">Failed to load teachers.</td></tr>`;
   }
-  return Math.min(count,5);
 }
 
-function addTeacher() {
+async function addTeacher() {
   const fn   = document.getElementById('newFN').value.trim().toUpperCase();
   const mn   = document.getElementById('newMN').value.trim().toUpperCase();
   const ln   = document.getElementById('newLN').value.trim().toUpperCase();
   const sub  = document.getElementById('newSubject').value.trim();
   const role = document.getElementById('newRole').value.trim();
   const pass = document.getElementById('newPass').value.trim();
+
   if (!fn||!mn||!ln||!sub||!pass) { showToast('Please fill in all fields','error'); return; }
-  const newId = Math.max(...TEACHERS_DB.map(t=>t.id),0)+1;
-  TEACHERS_DB.push({ id:newId, firstName:fn, middleName:mn, lastName:ln, subject:sub, role:role||'Teacher', password:pass });
-  localStorage.setItem('teachers_db', JSON.stringify(TEACHERS_DB));
-  ['newFN','newMN','newLN','newSubject','newRole','newPass'].forEach(id=>document.getElementById(id).value='');
-  loadTeachersTable(); populateTeacherSelects();
-  showToast(`${fn} ${mn} ${ln} added successfully`,'success');
+
+  const token = getToken();
+  try {
+    const res = await fetch(`${API_BASE}/api/teachers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ firstName: fn, middleName: mn, lastName: ln, subject: sub, role: role||'Teacher', password: pass })
+    });
+
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Failed to add teacher','error'); return; }
+
+    ['newFN','newMN','newLN','newSubject','newRole','newPass'].forEach(id => document.getElementById(id).value='');
+    await loadTeachersTable();
+    showToast(`${fn} ${mn} ${ln} added successfully`,'success');
+
+  } catch(e) {
+    showToast('Network error. Please try again.','error');
+  }
 }
 
-function deleteTeacher(id) {
+async function deleteTeacher(id) {
   if (!confirm('Are you sure you want to delete this teacher?')) return;
-  TEACHERS_DB = TEACHERS_DB.filter(t=>t.id!==id);
-  localStorage.setItem('teachers_db', JSON.stringify(TEACHERS_DB));
-  loadTeachersTable(); populateTeacherSelects();
-  showToast('Teacher deleted','error');
+  const token = getToken();
+  try {
+    const res = await fetch(`${API_BASE}/api/teachers/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) { showToast('Failed to delete teacher','error'); return; }
+    await loadTeachersTable();
+    showToast('Teacher deleted','error');
+
+  } catch(e) {
+    showToast('Network error. Please try again.','error');
+  }
 }
 
 function populateTeacherSelects() {
   const opts = `<option value="">— All Teachers —</option>` +
-    TEACHERS_DB.map(t=>`<option value="${t.id}">${t.firstName} ${t.middleName} ${t.lastName}</option>`).join('');
+    TEACHERS_DB.map(t => `<option value="${t.id}">${t.firstName} ${t.middleName} ${t.lastName}</option>`).join('');
   document.getElementById('historyTeacher').innerHTML = opts;
   document.getElementById('exportTeacher').innerHTML  = opts;
 }
@@ -1284,32 +1427,48 @@ function populateTeacherSelects() {
 // ============================================================
 // CHANGE ADMIN PASSWORD
 // ============================================================
-function changeAdminPassword() {
+async function changeAdminPassword() {
   const current  = document.getElementById('pwCurrent').value.trim();
   const newPw    = document.getElementById('pwNew').value.trim();
   const confirm  = document.getElementById('pwConfirm').value.trim();
   const alertEl  = document.getElementById('pwChangeAlert');
 
   function showPwAlert(msg, type) {
-    alertEl.style.display = 'flex';
     alertEl.style.background = type==='success' ? '#d5f5e3' : '#fadbd8';
     alertEl.style.color = type==='success' ? '#1e8449' : '#922b21';
     alertEl.textContent = msg;
     alertEl.className = `inline-alert show ${type}`;
   }
 
-  ADMIN_CREDS.pass = localStorage.getItem('admin_password') || 'admin123';
   if (!current||!newPw||!confirm) { showPwAlert('Please fill in all fields.','error'); return; }
-  if (current !== ADMIN_CREDS.pass) { showPwAlert('Current password is incorrect.','error'); return; }
   if (newPw.length < 4) { showPwAlert('New password must be at least 4 characters.','error'); return; }
   if (newPw !== confirm) { showPwAlert('New passwords do not match.','error'); return; }
 
-  ADMIN_CREDS.pass = newPw;
-  localStorage.setItem('admin_password', newPw);
-  document.getElementById('pwCurrent').value = '';
-  document.getElementById('pwNew').value = '';
-  document.getElementById('pwConfirm').value = '';
-  showPwAlert('Password changed successfully!','success');
+  try {
+    const token = sessionStorage.getItem('admin_token');
+    const res = await fetch('/api/admin/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ currentPassword: current, newPassword: newPw })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('pwCurrent').value = '';
+      document.getElementById('pwNew').value = '';
+      document.getElementById('pwConfirm').value = '';
+      showPwAlert('Password changed! Please login again.','success');
+      setTimeout(() => doLogout(), 2500);
+    } else {
+      showPwAlert(data.error || 'Failed to change password.','error');
+    }
+  } catch(e) {
+    showPwAlert('Network error. Please try again.','error');
+  }
 }
 
 // ============================================================
@@ -1336,64 +1495,49 @@ function doExport() {
   closeExportModal();
 }
 
-function getExportRecords(period) {
-  const today = new Date();
-  let records = [];
-  let days = period==='week' ? 7 : period==='month' ? 30 : 1;
-  if (period === 'custom') {
-    const from = new Date(document.getElementById('exportFrom').value);
-    const to   = new Date(document.getElementById('exportTo').value);
-    const d = new Date(from);
-    while (d <= to) {
-      records = records.concat(JSON.parse(localStorage.getItem('attendance_'+d.toDateString())||'[]'));
-      d.setDate(d.getDate()+1);
-    }
-    return records;
+async function getExportRecords(period) {
+  const token = getToken();
+  const today = new Date().toISOString().split('T')[0];
+  let from = today, to = today;
+  if (period === 'week') {
+    const d = new Date(); d.setDate(d.getDate()-7); from = d.toISOString().split('T')[0];
+  } else if (period === 'month') {
+    const d = new Date(); d.setDate(d.getDate()-30); from = d.toISOString().split('T')[0];
+  } else if (period === 'custom') {
+    from = document.getElementById('exportFrom').value;
+    to   = document.getElementById('exportTo').value;
   }
-  for (let i=0; i<days; i++) {
-    const d = new Date(today); d.setDate(today.getDate()-i);
-    records = records.concat(JSON.parse(localStorage.getItem('attendance_'+d.toDateString())||'[]'));
-  }
-  return records;
+  try {
+    const res = await fetch(`${API_BASE}/api/attendance/range?from=${from}&to=${to}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch(e) { return []; }
 }
 
-function exportToExcel(period) {
-  const records = getExportRecords(period);
+async function exportToExcel(period) {
+  const records = await getExportRecords(period);
+  if (!records.length) { showToast('No records to export','error'); return; }
   const rows = [
-    ['#','Date','Full Name','Subject','Time Arrived','Status','Distance (m)','WiFi'],
-    ...records.map((r,i)=>[i+1, r.dateStr||new Date(r.timestamp).toDateString(), r.teacherName, r.subject||'', r.timeStr, r.isLate?'LATE':'ON TIME', r.distanceM, r.wifi||''])
+    ['#','Date','Full Name','Subject','Time','Status','Distance(m)'],
+    ...records.map((r,i)=>[i+1, r.date, r.teacher_name, r.subject||'', r.time_str, r.is_late?'LATE':'ON TIME', r.distance_m||''])
   ];
   const csv = rows.map(r=>r.join(',')).join('\n');
-  downloadFile(csv, `attendance-${period}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+  downloadFile(csv, `tams-attendance-${period}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
   showToast('File downloaded successfully','success');
 }
 
-function exportToPDF(period) {
-  const records = getExportRecords(period);
+async function exportToPDF(period) {
+  const records = await getExportRecords(period);
+  if (!records.length) { showToast('No records to export','error'); return; }
   const now = new Date();
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Attendance Report</title>
-<style>
-body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}
-h1{color:#0a3d62;font-size:18px;margin-bottom:4px;}
-.subtitle{color:#666;font-size:12px;margin-bottom:20px;}
-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px;}
-th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;font-size:11px;}
-td{padding:7px 10px;border-bottom:1px solid #e8edf2;}
-tr:nth-child(even)td{background:#f5f8fb;}
-.late{color:#c0392b;font-weight:700;}
-.ontime{color:#27ae60;font-weight:700;}
-.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}
-</style></head><body>
-<h1>Attendance Report &mdash;Mikumbi Secondary school</h1>
-<p class="subtitle">Generated: ${now.toLocaleString()} &nbsp;&bull;&nbsp; Period: ${period}</p>
-<table><thead><tr><th>#</th><th>Full Name</th><th>Subject</th><th>Time</th><th>Status</th></tr></thead><tbody>
-${records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.teacherName}</td><td>${r.subject||''}</td><td>${r.timeStr}</td><td class="${r.isLate?'late':'ontime'}">${r.isLate?'LATE':'ON TIME'}</td></tr>`).join('')}
-</tbody></table>
-<p class="footer">Mikumbi Secondary School &bull; Newala &bull; Attendance Management System</p>
-</body></html>`;
+  const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${now.toLocaleString()}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Subject</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p></body></html>`;
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.print();
   showToast('PDF ready to print','success');
+}
 }
 
 function downloadFile(content, filename, type) {

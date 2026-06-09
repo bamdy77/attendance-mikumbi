@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * BACKEND SERVER - Mfumo wa Mahudhurio
- * Shule ya Sendari Mikumbi
+ * Shule ya Sendari
  * ============================================================
  * 
  * Mahitaji: Node.js v18+
@@ -20,20 +20,20 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'kubadilisha-hii-kwa-neno-la-siri-imara-2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'badilisha-hii-kwa-neno-la-siri-imara-2025';
 
 // ============================================================
-// CONFIGURATION 
+// CONFIGURATION — BADILISHA HAPA
 // ============================================================
 const CONFIG = {
-  SCHOOL_LAT: -10.561915,        // ← Latitude ya shule
-  SCHOOL_LNG: 39.178560,         // ← Longitude ya shule
-  SCHOOL_RADIUS_M:  70,           // Mita 70
-  DEADLINE_HOUR: 7,              // 7:30 AM = Saa 1:30 asubuhi
+  SCHOOL_LAT: -10.561915,
+  SCHOOL_LNG: 39.178560,
+  SCHOOL_RADIUS_M: 45,
+  DEADLINE_HOUR: 7,
   DEADLINE_MIN: 30,
-  SCHOOL_WIFI_MAC: 'd8:93:d4:2a:ac:bc', // ← MAC address ya router
-  SCHOOL_WIFI_SSID: 'm2pa49',       // ← Jina la WiFi
-  SCHOOL_SUBNET: '10.234.149',    // ← Subnet ya network ya shule (kwa IP check)
+  SCHOOL_WIFI_MAC: 'AA:BB:CC:DD:EE:FF', // ← MAC address ya router
+  SCHOOL_WIFI_SSID: 'School_WiFi',       // ← Jina la WiFi
+  SCHOOL_SUBNET: '192.168.1',    // ← Subnet ya network ya shule (kwa IP check)
 };
 
 // ============================================================
@@ -53,7 +53,7 @@ const limiter = rateLimit({
 app.use('/api/attendance', limiter);
 
 // ============================================================
-// DATABASE SETUP (SQLite)
+// DATABASE SETUP (SQLite - rahisi kwa shule ndogo)
 // ============================================================
 const db = new sqlite3.Database('./mahudhurio.db', err => {
   if (err) console.error('DB Error:', err);
@@ -105,21 +105,17 @@ db.serialize(() => {
   )`);
 
   // Ongeza admin wa awali (admin / admin123) - BADILISHA mara moja!
-  const adminHash = bcrypt.hashSync('octavian@2026', 10);
+  const adminHash = bcrypt.hashSync('admin123', 10);
   db.run(`INSERT OR IGNORE INTO admins (username, password_hash, name) VALUES (?, ?, ?)`,
-    ['millanzi', adminHash, 'Mkuu wa Shule']);
+    ['admin', adminHash, 'Mkuu wa Shule']);
 
-  // kuongeza walimu wa demo
+  // Ongeza walimu wa demo
   const teachers = [
-    ['DEOGRATIUS', 'ROBERT', 'MUZO', 'History', 'Mhasibu'],
-    ['OCTAVIAN', 'CONRAD', 'MILLANZI', 'Geography', 'Mkuu wa shule'],
-    ['TEOFRID', 'TIMOTEO', 'KWENGA', 'Economics', 'Mwalimu'],
-    ['LINUS', 'SAMORA', 'MADAMA', 'Mathematics', 'Mtaaluma Msaidizi'],
-    ['ENOCK', 'SOSPETER', 'MATHAYO', 'Physics', 'Mwalimu wa Nidhamu'],
-    ['IGNATIO', 'BEYANGA', 'EZEKIEL', 'Biology', 'Makamu wa Shule'],
-    ['CHRISTOM', 'KASIAN', 'KOMBA', 'English', 'Mtaaluma Mwandamizi'],
-    ['FELISTA', 'DONALD', 'MOHAMED', 'Chemistry', 'Mwalimu wa afya'],
-    ['AHMAD', 'MOHAMED', 'VINDILI', 'Chemistry', 'Mwalimu wa Michezo'],
+    ['JOHN', 'PETER', 'MWANGI', 'Hisabati', 'Mwalimu'],
+    ['MARY', 'JOSEPH', 'NJERI', 'Kiswahili', 'Mwalimu Mkuu'],
+    ['DAVID', 'PAUL', 'OUMA', 'Sayansi', 'Mwalimu'],
+    ['GRACE', 'ANN', 'WAMBUA', 'Historia', 'Mwalimu'],
+    ['PETER', 'JAMES', 'KAMAU', 'Jiografia', 'Mwalimu'],
   ];
 
   teachers.forEach(([fn, mn, ln, sub, role]) => {
@@ -145,6 +141,13 @@ function isLate() {
   const deadline = new Date(now);
   deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
   return now > deadline;
+}
+
+function isWithinWindow() {
+  const now = new Date();
+  const start = new Date(now); start.setHours(6, 0, 0, 0);
+  const close = new Date(now); close.setHours(8, 0, 0, 0);
+  return now >= start && now <= close;
 }
 
 function getTodayDate() {
@@ -205,7 +208,7 @@ app.post('/api/admin/login', (req, res) => {
   });
 });
 
-// POST /api/attendance —
+// POST /api/attendance — Weka Mahudhurio
 app.post('/api/attendance', (req, res) => {
   const { firstName, middleName, lastName, password, lat, lng, wifiSSID } = req.body;
 
@@ -214,10 +217,21 @@ app.post('/api/attendance', (req, res) => {
   }
 
   if (!lat || !lng) {
-    return res.status(400).json({ ok: false, error: 'GPS inahitajika. Washa GPS na ujaribu tena.' });
+    return res.status(400).json({ ok: false, error: 'GPS is required. Please enable GPS and try again.' });
   }
 
-  // kungalia umbali kutoka shuleni
+  // Check time window
+  if (!isWithinWindow()) {
+    const now = new Date();
+    const start = new Date(now); start.setHours(6, 0, 0, 0);
+    if (now < start) {
+      return res.status(403).json({ ok: false, error: 'Registration not yet open. Opens at 6:00 AM.' });
+    } else {
+      return res.status(403).json({ ok: false, error: 'Registration closed. Attendance closed at 8:00 AM.' });
+    }
+  }
+
+  // Angalia umbali kutoka shuleni
   const distance = haversineDistance(lat, lng, CONFIG.SCHOOL_LAT, CONFIG.SCHOOL_LNG);
   if (distance > CONFIG.SCHOOL_RADIUS_M) {
     return res.status(403).json({
@@ -248,7 +262,7 @@ app.post('/api/attendance', (req, res) => {
       const teacherName = `${fn} ${mn} ${ln}`;
       const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
 
-      // kungalia kama tayari amesajili leo
+      // Angalia kama tayari amesajili leo
       db.get('SELECT id FROM attendance WHERE teacher_id = ? AND date = ?', [teacher.id, today], (err2, existing) => {
         if (existing) {
           return res.status(409).json({
@@ -282,6 +296,27 @@ app.post('/api/attendance', (req, res) => {
       });
     }
   );
+});
+
+// POST /api/admin/change-password
+app.post('/api/admin/change-password', authMiddleware, (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword)
+    return res.status(400).json({ error: 'Fill in all fields' });
+  if (newPassword.length < 4)
+    return res.status(400).json({ error: 'New password must be at least 4 characters' });
+
+  db.get('SELECT * FROM admins WHERE id = ?', [req.user.id], (err, admin) => {
+    if (err || !admin) return res.status(404).json({ error: 'Admin not found' });
+    if (!bcrypt.compareSync(currentPassword, admin.password_hash))
+      return res.status(401).json({ error: 'Current password is incorrect' });
+
+    const newHash = bcrypt.hashSync(newPassword, 10);
+    db.run('UPDATE admins SET password_hash = ? WHERE id = ?', [newHash, admin.id], err2 => {
+      if (err2) return res.status(500).json({ error: 'Failed to update password' });
+      res.json({ ok: true, message: 'Password changed successfully' });
+    });
+  });
 });
 
 // GET /api/attendance/today — Mahudhurio ya leo (Admin)
@@ -347,7 +382,7 @@ app.get('/api/teachers', authMiddleware, (req, res) => {
   });
 });
 
-// POST /api/teachers — kuongeza mwalimu (Admin)
+// POST /api/teachers — Ongeza mwalimu (Admin)
 app.post('/api/teachers', authMiddleware, (req, res) => {
   const { firstName, middleName, lastName, subject, role, password } = req.body;
   if (!firstName || !middleName || !lastName || !subject || !password)
@@ -382,7 +417,7 @@ app.listen(PORT, () => {
 ║   Shule ya Sendari                     ║
 ╠════════════════════════════════════════╣
 ║   ✅ Seva inafanya kazi!               ║
-║   🌐 http://localhost:${PORT}          ║
+║   🌐 http://localhost:${PORT}             ║
 ║   📱 Teacher: /teacher-attendance.html ║
 ║   🔐 Admin:   /admin-dashboard.html    ║
 ╚════════════════════════════════════════╝

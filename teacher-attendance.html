@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="sw">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a3d62">
-<title>Attendance System - Mikumbi Secondary School</title>
+<title>TAMS - Mikumbi S.S </title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="school-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -50,35 +50,47 @@
     z-index: 100;
   }
 
+  /* TAMS Title Bar */
+  .header-tams {
+    text-align: center;
+    padding: 8px 16px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .header-tams h1 {
+    font-size: 17px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-tams p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+  }
+
+  /* Logo + Clock Row */
   .header-main {
-    padding: 10px 16px;
+    padding: 8px 16px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .logo-area { display: flex; align-items: center; }
-
   .logo-box {
-    width: 52px; height: 52px;
+    width: 50px; height: 50px;
     background: transparent; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     border: none; overflow: hidden;
   }
 
   .logo-box img {
-    width: 52px; height: 52px;
+    width: 50px; height: 50px;
     object-fit: contain; border-radius: 50%;
   }
-
-  .header-title { text-align: center; flex: 1; padding: 0 8px; }
-
-  .header-title h1 {
-    font-size: 13px; font-weight: 700; color: white; line-height: 1.3;
-    letter-spacing: 0.2px;
-  }
-
-  .header-title p { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; }
 
   .time-display { text-align: right; }
   .time-display .time { font-size: 17px; font-weight: 700; color: white; font-variant-numeric: tabular-nums; }
@@ -165,10 +177,7 @@
     flex-shrink: 0;
   }
 
-  .form-card-header h2 {
-    font-size: 16px; font-weight: 700; color: var(--primary);
-  }
-
+  .form-card-header h2 { font-size: 16px; font-weight: 700; color: var(--primary); }
   .form-card-header p { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
   .form-group { margin-bottom: 13px; }
@@ -202,8 +211,7 @@
     transform: translateY(-50%);
     background: none; border: none; padding: 4px;
     cursor: pointer; color: var(--muted);
-    display: flex; align-items: center;
-    transition: color 0.2s;
+    display: flex; align-items: center; transition: color 0.2s;
   }
 
   .toggle-pw:hover { color: var(--primary); }
@@ -218,10 +226,8 @@
   .alert-info { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; }
   .alert-icon { flex-shrink: 0; margin-top: 1px; }
 
-  /* ── FORGOT PASSWORD LINK ── */
-  .forgot-link {
-    text-align: right; margin-top: -6px; margin-bottom: 13px;
-  }
+  /* ── FORGOT PASSWORD ── */
+  .forgot-link { text-align: right; margin-top: -6px; margin-bottom: 13px; }
 
   .btn-link {
     background: none; border: none; padding: 0;
@@ -234,8 +240,7 @@
   /* ── REQUIREMENTS ── */
   .requirements {
     background: #f8fafd; border-radius: 10px;
-    padding: 12px 14px; margin-bottom: 14px;
-    border: 1px solid var(--border);
+    padding: 12px 14px; margin-bottom: 14px; border: 1px solid var(--border);
   }
 
   .requirements h4 {
@@ -256,8 +261,7 @@
     width: 18px; height: 18px; border-radius: 50%;
     border: 1.5px solid currentColor;
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px; flex-shrink: 0; transition: all 0.25s;
-    font-weight: 700;
+    font-size: 10px; flex-shrink: 0; transition: all 0.25s; font-weight: 700;
   }
 
   .req-item.ok { color: var(--accent); }
@@ -278,7 +282,7 @@
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
 
-  .btn-submit:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(10,61,98,0.25); }
+  .btn-submit:active { transform: scale(0.97); }
   .btn-submit:disabled { background: #b0bec5; box-shadow: none; cursor: not-allowed; }
 
   /* ── RESULT SCREENS ── */
@@ -311,7 +315,6 @@
   .result-screen.show.success h2 { color: var(--accent); }
   .result-screen.show.late h2 { color: var(--warning); }
   .result-screen.show.error h2 { color: var(--danger); }
-
   .result-screen p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
 
   .result-badge {
@@ -427,7 +430,7 @@
 
   .overlay p { color: white; font-size: 15px; font-weight: 500; }
 
-  /* ── RESET PASSWORD MODAL ── */
+  /* ── MODAL ── */
   .modal-backdrop {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.65); z-index: 300;
@@ -442,9 +445,7 @@
     box-shadow: 0 24px 64px rgba(0,0,0,0.3);
   }
 
-  .modal-steps {
-    display: flex; gap: 5px; margin-bottom: 20px;
-  }
+  .modal-steps { display: flex; gap: 5px; margin-bottom: 20px; }
 
   .modal-step {
     flex: 1; height: 3px; border-radius: 2px; background: var(--border);
@@ -473,8 +474,7 @@
 
   .modal-alert {
     border-radius: 8px; padding: 9px 12px; font-size: 12px;
-    margin-bottom: 12px; display: none; align-items: center; gap: 7px;
-    line-height: 1.4;
+    margin-bottom: 12px; display: none; align-items: center; gap: 7px; line-height: 1.4;
   }
 
   .modal-alert.show { display: flex; }
@@ -487,10 +487,8 @@
     padding: 9px 16px; background: transparent;
     border: 1.5px solid var(--border); border-radius: 8px;
     font-size: 13px; font-weight: 600; color: var(--muted);
-    cursor: pointer; font-family: 'Roboto', sans-serif; transition: all 0.15s;
+    cursor: pointer; font-family: 'Roboto', sans-serif;
   }
-
-  .btn-modal-cancel:hover { border-color: var(--muted); }
 
   .btn-modal-next {
     padding: 9px 18px;
@@ -499,10 +497,7 @@
     font-size: 13px; font-weight: 700;
     cursor: pointer; font-family: 'Roboto', sans-serif;
     display: flex; align-items: center; gap: 6px;
-    transition: all 0.15s;
   }
-
-  .btn-modal-next:disabled { background: #b0bec5; cursor: not-allowed; }
 
   .success-circle {
     width: 64px; height: 64px; border-radius: 50%;
@@ -516,21 +511,25 @@
 
 <!-- HEADER -->
 <div class="header">
+  <!-- TAMS Title -->
+  <div class="header-tams">
+    <h1>TAMS</h1>
+    <p>Teachers Attendance Management System</p>
+  </div>
+
+  <!-- Logos + Clock -->
   <div class="header-main">
-    <div class="logo-area">
-      <div class="logo-box">
-        <img src="govt-logo.png" alt="Serikali">
-      </div>
+    <div class="logo-box">
+      <img src="govt-logo.png" alt="Government">
     </div>
 
-    <div class="header-title">
-      <h1>Teachers Attendance System</h1>
-      <p>Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala</p>
+    <div style="text-align:center; flex:1; padding:0 8px;">
+      <div style="font-size:12px; font-weight:700; color:white; letter-spacing:0.3px;">Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala</div>
     </div>
 
     <div style="display:flex; flex-direction:row-reverse; align-items:center; gap:8px;">
       <div class="logo-box">
-        <img src="school-logo.png" alt="Shule">
+        <img src="school-logo.png" alt="School">
       </div>
       <div class="time-display" style="margin-right:4px;">
         <div class="time" id="clock">--:--</div>
@@ -539,18 +538,19 @@
     </div>
   </div>
 
+  <!-- Status Bar -->
   <div class="status-bar">
     <div class="status-item">
       <div class="status-dot" id="dot-gps"></div>
       <span id="lbl-gps">GPS: Unknown</span>
     </div>
     <div class="status-item">
-      <div class="status-dot" id="dot-wifi"></div>
-      <span id="lbl-wifi">WiFi: Checking...</span>
-    </div>
-    <div class="status-item">
       <div class="status-dot" id="dot-zone"></div>
       <span id="lbl-zone">Zone: Unknown</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot" id="dot-time"></div>
+      <span id="lbl-time">Window: Checking...</span>
     </div>
   </div>
 </div>
@@ -565,11 +565,11 @@
     </div>
     <div class="deadline-text">
       <h3>Registration Window</h3>
-      <p>Opens 6:00 AM &nbsp;&bull;&nbsp; Closes 7:30 AM</p>
+      <p>Opens 6:00 AM &nbsp;&bull;&nbsp; Late after 7:30 AM &nbsp;&bull;&nbsp; Closes 8:00 AM</p>
     </div>
     <div class="deadline-countdown">
       <div class="cd-time" id="countdown">--:--</div>
-      <div class="cd-label">Remaining</div>
+      <div class="cd-label" id="countdownLabel">Remaining</div>
     </div>
   </div>
 
@@ -589,7 +589,7 @@
       <span class="alert-icon">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>You must be <strong>within 70 metres</strong> of the school and connected to the <strong>school WiFi</strong> to mark attendance.</span>
+      <span>You must be <strong>within 45 metres</strong> of the school. Registration is open from <strong>6:00 AM to 8:00 AM</strong> only.</span>
     </div>
 
     <div class="form-group">
@@ -646,11 +646,7 @@
       </div>
       <div class="req-item" id="req-time">
         <div class="req-icon">?</div>
-        <span>Within registration window (6:00 AM – 7:30 AM)</span>
-      </div>
-      <div class="req-item" id="req-wifi">
-        <div class="req-icon">?</div>
-        <span>Connected to school WiFi</span>
+        <span>Within registration window (6:00 AM – 8:00 AM)</span>
       </div>
       <div class="req-item" id="req-gps">
         <div class="req-icon">?</div>
@@ -658,7 +654,7 @@
       </div>
       <div class="req-item" id="req-zone">
         <div class="req-icon">?</div>
-        <span>Within 70 metres of school</span>
+        <span>Within 45 metres of school</span>
       </div>
     </div>
 
@@ -737,7 +733,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  Attendance System v1.0 &nbsp;&middot;&nbsp; Mikumbi Sec School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2025
+  TAMS v1.0 &nbsp;&middot;&nbsp; Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2025
 </div>
 
 <!-- OVERLAY -->
@@ -755,19 +751,16 @@
       <div class="modal-step" id="step3bar"></div>
     </div>
 
-    <!-- STEP 1 -->
     <div id="resetStep1">
       <h3>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Reset Password
       </h3>
       <p class="modal-sub">Step 1 of 3 — Verify your identity</p>
-
       <div class="modal-alert error" id="resetErr1">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span id="resetErr1Msg">Name not found. Check spelling.</span>
       </div>
-
       <div class="modal-field">
         <label>First Name</label>
         <div class="input-wrap"><input type="text" id="rFN" placeholder="Your first name"></div>
@@ -780,7 +773,6 @@
         <label>Last Name</label>
         <div class="input-wrap"><input type="text" id="rLN" placeholder="Your last name"></div>
       </div>
-
       <div class="modal-footer">
         <button class="btn-modal-cancel" onclick="closeResetModal()">Cancel</button>
         <button class="btn-modal-next" onclick="resetStep1Next()">
@@ -790,19 +782,16 @@
       </div>
     </div>
 
-    <!-- STEP 2 -->
     <div id="resetStep2" style="display:none;">
       <h3>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         New Password
       </h3>
       <p class="modal-sub">Step 2 of 3 — Set your new password</p>
-
       <div class="modal-alert error" id="resetErr2">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span id="resetErr2Msg">Passwords do not match.</span>
       </div>
-
       <div class="modal-field">
         <label>New Password</label>
         <div class="input-wrap">
@@ -823,7 +812,6 @@
           </button>
         </div>
       </div>
-
       <div class="modal-footer">
         <button class="btn-modal-cancel" onclick="resetGoBack()">Back</button>
         <button class="btn-modal-next" onclick="resetStep2Next()">
@@ -833,13 +821,12 @@
       </div>
     </div>
 
-    <!-- STEP 3 -->
     <div id="resetStep3" style="display:none; text-align:center; padding:8px 0;">
       <div class="success-circle">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h3 style="justify-content:center; color:var(--accent); margin-bottom:6px;">Password Changed!</h3>
-      <p class="modal-sub" style="margin-bottom:18px;">Your new password has been saved. You can now sign in with your new password.</p>
+      <p class="modal-sub" style="margin-bottom:18px;">Your new password has been saved.</p>
       <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         Done
@@ -855,14 +842,13 @@
 const CONFIG = {
   SCHOOL_LAT: -10.561915,
   SCHOOL_LNG: 39.178560,
-  SCHOOL_RADIUS_M: 70,
-  DEADLINE_HOUR: 7,
-  DEADLINE_MIN: 30,
+  SCHOOL_RADIUS_M: 45,
   START_HOUR: 6,
   START_MIN: 0,
-  SCHOOL_WIFI_SSID: 'm2pa49',
-  SCHOOL_WIFI_MAC: 'd8:93:d4:2a:ac:bc',
-  SCHOOL_SUBNET: '10.234.149',
+  DEADLINE_HOUR: 7,
+  DEADLINE_MIN: 30,
+  CLOSE_HOUR: 8,
+  CLOSE_MIN: 0,
   API_URL: 'https://attendance-mikumbi-production.up.railway.app/api/attendance',
 };
 
@@ -870,15 +856,15 @@ const CONFIG = {
 // TEACHERS DATA
 // ============================================================
 let TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify([
-  { id:1, firstName:'DEOGRATIUS', middleName:'ROBERT',  lastName:'MUZO',    password:'1234', subject:'History',   role:'Mhasibu' },
-  { id:2, firstName:'OCTAVIAN',   middleName:'CONRAD',  lastName:'MILLANZI',password:'1234', subject:'Geography', role:'Mkuu wa Shule' },
-  { id:3, firstName:'TEOFRID',    middleName:'TIMOTEO', lastName:'KWENGA',  password:'1234', subject:'Economics', role:'Mwalimu' },
+  { id:1, firstName:'DEOGRATIUS', middleName:'ROBERT',  lastName:'MUZO',    password:'1234', subject:'History',    role:'Mhasibu' },
+  { id:2, firstName:'OCTAVIAN',   middleName:'CONRAD',  lastName:'MILLANZI',password:'1234', subject:'Geography',  role:'Mkuu wa Shule' },
+  { id:3, firstName:'TEOFRID',    middleName:'TIMOTEO', lastName:'KWENGA',  password:'1234', subject:'Economics',  role:'Mwalimu' },
   { id:4, firstName:'LINUS',      middleName:'SAMORA',  lastName:'MADAMA',  password:'1234', subject:'Mathematics',role:'Mtaalamu Msaidizi' },
-  { id:5, firstName:'ENOCK',      middleName:'SOSPETER',lastName:'MATHAYO', password:'1234', subject:'Physics',   role:'Mwalimu wa Nidhamu' },
-  { id:6, firstName:'IGNATIO',    middleName:'BEYANGA', lastName:'EZEKIEL', password:'1234', subject:'Biology',   role:'Makamu wa Shule' },
-  { id:7, firstName:'CHRISTOM',   middleName:'KASIAN',  lastName:'KOMBA',   password:'1234', subject:'English',   role:'Mtaalamu Mwandamizi' },
-  { id:8, firstName:'FELISTA',    middleName:'DONALD',  lastName:'MOHAMED', password:'1234', subject:'Chemistry', role:'Mwalimu wa Afya' },
-  { id:9, firstName:'AHMAD',      middleName:'MOHAMED', lastName:'VINDILI', password:'1234', subject:'Chemistry', role:'Mwalimu wa Michezo' },
+  { id:5, firstName:'ENOCK',      middleName:'SOSPETER',lastName:'MATHAYO', password:'1234', subject:'Physics',    role:'Mwalimu wa Nidhamu' },
+  { id:6, firstName:'IGNATIO',    middleName:'BEYANGA', lastName:'EZEKIEL', password:'1234', subject:'Biology',    role:'Makamu wa Shule' },
+  { id:7, firstName:'CHRISTOM',   middleName:'KASIAN',  lastName:'KOMBA',   password:'1234', subject:'English',    role:'Mtaalamu Mwandamizi' },
+  { id:8, firstName:'FELISTA',    middleName:'DONALD',  lastName:'MOHAMED', password:'1234', subject:'Chemistry',  role:'Mwalimu wa Afya' },
+  { id:9, firstName:'AHMAD',      middleName:'MOHAMED', lastName:'VINDILI', password:'1234', subject:'Chemistry',  role:'Mwalimu wa Michezo' },
 ]));
 
 // ============================================================
@@ -893,30 +879,52 @@ function updateClock() {
   document.getElementById('dateDisplay').textContent =
     `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
   updateCountdown(now);
-  updateTimeReq(now);
+  updateTimeStatus(now);
+}
+
+function getTimePoints(now) {
+  const start    = new Date(now); start.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
+  const deadline = new Date(now); deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  const close    = new Date(now); close.setHours(CONFIG.CLOSE_HOUR, CONFIG.CLOSE_MIN, 0, 0);
+  return { start, deadline, close };
 }
 
 function updateCountdown(now) {
-  const deadline = new Date(now);
-  deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
-  const diff = deadline - now;
-  const el = document.getElementById('countdown');
-  if (diff <= 0) {
+  const { start, deadline, close } = getTimePoints(now);
+  const el    = document.getElementById('countdown');
+  const label = document.getElementById('countdownLabel');
+
+  if (now < start) {
+    const diff = start - now;
+    el.textContent = formatDiff(diff);
+    el.style.color = '#f39c12';
+    label.textContent = 'Opens In';
+  } else if (now >= start && now <= close) {
+    const diff = close - now;
+    el.textContent = formatDiff(diff);
+    el.style.color = now > deadline ? '#e74c3c' : 'white';
+    label.textContent = now > deadline ? 'LATE — Closes' : 'Time Left';
+  } else {
     el.textContent = 'Closed';
     el.style.color = '#e74c3c';
-    return;
+    label.textContent = 'Closed';
   }
-  el.style.color = '';
+}
+
+function formatDiff(diff) {
   const hh = Math.floor(diff / 3600000);
   const mm = Math.floor((diff % 3600000) / 60000);
   const ss = Math.floor((diff % 60000) / 1000);
-  el.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
 }
 
-function updateTimeReq(now) {
-  const start = new Date(now); start.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
-  const end   = new Date(now); end.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
-  const inWindow = now >= start && now <= end;
+function updateTimeStatus(now) {
+  const { start, close } = getTimePoints(now);
+  const inWindow = now >= start && now <= close;
+  const dot = document.getElementById('dot-time');
+  const lbl = document.getElementById('lbl-time');
+  dot.className = `status-dot ${inWindow ? 'active' : 'error'}`;
+  lbl.textContent = inWindow ? 'Window: Open' : (now < start ? 'Window: Not yet open' : 'Window: Closed');
   setReq('req-time', inWindow);
 }
 
@@ -931,56 +939,18 @@ function togglePw(inputId, eyeId, eyeOffId) {
   const on  = document.getElementById(eyeId);
   const off = document.getElementById(eyeOffId);
   if (inp.type === 'password') {
-    inp.type = 'text'; on.style.display = 'none'; off.style.display = 'block';
+    inp.type='text'; on.style.display='none'; off.style.display='block';
   } else {
-    inp.type = 'password'; on.style.display = 'block'; off.style.display = 'none';
+    inp.type='password'; on.style.display='block'; off.style.display='none';
   }
 }
 
 // ============================================================
-// WIFI CHECK
-// ============================================================
-let wifiStatus = false;
-let wifiSSID   = null;
-
-async function checkWifi() {
-  if (navigator.onLine) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
-      await fetch('/api/wifi-check', { method:'GET', signal: controller.signal }).catch(()=>null);
-      clearTimeout(timeout);
-      wifiStatus = true;
-      wifiSSID = CONFIG.SCHOOL_WIFI_SSID;
-    } catch(e) {
-      wifiStatus = true;
-      wifiSSID = CONFIG.SCHOOL_WIFI_SSID;
-    }
-  } else {
-    wifiStatus = false;
-  }
-  updateWifiUI();
-}
-
-function updateWifiUI() {
-  const dot = document.getElementById('dot-wifi');
-  const lbl = document.getElementById('lbl-wifi');
-  if (wifiStatus) {
-    dot.className = 'status-dot active';
-    lbl.textContent = `WiFi: ${wifiSSID || 'Connected'}`;
-  } else {
-    dot.className = 'status-dot error';
-    lbl.textContent = 'WiFi: Not Connected';
-  }
-  updateRequirements();
-}
-
-// ============================================================
-// GPS
+// GPS ONLY — No WiFi check
 // ============================================================
 let gpsStatus = false;
-let userLat = null;
-let userLng = null;
+let userLat   = null;
+let userLng   = null;
 let distanceFromSchool = null;
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -992,7 +962,10 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 function checkGPS() {
-  if (!navigator.geolocation) { setGPSStatus(false,'GPS not supported'); return; }
+  if (!navigator.geolocation) {
+    setGPSStatus(false,'GPS not supported');
+    return;
+  }
   navigator.geolocation.getCurrentPosition(
     pos => {
       userLat = pos.coords.latitude;
@@ -1002,8 +975,8 @@ function checkGPS() {
       document.getElementById('dot-gps').className = 'status-dot active';
       document.getElementById('lbl-gps').textContent = 'GPS: Active';
       const inside = distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M;
-      document.getElementById('dot-zone').className = `status-dot ${inside?'active':'error'}`;
-      document.getElementById('lbl-zone').textContent = `Zone: ${inside?'Inside':'Outside'} (${Math.round(distanceFromSchool)}m)`;
+      document.getElementById('dot-zone').className = `status-dot ${inside ? 'active' : 'error'}`;
+      document.getElementById('lbl-zone').textContent = `Zone: ${inside ? 'Inside' : 'Outside'} (${Math.round(distanceFromSchool)}m)`;
       updateRequirements();
     },
     err => {
@@ -1014,12 +987,12 @@ function checkGPS() {
       document.getElementById('lbl-gps').textContent = msg;
       updateRequirements();
     },
-    { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
   );
 }
 
 function setGPSStatus(status, label) {
-  document.getElementById('dot-gps').className = `status-dot ${status?'active':'error'}`;
+  document.getElementById('dot-gps').className = `status-dot ${status ? 'active' : 'error'}`;
   document.getElementById('lbl-gps').textContent = label;
   gpsStatus = status;
   updateRequirements();
@@ -1029,18 +1002,16 @@ function setGPSStatus(status, label) {
 // REQUIREMENTS
 // ============================================================
 function updateRequirements() {
-  const fn = document.getElementById('firstName').value.trim();
-  const mn = document.getElementById('middleName').value.trim();
-  const ln = document.getElementById('lastName').value.trim();
-  const pw = document.getElementById('password').value.trim();
+  const fn  = document.getElementById('firstName').value.trim();
+  const mn  = document.getElementById('middleName').value.trim();
+  const ln  = document.getElementById('lastName').value.trim();
+  const pw  = document.getElementById('password').value.trim();
   const now = new Date();
-  const start = new Date(now); start.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
-  const end   = new Date(now); end.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  const { start, close } = getTimePoints(now);
 
   setReq('req-names', fn && mn && ln);
   setReq('req-pass',  pw.length > 0);
-  setReq('req-time',  now >= start && now <= end);
-  setReq('req-wifi',  wifiStatus);
+  setReq('req-time',  now >= start && now <= close);
   setReq('req-gps',   gpsStatus);
   setReq('req-zone',  gpsStatus && distanceFromSchool !== null && distanceFromSchool <= CONFIG.SCHOOL_RADIUS_M);
 }
@@ -1048,11 +1019,11 @@ function updateRequirements() {
 function setReq(id, ok) {
   const el = document.getElementById(id);
   if (ok === null || ok === undefined) {
-    el.className='req-item'; el.querySelector('.req-icon').textContent='?';
+    el.className = 'req-item'; el.querySelector('.req-icon').textContent = '?';
   } else if (ok) {
-    el.className='req-item ok'; el.querySelector('.req-icon').textContent='✓';
+    el.className = 'req-item ok'; el.querySelector('.req-icon').textContent = '✓';
   } else {
-    el.className='req-item fail'; el.querySelector('.req-icon').textContent='✗';
+    el.className = 'req-item fail'; el.querySelector('.req-icon').textContent = '✗';
   }
 }
 
@@ -1072,34 +1043,38 @@ async function startAttendance() {
   if (!fn || !mn || !ln) { showError('Incomplete Name','Please enter all three names.'); return; }
   if (!pw) { showError('Password Required','Please enter your password.'); return; }
 
-  // Time window check
   const now = new Date();
-  const startT = new Date(now); startT.setHours(CONFIG.START_HOUR, CONFIG.START_MIN, 0, 0);
-  const endT   = new Date(now); endT.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
-  if (now < startT) {
-    showError('Too Early', 'Attendance registration opens at 12:00 AM midnight. Please try again later.');
+  const { start, deadline, close } = getTimePoints(now);
+
+  // Too early
+  if (now < start) {
+    showError('Too Early', `Attendance registration opens at ${CONFIG.START_HOUR}:00 AM. Please come back then.`);
     return;
   }
 
-  showOverlay('Checking requirements...');
-  await checkWifi();
-
-  if (!wifiStatus) {
-    hideOverlay();
-    showError('School WiFi Not Found','You are not connected to the school WiFi. Please connect and try again.');
+  // Too late — closed completely
+  if (now > close) {
+    showError('Registration Closed', `Attendance registration closed at ${CONFIG.CLOSE_HOUR}:00 AM. You cannot sign in today.`);
     return;
   }
 
   showOverlay('Getting your location...');
+
+  // GPS Check
   await new Promise(resolve => {
     if (!navigator.geolocation) {
-      hideOverlay(); showError('GPS Not Available','Your device does not support GPS or it is disabled.'); return;
+      hideOverlay();
+      showError('GPS Not Available','Your device does not support GPS or it is disabled.');
+      resolve();
+      return;
     }
     navigator.geolocation.getCurrentPosition(
       pos => {
-        userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
         distanceFromSchool = haversineDistance(userLat, userLng, CONFIG.SCHOOL_LAT, CONFIG.SCHOOL_LNG);
-        gpsStatus = true; resolve();
+        gpsStatus = true;
+        resolve();
       },
       err => {
         hideOverlay();
@@ -1107,25 +1082,31 @@ async function startAttendance() {
         if (err.code===1) msg += 'Please allow location access on your device.';
         else if (err.code===2) msg += 'Location unavailable. Please try outdoors.';
         else msg += 'Request timed out. Please try again.';
-        showError('GPS Failed', msg); resolve();
+        showError('GPS Failed', msg);
+        resolve();
       },
-      { enableHighAccuracy:true, timeout:15000 }
+      { enableHighAccuracy: true, timeout: 15000 }
     );
   });
 
   if (!gpsStatus) return;
 
+  // Zone Check
   if (distanceFromSchool > CONFIG.SCHOOL_RADIUS_M) {
     hideOverlay();
-    showError('Outside School Zone',
-      `You are ${Math.round(distanceFromSchool)} metres from school. Only within ${CONFIG.SCHOOL_RADIUS_M} metres is allowed. Please come to school first.`);
+    showError(
+      'Outside School Zone',
+      `You are ${Math.round(distanceFromSchool)} metres from school. Only within 45 metres is allowed. Please come to school first.`
+    );
     return;
   }
 
   showOverlay('Verifying your account...');
+
+  // Reload teachers from localStorage in case admin added/updated
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
   const teacher = TEACHERS.find(t =>
-    t.firstName===fn && t.middleName===mn && t.lastName===ln && t.password===pw
+    t.firstName === fn && t.middleName === mn && t.lastName === ln && t.password === pw
   );
 
   if (!teacher) {
@@ -1134,8 +1115,8 @@ async function startAttendance() {
     return;
   }
 
-  // Check duplicate for today
-  const todayKey = 'attendance_' + new Date().toDateString();
+  // Duplicate check
+  const todayKey  = 'attendance_' + new Date().toDateString();
   const todayRecs = JSON.parse(localStorage.getItem(todayKey) || '[]');
   if (todayRecs.some(r => r.teacherId === teacher.id)) {
     hideOverlay();
@@ -1144,24 +1125,44 @@ async function startAttendance() {
   }
 
   showOverlay('Saving your attendance...');
-  const deadline = new Date(now); deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+
   const isLate = now > deadline;
 
   const record = {
-    teacherId: teacher.id,
+    teacherId:   teacher.id,
     teacherName: `${fn} ${mn} ${ln}`,
-    subject: teacher.subject,
-    role: teacher.role,
-    timestamp: now.toISOString(),
-    timeStr: formatTime(now),
-    dateStr: formatDate(now),
+    subject:     teacher.subject,
+    role:        teacher.role,
+    timestamp:   now.toISOString(),
+    timeStr:     formatTime(now),
+    dateStr:     formatDate(now),
     isLate,
-    lat: userLat, lng: userLng,
-    distanceM: Math.round(distanceFromSchool),
-    wifi: wifiSSID,
+    lat:         userLat,
+    lng:         userLng,
+    distanceM:   Math.round(distanceFromSchool),
   };
 
+  // Save locally
   saveAttendanceRecord(record);
+
+  // Also send to backend
+  try {
+    await fetch(CONFIG.API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: fn,
+        middleName: mn,
+        lastName: ln,
+        password: pw,
+        lat: userLat,
+        lng: userLng,
+      })
+    });
+  } catch(e) {
+    // Continue even if backend fails — record saved locally
+  }
+
   hideOverlay();
 
   const detailsHTML = `
@@ -1170,7 +1171,7 @@ async function startAttendance() {
     <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${record.dateStr}</span></div>
     <div class="detail-row"><span class="detail-label">Time</span><span class="detail-value">${record.timeStr}</span></div>
     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${record.distanceM}m from school</span></div>
-    <div class="detail-row"><span class="detail-label">WiFi</span><span class="detail-value">${record.wifi}</span></div>
+    <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${isLate ? 'LATE' : 'ON TIME'}</span></div>
   `;
 
   if (isLate) {
@@ -1180,6 +1181,7 @@ async function startAttendance() {
     document.getElementById('detailsOnTime').innerHTML = detailsHTML;
     showResult('resultOnTime');
   }
+
   updateHistory();
 }
 
@@ -1189,7 +1191,9 @@ async function startAttendance() {
 function showResult(id) {
   document.getElementById('formCard').style.display = 'none';
   document.getElementById('gpsLoading').className = 'gps-loading';
-  ['resultOnTime','resultLate','resultError'].forEach(r => document.getElementById(r).classList.remove('show'));
+  ['resultOnTime','resultLate','resultError'].forEach(r =>
+    document.getElementById(r).classList.remove('show')
+  );
   document.getElementById(id).classList.add('show');
 }
 
@@ -1202,9 +1206,13 @@ function showError(title, msg) {
 
 function resetForm() {
   document.getElementById('formCard').style.display = 'block';
-  ['resultOnTime','resultLate','resultError'].forEach(r => document.getElementById(r).classList.remove('show'));
-  ['firstName','middleName','lastName','password'].forEach(id => document.getElementById(id).value = '');
-  checkGPS(); checkWifi();
+  ['resultOnTime','resultLate','resultError'].forEach(r =>
+    document.getElementById(r).classList.remove('show')
+  );
+  ['firstName','middleName','lastName','password'].forEach(id =>
+    document.getElementById(id).value = ''
+  );
+  checkGPS();
 }
 
 function showOverlay(msg) {
@@ -1212,20 +1220,22 @@ function showOverlay(msg) {
   document.getElementById('loadingOverlay').className = 'overlay show';
 }
 
-function hideOverlay() { document.getElementById('loadingOverlay').className = 'overlay'; }
+function hideOverlay() {
+  document.getElementById('loadingOverlay').className = 'overlay';
+}
 
 // ============================================================
 // HISTORY
 // ============================================================
 function saveAttendanceRecord(record) {
-  const key = 'attendance_' + new Date().toDateString();
+  const key      = 'attendance_' + new Date().toDateString();
   const existing = JSON.parse(localStorage.getItem(key) || '[]');
   existing.push(record);
   localStorage.setItem(key, JSON.stringify(existing));
 }
 
 function updateHistory() {
-  const key = 'attendance_' + new Date().toDateString();
+  const key     = 'attendance_' + new Date().toDateString();
   const records = JSON.parse(localStorage.getItem(key) || '[]');
   const container = document.getElementById('historyList');
   if (records.length === 0) {
@@ -1238,7 +1248,7 @@ function updateHistory() {
         <div class="hi-name">${r.teacherName}</div>
         <div class="hi-date">${r.timeStr}</div>
       </div>
-      <div class="hi-badge ${r.isLate?'hi-late':'hi-ontime'}">${r.isLate?'LATE':'ON TIME'}</div>
+      <div class="hi-badge ${r.isLate ? 'hi-late' : 'hi-ontime'}">${r.isLate ? 'LATE' : 'ON TIME'}</div>
     </div>
   `).join('');
 }
@@ -1263,7 +1273,9 @@ let resetTeacherFound = null;
 
 function openResetModal() {
   resetTeacherFound = null;
-  ['rFN','rMN','rLN','rNewPass','rConfPass'].forEach(id => document.getElementById(id).value = '');
+  ['rFN','rMN','rLN','rNewPass','rConfPass'].forEach(id =>
+    document.getElementById(id).value = ''
+  );
   document.getElementById('resetErr1').className = 'modal-alert error';
   document.getElementById('resetErr2').className = 'modal-alert error';
   document.getElementById('resetStep1').style.display = 'block';
@@ -1275,7 +1287,9 @@ function openResetModal() {
   document.getElementById('resetModal').className = 'modal-backdrop show';
 }
 
-function closeResetModal() { document.getElementById('resetModal').className = 'modal-backdrop'; }
+function closeResetModal() {
+  document.getElementById('resetModal').className = 'modal-backdrop';
+}
 
 function resetGoBack() {
   document.getElementById('resetStep2').style.display = 'none';
@@ -1290,13 +1304,15 @@ function resetStep1Next() {
   const ln = document.getElementById('rLN').value.trim().toUpperCase();
   if (!fn || !mn || !ln) {
     document.getElementById('resetErr1Msg').textContent = 'Please fill in all three names.';
-    document.getElementById('resetErr1').className = 'modal-alert error show'; return;
+    document.getElementById('resetErr1').className = 'modal-alert error show';
+    return;
   }
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
   const found = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln);
   if (!found) {
     document.getElementById('resetErr1Msg').textContent = 'Name not found in the system. Check spelling.';
-    document.getElementById('resetErr1').className = 'modal-alert error show'; return;
+    document.getElementById('resetErr1').className = 'modal-alert error show';
+    return;
   }
   resetTeacherFound = found;
   document.getElementById('resetErr1').className = 'modal-alert error';
@@ -1311,11 +1327,13 @@ function resetStep2Next() {
   const cp = document.getElementById('rConfPass').value.trim();
   if (np.length < 4) {
     document.getElementById('resetErr2Msg').textContent = 'Password must be at least 4 characters.';
-    document.getElementById('resetErr2').className = 'modal-alert error show'; return;
+    document.getElementById('resetErr2').className = 'modal-alert error show';
+    return;
   }
   if (np !== cp) {
     document.getElementById('resetErr2Msg').textContent = 'Passwords do not match. Try again.';
-    document.getElementById('resetErr2').className = 'modal-alert error show'; return;
+    document.getElementById('resetErr2').className = 'modal-alert error show';
+    return;
   }
   TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
   const idx = TEACHERS.findIndex(t => t.id === resetTeacherFound.id);
@@ -1335,10 +1353,8 @@ function resetStep2Next() {
 // ============================================================
 window.addEventListener('load', () => {
   checkGPS();
-  checkWifi();
   updateHistory();
   setInterval(checkGPS, 30000);
-  setInterval(checkWifi, 15000);
 });
 </script>
 </body>

@@ -1,7 +1,7 @@
 {
-  "name": "Mfumo wa Mahudhurio - Shule ya Sendari Mikumbi",
-  "short_name": "Mahudhurio",
-  "description": "Mfumo wa Mahudhurio kwa Walimu wa Shule ya Sendari Mikumbi",
+  "name": "TAMS - Teachers Attendance Management System",
+  "short_name": "TAMS",
+  "description": "Teachers Attendance Management System - S.S. Mikumbi",
   "start_url": "/teacher-attendance.html",
   "display": "standalone",
   "background_color": "#0a3d62",
@@ -9,18 +9,18 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "school-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "school-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   "categories": ["education", "productivity"],
-  "lang": "sw"
+  "lang": "en"
 }
