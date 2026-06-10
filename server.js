@@ -16,10 +16,9 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const JWT_SECRET = process.env.JWT_SECRET || 'badilisha-hii-kwa-neno-la-siri-imara-2025';
 
 // ============================================================
@@ -43,15 +42,6 @@ app.use(cors({ origin: '*' }));
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
-
-// Rate limiting - kuzuia spam
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // dakika 15
-  max: 20,
-  message: { error: 'Maombi mengi sana. Subiri dakika 15.' }
-});
-
-app.use('/api/attendance', limiter);
 
 // ============================================================
 // DATABASE SETUP (SQLite - rahisi kwa shule ndogo)
