@@ -42,6 +42,8 @@ app.use(cors({ origin: '*' }));
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'files')));
 
 // ============================================================
 // DATABASE SETUP (SQLite - rahisi kwa shule ndogo)
