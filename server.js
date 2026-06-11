@@ -133,32 +133,42 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-function isLate() {
+// Tanzania timezone offset: UTC+3
+function getTanzaniaTime() {
   const now = new Date();
+  // Add 3 hours to convert UTC to Tanzania time
+  return new Date(now.getTime() + (3 * 60 * 60 * 1000));
+}
+
+function isLate() {
+  const now = getTanzaniaTime();
   const deadline = new Date(now);
   deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
   return now > deadline;
 }
 
 function isWithinWindow() {
-  const now = new Date();
+  const now = getTanzaniaTime();
   const start = new Date(now); start.setHours(6, 0, 0, 0);
   const close = new Date(now); close.setHours(8, 0, 0, 0);
   return now >= start && now <= close;
 }
 
 function getTodayDate() {
-  return new Date().toISOString().split('T')[0];
+  const now = getTanzaniaTime();
+  return now.toISOString().split('T')[0];
 }
 
 function formatTime(date) {
-  return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+  const tz = new Date(date.getTime() + (3 * 60 * 60 * 1000));
+  return `${String(tz.getHours()).padStart(2,'0')}:${String(tz.getMinutes()).padStart(2,'0')}:${String(tz.getSeconds()).padStart(2,'0')}`;
 }
 
 function formatDate(date) {
-  const days = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
+  const tz = new Date(date.getTime() + (3 * 60 * 60 * 1000));
+  const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
   const months = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
-  return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  return `${days[tz.getDay()]}, ${tz.getDate()} ${months[tz.getMonth()]} ${tz.getFullYear()}`;
 }
 
 // JWT middleware
@@ -219,7 +229,7 @@ app.post('/api/attendance', (req, res) => {
 
   // Check time window
   if (!isWithinWindow()) {
-    const now = new Date();
+    const now = getTanzaniaTime();
     const start = new Date(now); start.setHours(6, 0, 0, 0);
     if (now < start) {
       return res.status(403).json({ ok: false, error: 'Registration not yet open. Opens at 6:00 AM.' });
@@ -252,7 +262,7 @@ app.post('/api/attendance', (req, res) => {
         return res.status(401).json({ ok: false, error: 'Neno la siri si sahihi.' });
 
       const today = getTodayDate();
-      const now = new Date();
+      const now = getTanzaniaTime();
       const late = isLate();
       const timeStr = formatTime(now);
       const dateStr = formatDate(now);
@@ -319,34 +329,36 @@ app.post('/api/admin/change-password', authMiddleware, (req, res) => {
 // GET /api/attendance/today — Mahudhurio ya leo (Admin)
 app.get('/api/attendance/today', authMiddleware, (req, res) => {
   const today = getTodayDate();
+
   db.all('SELECT * FROM attendance WHERE date = ? ORDER BY timestamp ASC', [today], (err, records) => {
     if (err) return res.status(500).json({ error: 'Tatizo la seva' });
 
     db.all('SELECT * FROM teachers WHERE is_active = 1', [], (err2, teachers) => {
       if (err2) return res.status(500).json({ error: 'Tatizo la seva' });
 
-      const present = records.map(r => r.teacher_id);
+      // Count unique teachers who signed in
+      const presentIds = new Set(records.map(r => r.teacher_id));
+
       const result = teachers.map(t => {
         const rec = records.find(r => r.teacher_id === t.id);
         return {
-          teacherId: t.id,
+          teacherId:   t.id,
           teacherName: `${t.first_name} ${t.middle_name} ${t.last_name}`,
-          subject: t.subject,
-          role: t.role,
-          present: !!rec,
-          isLate: rec ? !!rec.is_late : null,
-          timeStr: rec ? rec.time_str : null,
-          distanceM: rec ? rec.distance_m : null,
-          wifiSSID: rec ? rec.wifi_ssid : null,
+          subject:     t.subject,
+          role:        t.role,
+          present:     !!rec,
+          isLate:      rec ? !!rec.is_late : null,
+          timeStr:     rec ? rec.time_str : null,
+          distanceM:   rec ? rec.distance_m : null,
         };
       });
 
       res.json({
-        date: today,
-        total: teachers.length,
-        present: present.length,
-        absent: teachers.length - present.length,
-        late: records.filter(r => r.is_late).length,
+        date:     today,
+        total:    teachers.length,
+        present:  presentIds.size,
+        absent:   teachers.length - presentIds.size,
+        late:     records.filter(r => r.is_late).length,
         teachers: result
       });
     });
