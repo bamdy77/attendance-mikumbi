@@ -1,7 +1,7 @@
 {
-  "name": "mahudhurio-shule",
+  "name": "tams-mikumbi",
   "version": "1.0.0",
-  "description": "Teacher Attendance Management System - Mikumbi Secondary School",
+  "description": "Teachers Attendance Management System - Mikumbi Secondary School",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -11,6 +11,6 @@
     "cors": "^2.8.5",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "sqlite3": "^5.1.6"
+    "pg": "^8.11.3"
   }
 }

@@ -133,6 +133,77 @@
     max-width: 460px; margin: 0 auto; width: 100%;
   }
 
+  /* ── DESKTOP LAYOUT (screens wider than 768px) ── */
+  @media (min-width: 768px) {
+    body { background: #e8edf3; }
+
+    .header-tams h1 { font-size: 22px; letter-spacing: 4px; }
+    .header-tams p  { font-size: 12px; }
+
+    .header-main { padding: 12px 32px 14px; }
+
+    .logo-box { width: 58px; height: 58px; }
+    .logo-box img { width: 58px; height: 58px; }
+
+    .status-bar { padding: 6px 32px; gap: 20px; }
+    .status-item { font-size: 12px; }
+
+    .main {
+      max-width: 100%;
+      padding: 24px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .deadline-notice {
+      grid-column: 1 / -1;
+      padding: 16px 24px;
+    }
+
+    .deadline-text h3 { font-size: 16px; }
+    .deadline-text p  { font-size: 13px; }
+    .deadline-countdown .cd-time { font-size: 22px; }
+
+    .form-card {
+      grid-column: 1;
+      padding: 28px;
+    }
+
+    .history-card {
+      grid-column: 2;
+      padding: 24px;
+      align-self: start;
+    }
+
+    .result-screen {
+      grid-column: 1 / -1;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .gps-loading {
+      grid-column: 1 / -1;
+    }
+
+    .form-card-header h2 { font-size: 20px; }
+
+    .input-wrap input { padding: 13px 44px 13px 14px; font-size: 16px; }
+
+    .btn-submit { padding: 16px; font-size: 16px; }
+
+    .footer { padding: 16px; font-size: 12px; }
+  }
+
+  @media (min-width: 1200px) {
+    .main {
+      max-width: 1100px;
+      padding: 28px 40px;
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  }
+
   /* ── DEADLINE CARD ── */
   .deadline-notice {
     background: linear-gradient(135deg, #1a5276, #2471a3);
