@@ -48,7 +48,7 @@ const pool = new Pool({
 async function initDB() {
   const client = await pool.connect();
   try {
-    // Teachers table
+    // Teachers table — with UNIQUE constraint on names
     await client.query(`
       CREATE TABLE IF NOT EXISTS teachers (
         id SERIAL PRIMARY KEY,
@@ -59,8 +59,32 @@ async function initDB() {
         role TEXT DEFAULT 'Mwalimu',
         password_hash TEXT NOT NULL,
         is_active INTEGER DEFAULT 1,
-        created_at TIMESTAMP DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(first_name, middle_name, last_name)
       )
+    `);
+
+    // Add UNIQUE constraint on existing databases that don't have it yet
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint
+          WHERE conname = 'teachers_first_name_middle_name_last_name_key'
+        ) THEN
+          -- First remove duplicates keeping lowest id not referenced by attendance
+          DELETE FROM teachers t1
+          USING teachers t2
+          WHERE t1.first_name = t2.first_name
+            AND t1.middle_name = t2.middle_name
+            AND t1.last_name = t2.last_name
+            AND t1.id > t2.id;
+
+          ALTER TABLE teachers
+            ADD CONSTRAINT teachers_first_name_middle_name_last_name_key
+            UNIQUE (first_name, middle_name, last_name);
+        END IF;
+      END$$;
     `);
 
     // Attendance table
@@ -78,7 +102,27 @@ async function initDB() {
         longitude REAL,
         distance_m INTEGER,
         ip_address TEXT,
+        device_fingerprint TEXT,
         UNIQUE(teacher_id, date),
+        FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+      )
+    `);
+
+    // Add device_fingerprint column if it doesn't exist (existing databases)
+    await client.query(`
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS device_fingerprint TEXT;
+    `);
+
+    // Device registrations table — one device per day
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS device_registrations (
+        id SERIAL PRIMARY KEY,
+        device_fingerprint TEXT NOT NULL,
+        teacher_id INTEGER NOT NULL,
+        teacher_name TEXT NOT NULL,
+        date TEXT NOT NULL,
+        registered_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(device_fingerprint, date),
         FOREIGN KEY (teacher_id) REFERENCES teachers(id)
       )
     `);
@@ -102,7 +146,7 @@ async function initDB() {
       ON CONFLICT (username) DO NOTHING
     `, ['admin', adminHash, 'Mkuu wa Shule']);
 
-    // Seed teachers
+    // Seed teachers — safe: ON CONFLICT on name does nothing
     const teachers = [
       ['DEOGRATIUS', 'ROBERT',   'MUZO',    'History',    'Mhasibu'],
       ['OCTAVIAN',   'CONRAD',   'MILLANZI','Geography',  'Mkuu wa Shule'],
@@ -120,7 +164,7 @@ async function initDB() {
       await client.query(`
         INSERT INTO teachers (first_name, middle_name, last_name, subject, role, password_hash)
         VALUES ($1,$2,$3,$4,$5,$6)
-        ON CONFLICT DO NOTHING
+        ON CONFLICT (first_name, middle_name, last_name) DO NOTHING
       `, [fn, mn, ln, sub, role, hash]);
     }
 
@@ -142,11 +186,7 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 // Tanzania is UTC+3. We get the true local time by using toLocaleString.
-// NOTE: getTanzaniaTime() returns a Date whose .getHours()/.getMinutes() etc.
-//       reflect EAT (UTC+3) — use it only for reading hours/minutes/date parts,
-//       NOT for arithmetic with .getTime() offsets (that would double-count).
 function getTanzaniaTime() {
-  // Convert current UTC time to a Date object that represents EAT wall-clock values
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
 }
 
@@ -161,7 +201,6 @@ function isWithinWindow() {
   const now   = getTanzaniaTime();
   const start = new Date(now); start.setHours(6, 0, 0, 0);
   const close = new Date(now); close.setHours(8, 0, 0, 0);
-  // strictly less than 8:00:00 AM — exactly 8:00 is already closed
   return now >= start && now < close;
 }
 
@@ -174,12 +213,10 @@ function getTodayDate() {
 }
 
 function formatTime(date) {
-  // date is already a Tanzania-time Date from getTanzaniaTime()
   return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
 }
 
 function formatDate(date) {
-  // date is already a Tanzania-time Date from getTanzaniaTime()
   const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
   const months = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
   return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
@@ -218,7 +255,7 @@ app.post('/api/admin/login', async (req, res) => {
 
 // POST /api/attendance — Weka Mahudhurio
 app.post('/api/attendance', async (req, res) => {
-  const { firstName, middleName, lastName, password, lat, lng } = req.body;
+  const { firstName, middleName, lastName, password, lat, lng, deviceFingerprint } = req.body;
 
   if (!firstName || !middleName || !lastName || !password)
     return res.status(400).json({ ok: false, error: 'Jaza sehemu zote' });
@@ -264,7 +301,21 @@ app.post('/api/attendance', async (req, res) => {
     const teacherName = `${fn} ${mn} ${ln}`;
     const clientIP    = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
 
-    // Check duplicate
+    // ── DEVICE CHECK — device moja, mwalimu mmoja kwa siku ──
+    if (deviceFingerprint) {
+      const devCheck = await pool.query(
+        'SELECT teacher_name FROM device_registrations WHERE device_fingerprint=$1 AND date=$2',
+        [deviceFingerprint, today]
+      );
+      if (devCheck.rows[0] && devCheck.rows[0].teacher_id !== teacher.id) {
+        return res.status(409).json({
+          ok: false,
+          error: `Kifaa hiki kilitumika leo kusajili ${devCheck.rows[0].teacher_name}. Kifaa kimoja kinaruhusu mwalimu mmoja tu kwa siku.`
+        });
+      }
+    }
+
+    // Check duplicate attendance
     const dupCheck = await pool.query(
       'SELECT id, time_str FROM attendance WHERE teacher_id=$1 AND date=$2',
       [teacher.id, today]
@@ -274,10 +325,19 @@ app.post('/api/attendance', async (req, res) => {
 
     // Save attendance
     await pool.query(
-      `INSERT INTO attendance (teacher_id, teacher_name, subject, date, time_str, is_late, latitude, longitude, distance_m, ip_address)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP]
+      `INSERT INTO attendance (teacher_id, teacher_name, subject, date, time_str, is_late, latitude, longitude, distance_m, ip_address, device_fingerprint)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP, deviceFingerprint || null]
     );
+
+    // Save device registration
+    if (deviceFingerprint) {
+      await pool.query(`
+        INSERT INTO device_registrations (device_fingerprint, teacher_id, teacher_name, date)
+        VALUES ($1,$2,$3,$4)
+        ON CONFLICT (device_fingerprint, date) DO NOTHING
+      `, [deviceFingerprint, teacher.id, teacherName, today]);
+    }
 
     res.json({ ok: true, isLate: late, teacherName, subject: teacher.subject, timeStr, dateStr, distanceM: Math.round(distance) });
 
@@ -312,7 +372,7 @@ app.get('/api/attendance/today', authMiddleware, async (req, res) => {
   try {
     const [records, teachers] = await Promise.all([
       pool.query('SELECT * FROM attendance WHERE date=$1 ORDER BY timestamp ASC', [today]),
-      pool.query('SELECT * FROM teachers WHERE is_active=1')
+      pool.query('SELECT * FROM teachers WHERE is_active=1 ORDER BY id')
     ]);
 
     const presentIds = new Set(records.rows.map(r => r.teacher_id));
@@ -386,7 +446,9 @@ app.post('/api/teachers', authMiddleware, async (req, res) => {
     );
     res.json({ ok: true, id: result.rows[0].id, message: 'Mwalimu ameongezwa' });
   } catch(e) {
-    res.status(500).json({ error: 'Imeshindwa. Jina huenda lipo tayari.' });
+    if (e.code === '23505') // unique violation
+      return res.status(409).json({ error: 'Mwalimu huyu yuko tayari kwenye mfumo.' });
+    res.status(500).json({ error: 'Imeshindwa. Jaribu tena.' });
   }
 });
 

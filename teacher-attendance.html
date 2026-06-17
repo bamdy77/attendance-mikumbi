@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="school-logo.svg">
+<link rel="apple-touch-icon" href="school-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -601,7 +601,7 @@
   <!-- Logos + Clock -->
   <div class="header-main">
     <div class="logo-box">
-      <img src="govt-logo.svg" alt="Government">
+      <img src="govt-logo.png" alt="Government">
     </div>
 
     <div class="center-text">
@@ -611,7 +611,7 @@
     </div>
 
     <div class="logo-box">
-      <img src="school-logo.svg" alt="School">
+      <img src="school-logo.png" alt="School">
     </div>
   </div>
 
@@ -810,7 +810,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  TAMS &nbsp;&middot;&nbsp; Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2026
+  TAMS v1.0 &nbsp;&middot;&nbsp; Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2025
 </div>
 
 <!-- OVERLAY -->
@@ -928,6 +928,31 @@ const CONFIG = {
   CLOSE_MIN: 0,
   API_URL: 'https://attendance-mikumbi-production.up.railway.app/api/attendance',
 };
+
+
+// ============================================================
+// DEVICE FINGERPRINT — kifaa kimoja, mwalimu mmoja kwa siku
+// ============================================================
+function getDeviceFingerprint() {
+  const nav = window.navigator;
+  const parts = [
+    nav.userAgent,
+    nav.language,
+    screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    nav.hardwareConcurrency || '',
+    nav.platform || '',
+  ];
+  // Simple hash
+  const str = parts.join('|');
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash |= 0;
+  }
+  return 'dev_' + Math.abs(hash).toString(36);
+}
 
 // ============================================================
 // TEACHERS DATA
@@ -1192,6 +1217,7 @@ async function startAttendance() {
         password: pw,
         lat: userLat,
         lng: userLng,
+        deviceFingerprint: getDeviceFingerprint(),
       })
     });
 
