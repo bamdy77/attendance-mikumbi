@@ -141,37 +141,48 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
+// Tanzania is UTC+3. We get the true local time by using toLocaleString.
+// NOTE: getTanzaniaTime() returns a Date whose .getHours()/.getMinutes() etc.
+//       reflect EAT (UTC+3) — use it only for reading hours/minutes/date parts,
+//       NOT for arithmetic with .getTime() offsets (that would double-count).
 function getTanzaniaTime() {
-  return new Date(Date.now() + 3*60*60*1000);
+  // Convert current UTC time to a Date object that represents EAT wall-clock values
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
 }
 
 function isLate() {
   const now = getTanzaniaTime();
-  const d = new Date(now); d.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
-  return now > d;
+  const deadline = new Date(now);
+  deadline.setHours(CONFIG.DEADLINE_HOUR, CONFIG.DEADLINE_MIN, 0, 0);
+  return now > deadline;
 }
 
 function isWithinWindow() {
   const now   = getTanzaniaTime();
   const start = new Date(now); start.setHours(6, 0, 0, 0);
   const close = new Date(now); close.setHours(8, 0, 0, 0);
-  return now >= start && now <= close;
+  // strictly less than 8:00:00 AM — exactly 8:00 is already closed
+  return now >= start && now < close;
 }
 
 function getTodayDate() {
-  return getTanzaniaTime().toISOString().split('T')[0];
+  const now = getTanzaniaTime();
+  const y   = now.getFullYear();
+  const m   = String(now.getMonth() + 1).padStart(2, '0');
+  const d   = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function formatTime(date) {
-  const tz = new Date(date.getTime() + 3*60*60*1000);
-  return `${String(tz.getHours()).padStart(2,'0')}:${String(tz.getMinutes()).padStart(2,'0')}:${String(tz.getSeconds()).padStart(2,'0')}`;
+  // date is already a Tanzania-time Date from getTanzaniaTime()
+  return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
 }
 
 function formatDate(date) {
-  const tz     = new Date(date.getTime() + 3*60*60*1000);
+  // date is already a Tanzania-time Date from getTanzaniaTime()
   const days   = ['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'];
   const months = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
-  return `${days[tz.getDay()]}, ${tz.getDate()} ${months[tz.getMonth()]} ${tz.getFullYear()}`;
+  return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function authMiddleware(req, res, next) {

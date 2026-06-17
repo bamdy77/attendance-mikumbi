@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="school-logo.png">
+<link rel="apple-touch-icon" href="school-logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -601,7 +601,7 @@
   <!-- Logos + Clock -->
   <div class="header-main">
     <div class="logo-box">
-      <img src="govt-logo.png" alt="Government">
+      <img src="govt-logo.svg" alt="Government">
     </div>
 
     <div class="center-text">
@@ -611,7 +611,7 @@
     </div>
 
     <div class="logo-box">
-      <img src="school-logo.png" alt="School">
+      <img src="school-logo.svg" alt="School">
     </div>
   </div>
 
@@ -810,7 +810,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  TAMS v1.0 &nbsp;&middot;&nbsp; Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2025
+  TAMS &nbsp;&middot;&nbsp; Mikumbi Secondary School &nbsp;&middot;&nbsp; Newala &nbsp;&middot;&nbsp; &copy; 2026
 </div>
 
 <!-- OVERLAY -->
@@ -1364,19 +1364,10 @@ function resetStep1Next() {
     document.getElementById('resetErr1').className = 'modal-alert error show';
     return;
   }
-  TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
-  const found = TEACHERS.find(t => t.firstName===fn && t.middleName===mn && t.lastName===ln);
-  if (!found) {
-    document.getElementById('resetErr1Msg').textContent = 'Name not found in the system. Check spelling.';
-    document.getElementById('resetErr1').className = 'modal-alert error show';
-    return;
-  }
-  resetTeacherFound = found;
-  document.getElementById('resetErr1').className = 'modal-alert error';
-  document.getElementById('resetStep1').style.display = 'none';
-  document.getElementById('resetStep2').style.display = 'block';
-  document.getElementById('step1bar').className = 'modal-step done';
-  document.getElementById('step2bar').className = 'modal-step active';
+  // Password reset must be handled by Admin — inform the teacher
+  document.getElementById('resetErr1Msg').textContent =
+    'To reset your password, please contact the school Admin. The administrator can reset it from the admin dashboard.';
+  document.getElementById('resetErr1').className = 'modal-alert error show';
 }
 
 function resetStep2Next() {
@@ -1392,17 +1383,12 @@ function resetStep2Next() {
     document.getElementById('resetErr2').className = 'modal-alert error show';
     return;
   }
-  TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify(TEACHERS));
-  const idx = TEACHERS.findIndex(t => t.id === resetTeacherFound.id);
-  if (idx !== -1) {
-    TEACHERS[idx].password = np;
-    localStorage.setItem('teachers_db', JSON.stringify(TEACHERS));
-  }
-  document.getElementById('resetErr2').className = 'modal-alert error';
-  document.getElementById('resetStep2').style.display = 'none';
-  document.getElementById('resetStep3').style.display = 'block';
-  document.getElementById('step2bar').className = 'modal-step done';
-  document.getElementById('step3bar').className = 'modal-step done';
+  // NOTE: Password reset for teachers must be done by Admin via admin-dashboard.
+  // Teachers cannot reset their own password from this page — it would not update
+  // the PostgreSQL database. Show a friendly message instead.
+  document.getElementById('resetErr2Msg').textContent =
+    'Password reset must be done by the school Admin. Please contact the administrator.';
+  document.getElementById('resetErr2').className = 'modal-alert error show';
 }
 
 // ============================================================
