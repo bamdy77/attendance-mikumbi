@@ -30,7 +30,14 @@ const CONFIG = {
 // ============================================================
 // MIDDLEWARE
 // ============================================================
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: [
+    'https://attendance-mikumbi-production.up.railway.app',
+    'http://localhost:8080',
+  ],
+  methods: ['GET','POST','DELETE'],
+  allowedHeaders: ['Content-Type','Authorization'],
+}));
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -304,7 +311,7 @@ app.post('/api/attendance', async (req, res) => {
     // ── DEVICE CHECK — device moja, mwalimu mmoja kwa siku ──
     if (deviceFingerprint) {
       const devCheck = await pool.query(
-        'SELECT teacher_name FROM device_registrations WHERE device_fingerprint=$1 AND date=$2',
+        'SELECT teacher_id, teacher_name FROM device_registrations WHERE device_fingerprint=$1 AND date=$2',
         [deviceFingerprint, today]
       );
       if (devCheck.rows[0] && devCheck.rows[0].teacher_id !== teacher.id) {
@@ -425,7 +432,7 @@ app.get('/api/attendance/range', authMiddleware, async (req, res) => {
 app.get('/api/teachers', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, first_name, middle_name, last_name, subject, role, is_active, created_at FROM teachers ORDER BY id'
+      'SELECT id, first_name, middle_name, last_name, subject, role, is_active, created_at FROM teachers WHERE is_active=1 ORDER BY id'
     );
     res.json(result.rows);
   } catch(e) {
@@ -454,8 +461,12 @@ app.post('/api/teachers', authMiddleware, async (req, res) => {
 
 // DELETE /api/teachers/:id
 app.delete('/api/teachers/:id', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID si sahihi' });
   try {
-    await pool.query('UPDATE teachers SET is_active=0 WHERE id=$1', [req.params.id]);
+    const check = await pool.query('SELECT id FROM teachers WHERE id=$1', [id]);
+    if (!check.rows[0]) return res.status(404).json({ error: 'Mwalimu hapatikani' });
+    await pool.query('UPDATE teachers SET is_active=0 WHERE id=$1', [id]);
     res.json({ ok: true, message: 'Mwalimu amefutwa' });
   } catch(e) {
     res.status(500).json({ error: 'Server error' });
