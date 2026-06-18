@@ -175,6 +175,29 @@ async function initDB() {
       `, [fn, mn, ln, sub, role, hash]);
     }
 
+    // Announcements table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS announcements (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        expires_at TIMESTAMP NOT NULL,
+        is_active INTEGER DEFAULT 1
+      )
+    `);
+
+    // Seed first announcement
+    await client.query(`
+      INSERT INTO announcements (title, message, created_by, expires_at)
+      SELECT 'Taarifa kwa Walimu Wote',
+             'Habari walimu! Mara baada ya kufungua Shule, ufundishaji utaanza mara moja. Hakikisha unaandaa lesson plan na unajaza majukumu yako ya siku kupitia mfumo wa ESS.',
+             'Admin',
+             (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '7 days'
+      WHERE NOT EXISTS (SELECT 1 FROM announcements LIMIT 1)
+    `);
+
     console.log('✅ PostgreSQL Database imeunganishwa na kuandaliwa');
   } finally {
     client.release();
@@ -468,6 +491,57 @@ app.delete('/api/teachers/:id', authMiddleware, async (req, res) => {
     if (!check.rows[0]) return res.status(404).json({ error: 'Mwalimu hapatikani' });
     await pool.query('UPDATE teachers SET is_active=0 WHERE id=$1', [id]);
     res.json({ ok: true, message: 'Mwalimu amefutwa' });
+  } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ============================================================
+// ANNOUNCEMENTS API
+// ============================================================
+
+// GET /api/announcements — public, no auth needed (landing page)
+app.get('/api/announcements', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, title, message, created_by, created_at, expires_at
+      FROM announcements
+      WHERE is_active = 1
+        AND expires_at > (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam')
+      ORDER BY created_at DESC
+    `);
+    res.json(result.rows);
+  } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/announcements — admin only
+app.post('/api/announcements', authMiddleware, async (req, res) => {
+  const { title, message } = req.body;
+  if (!title || !message)
+    return res.status(400).json({ error: 'Jaza kichwa na ujumbe wa tangazo' });
+  try {
+    const result = await pool.query(`
+      INSERT INTO announcements (title, message, created_by, expires_at)
+      VALUES ($1, $2, $3, (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '7 days')
+      RETURNING id, title, message, created_at, expires_at
+    `, [title.trim(), message.trim(), req.user.name]);
+    res.json({ ok: true, announcement: result.rows[0] });
+  } catch(e) {
+    res.status(500).json({ error: 'Imeshindwa kutuma tangazo. Jaribu tena.' });
+  }
+});
+
+// DELETE /api/announcements/:id — admin only
+app.delete('/api/announcements/:id', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID si sahihi' });
+  try {
+    const check = await pool.query('SELECT id FROM announcements WHERE id=$1', [id]);
+    if (!check.rows[0]) return res.status(404).json({ error: 'Tangazo halipatikani' });
+    await pool.query('UPDATE announcements SET is_active=0 WHERE id=$1', [id]);
+    res.json({ ok: true, message: 'Tangazo limefutwa' });
   } catch(e) {
     res.status(500).json({ error: 'Server error' });
   }

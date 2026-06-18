@@ -831,6 +831,198 @@
   @media (max-width: 480px) {
     .steps-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── ANNOUNCEMENT TICKER ── */
+  #announcementBar {
+    display: none;
+    background: linear-gradient(90deg, #122970 0%, #1a398e 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 0;
+    width: 100%;
+    position: relative;
+    z-index: 100;
+  }
+
+  #announcementBar.visible { display: block; }
+
+  .ticker-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 44px;
+  }
+
+  .ticker-label {
+    background: var(--accent);
+    color: #1a1a1a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-right: 18px;
+  }
+
+  .ticker-text {
+    color: rgba(255,255,255,0.88);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    cursor: pointer;
+    letter-spacing: 0.1px;
+  }
+
+  .ticker-text:hover { color: #ffffff; }
+
+  .ticker-read-more {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 16px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .ticker-read-more:hover {
+    background: rgba(255,255,255,0.12);
+    color: #ffffff;
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  /* ── ANNOUNCEMENT MODAL ── */
+  #announcementModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(10,20,60,0.7);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #announcementModal.open { display: flex; }
+
+  .ann-modal-box {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(10,20,60,0.3);
+    animation: annModalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes annModalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .ann-modal-header {
+    background: linear-gradient(135deg, #122970, #1a398e);
+    padding: 28px 28px 24px;
+    position: relative;
+  }
+
+  .ann-modal-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #1a1a1a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .ann-modal-title {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .ann-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .ann-modal-close:hover { background: rgba(255,255,255,0.28); }
+
+  .ann-modal-body {
+    padding: 28px;
+  }
+
+  .ann-modal-message {
+    color: #334155;
+    font-size: 15px;
+    line-height: 1.75;
+    margin: 0 0 24px;
+  }
+
+  .ann-modal-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .ann-modal-date {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .ann-modal-dismiss {
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .ann-modal-dismiss:hover { background: var(--primary-dark); }
+
+  @media (max-width: 600px) {
+    .ticker-label { display: none; }
+    .ticker-text { font-size: 12px; }
+  }
+
 </style>
 </head>
 <body>
@@ -892,6 +1084,36 @@
     <a href="admin-dashboard.html" style="text-align:center; border:1.5px solid #1a3a8f; color:#1a3a8f;">Admin Login</a>
   </div>
 </nav>
+
+<!-- ANNOUNCEMENT TICKER BAR -->
+<div id="announcementBar">
+  <div class="ticker-inner">
+    <span class="ticker-label">Matangazo</span>
+    <span class="ticker-text" id="tickerText" onclick="openAnnouncementModal()"></span>
+    <button class="ticker-read-more" onclick="openAnnouncementModal()">Soma Zaidi</button>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT MODAL -->
+<div id="announcementModal">
+  <div class="ann-modal-box">
+    <div class="ann-modal-header">
+      <span class="ann-modal-badge">Tangazo Rasmi</span>
+      <h2 class="ann-modal-title" id="annModalTitle"></h2>
+      <button class="ann-modal-close" onclick="closeAnnouncementModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ann-modal-body">
+      <p class="ann-modal-message" id="annModalMessage"></p>
+      <div class="ann-modal-meta">
+        <span class="ann-modal-date" id="annModalDate"></span>
+        <button class="ann-modal-dismiss" onclick="closeAnnouncementModal()">Nimesoma</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- HERO -->
 <section class="hero">
@@ -1222,6 +1444,51 @@ window.addEventListener('scroll', () => {
 </script>
 
 <script>
+
+// ── ANNOUNCEMENTS ──
+let currentAnnouncement = null;
+
+async function loadAnnouncements() {
+  try {
+    const res  = await fetch('/api/announcements');
+    const data = await res.json();
+    if (!data || data.length === 0) return;
+
+    currentAnnouncement = data[0];
+    const bar = document.getElementById('announcementBar');
+    const txt = document.getElementById('tickerText');
+    txt.textContent = currentAnnouncement.title + ' — ' + currentAnnouncement.message;
+    bar.classList.add('visible');
+  } catch(e) {
+    console.log('Announcements unavailable');
+  }
+}
+
+function openAnnouncementModal() {
+  if (!currentAnnouncement) return;
+  const modal = document.getElementById('announcementModal');
+  document.getElementById('annModalTitle').textContent   = currentAnnouncement.title;
+  document.getElementById('annModalMessage').textContent = currentAnnouncement.message;
+  const d = new Date(currentAnnouncement.created_at);
+  document.getElementById('annModalDate').textContent    =
+    'Imetumwa: ' + d.toLocaleDateString('sw-TZ', { day:'2-digit', month:'long', year:'numeric' });
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAnnouncementModal() {
+  document.getElementById('announcementModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('announcementModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAnnouncementModal();
+});
+
+// Load on page ready
+document.addEventListener('DOMContentLoaded', loadAnnouncements);
+
   // Service Worker Registration
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
