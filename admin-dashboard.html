@@ -783,7 +783,7 @@
         </select>
         <select id="historyStatus" onchange="loadHistoryData()">
           <option value="">— All Status —</option>
-          <option value="present">Present</option>
+          <option value="present">On time</option>
           <option value="late">Late</option>
         </select>
       </div>
@@ -1728,7 +1728,7 @@ function showToast(msg, type='') {
 
 // ── ANNOUNCEMENTS ──
 async function loadAdminAnnouncements() {
-  const token = localStorage.getItem('tams_token');
+  const token = sessionStorage.getItem('admin_token');
   try {
     const res  = await fetch('/api/announcements', {
       headers: { 'Authorization': 'Bearer ' + token }
@@ -1767,7 +1767,7 @@ async function loadAdminAnnouncements() {
 }
 
 async function sendAnnouncement() {
-  const token   = localStorage.getItem('tams_token');
+  const token   = sessionStorage.getItem('admin_token');
   const title   = document.getElementById('annTitle').value.trim();
   const message = document.getElementById('annMessage').value.trim();
   const alertEl = document.getElementById('annFormAlert');
@@ -1802,7 +1802,7 @@ async function sendAnnouncement() {
 }
 
 async function deleteAnnouncement(id) {
-  const token = localStorage.getItem('tams_token');
+  const token = sessionStorage.getItem('admin_token');
   if (!confirm('Una uhakika unataka kufuta tangazo hili?')) return;
   try {
     const res = await fetch('/api/announcements/' + id, {
