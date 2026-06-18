@@ -314,7 +314,7 @@ app.post('/api/attendance', async (req, res) => {
         'SELECT teacher_id, teacher_name FROM device_registrations WHERE device_fingerprint=$1 AND date=$2',
         [deviceFingerprint, today]
       );
-      if (devCheck.rows[0] && devCheck.rows[0].teacher_id !== teacher.id) {
+      if (devCheck.rows[0] && Number(devCheck.rows[0].teacher_id) !== Number(teacher.id)) {
         return res.status(409).json({
           ok: false,
           error: `Kifaa hiki kilitumika leo kusajili ${devCheck.rows[0].teacher_name}. Kifaa kimoja kinaruhusu mwalimu mmoja tu kwa siku.`

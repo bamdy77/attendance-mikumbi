@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="TAMS - Teachers Attendance Management System for Mikumbi Secondary School, Newala, Tanzania">
-<title>tams</title>
+<title>TAMS</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="app-icon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a398e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1216,6 +1219,17 @@ window.addEventListener('scroll', () => {
     }
   });
 });
+</script>
+
+<script>
+  // Service Worker Registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.log('SW registration failed:', err));
+    });
+  }
 </script>
 
 </body>

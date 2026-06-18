@@ -1,22 +1,28 @@
 // Service Worker - Mfumo wa Mahudhurio
-// Version: 1.0.0
+// Version: 2.0.0
 
-const CACHE_NAME = 'mahudhurio-v1';
+const CACHE_NAME = 'mahudhurio-v2';
 const ASSETS = [
+  '/',
+  '/index.html',
   '/teacher-attendance.html',
   '/admin-dashboard.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/govt-logo.png',
-  '/school-logo.png'
+  '/app-icon.svg',
+  '/school-logo.svg',
+  '/govt-logo.svg',
 ];
 
-// Install - cache assets
+// Install - cache assets individually so one failure won't break install
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS.filter(a => !a.includes('.png') && !a.includes('.ico')));
-    }).catch(err => console.log('Cache install error:', err))
+      return Promise.allSettled(
+        ASSETS.map(url =>
+          cache.add(url).catch(err => console.log('Cache miss:', url, err))
+        )
+      );
+    })
   );
   self.skipWaiting();
 });
@@ -34,24 +40,20 @@ self.addEventListener('activate', event => {
 // Fetch - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
   // Skip API calls - always go to network
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
+  if (event.request.url.includes('/api/')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        // Cache successful GET responses
         if (response.ok && event.request.method === 'GET') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
       }).catch(() => {
-        // Offline fallback
         if (event.request.destination === 'document') {
-          return caches.match('/teacher-attendance.html');
+          return caches.match('/index.html');
         }
       });
     })
