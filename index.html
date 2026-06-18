@@ -28,6 +28,117 @@
     --shadow-lg: 0 12px 40px rgba(0,0,0,0.15);
   }
 
+
+  /* ── SPLASH SCREEN ── */
+  #splashScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(160deg, #0f2166 0%, #1a398e 55%, #2a4aab 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+
+  #splashScreen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .splash-logos {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-bottom: 28px;
+    animation: splashFadeDown 0.7s ease both;
+  }
+
+  .splash-logo-box {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.25);
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .splash-logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .splash-divider {
+    width: 1.5px;
+    height: 48px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+  }
+
+  .splash-title {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-align: center;
+    animation: splashFadeDown 0.7s ease 0.1s both;
+  }
+
+  .splash-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 6px;
+    margin-bottom: 40px;
+    animation: splashFadeDown 0.7s ease 0.15s both;
+  }
+
+  .splash-progress-wrap {
+    width: min(280px, 75vw);
+    animation: splashFadeDown 0.7s ease 0.2s both;
+  }
+
+  .splash-progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .splash-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), #ffffff);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+  }
+
+  .splash-progress-label {
+    color: rgba(255,255,255,0.45);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  @keyframes splashFadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html { scroll-behavior: smooth; }
@@ -721,6 +832,27 @@
 </head>
 <body>
 
+<!-- SPLASH SCREEN -->
+<div id="splashScreen">
+  <div class="splash-logos">
+    <div class="splash-logo-box">
+      <img src="govt-logo.svg" alt="Government">
+    </div>
+    <div class="splash-divider"></div>
+    <div class="splash-logo-box">
+      <img src="school-logo.svg" alt="School">
+    </div>
+  </div>
+  <div class="splash-title">Mikumbi Secondary School</div>
+  <div class="splash-sub">Newala &bull; Tanzania</div>
+  <div class="splash-progress-wrap">
+    <div class="splash-progress-track">
+      <div class="splash-progress-bar" id="splashBar"></div>
+    </div>
+    <div class="splash-progress-label" id="splashLabel">Inapakia mfumo...</div>
+  </div>
+</div>
+
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="navbar-inner">
@@ -1024,6 +1156,34 @@
 </footer>
 
 <script>
+
+// ── SPLASH SCREEN ──
+(function() {
+  const bar    = document.getElementById('splashBar');
+  const label  = document.getElementById('splashLabel');
+  const splash = document.getElementById('splashScreen');
+
+  const steps = [
+    { pct: 20,  msg: 'Inapakia mfumo...'        },
+    { pct: 50,  msg: 'Inaunganisha seva...'      },
+    { pct: 75,  msg: 'Inatayarisha data...'      },
+    { pct: 95,  msg: 'Inakamilisha...'           },
+    { pct: 100, msg: 'Karibu!'                   },
+  ];
+
+  const delays = [100, 400, 800, 1300, 1800];
+
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      bar.style.width  = step.pct + '%';
+      label.textContent = step.msg;
+      if (step.pct === 100) {
+        setTimeout(() => splash.classList.add('hide'), 500);
+      }
+    }, delays[i]);
+  });
+})();
+
 function toggleMenu() {
   const menu = document.getElementById('mobileMenu');
   menu.classList.toggle('open');
