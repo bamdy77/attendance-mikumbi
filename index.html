@@ -860,14 +860,36 @@
     background: var(--accent);
     color: #1a1a1a;
     font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 4px;
+    padding: 6px 14px;
     flex-shrink: 0;
-    margin-right: 12px;
+    margin-right: 14px;
     white-space: nowrap;
+    position: relative;
+    clip-path: polygon(
+      0% 50%,
+      8% 20%,
+      18% 35%,
+      28% 0%,
+      38% 30%,
+      50% 8%,
+      62% 30%,
+      72% 0%,
+      82% 35%,
+      92% 20%,
+      100% 50%,
+      92% 80%,
+      82% 65%,
+      72% 100%,
+      62% 70%,
+      50% 92%,
+      38% 70%,
+      28% 100%,
+      18% 65%,
+      8% 80%
+    );
   }
 
   .ticker-text {
@@ -907,9 +929,10 @@
   }
 
   @media (max-width: 480px) {
-    .ticker-label { display: none; }
-    .ticker-text  { font-size: 12px; }
-    .ticker-read-more { font-size: 10px; padding: 4px 10px; }
+    .ticker-inner   { padding: 6px 10px; min-height: 40px; gap: 0; }
+    .ticker-label   { font-size: 8px; padding: 3px 7px; margin-right: 8px; letter-spacing: 1px; }
+    .ticker-text    { font-size: 11px; }
+    .ticker-read-more { font-size: 10px; padding: 4px 8px; margin-left: 6px; }
   }
 
   /* ── ANNOUNCEMENT MODAL ── */
