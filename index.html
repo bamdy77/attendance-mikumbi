@@ -1564,7 +1564,21 @@ document.addEventListener('DOMContentLoaded', loadAnnouncements);
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('✅ Service Worker registered'))
+        .then(reg => {
+          console.log('✅ Service Worker registered');
+          // Angalia update kila ukurasa unapofunguliwa — si kusubiri saa 24
+          reg.update();
+
+          // Ukipata SW mpya — reload automatically
+          reg.addEventListener('updatefound', () => {
+            const newSW = reg.installing;
+            newSW.addEventListener('statechange', () => {
+              if (newSW.state === 'activated') {
+                window.location.reload();
+              }
+            });
+          });
+        })
         .catch(err => console.log('SW registration failed:', err));
     });
   }
