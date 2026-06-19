@@ -482,13 +482,31 @@ app.post('/api/teachers', authMiddleware, async (req, res) => {
   }
 });
 
+// PUT /api/teachers/:id/reset-password — admin only
+app.put('/api/teachers/:id/reset-password', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID si sahihi' });
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.length < 4)
+    return res.status(400).json({ error: 'Password must be at least 4 characters' });
+  try {
+    const check = await pool.query('SELECT id FROM teachers WHERE id=$1 AND is_active=1', [id]);
+    if (!check.rows[0]) return res.status(404).json({ error: 'Teacher not found' });
+    const hash = bcrypt.hashSync(newPassword, 10);
+    await pool.query('UPDATE teachers SET password_hash=$1 WHERE id=$2', [hash, id]);
+    res.json({ ok: true, message: 'Password imebadilishwa' });
+  } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // DELETE /api/teachers/:id
 app.delete('/api/teachers/:id', authMiddleware, async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) return res.status(400).json({ error: 'ID si sahihi' });
   try {
     const check = await pool.query('SELECT id FROM teachers WHERE id=$1', [id]);
-    if (!check.rows[0]) return res.status(404).json({ error: 'Mwalimu hapatikani' });
+    if (!check.rows[0]) return res.status(404).json({ error: 'Teacher not found' });
     await pool.query('UPDATE teachers SET is_active=0 WHERE id=$1', [id]);
     res.json({ ok: true, message: 'Mwalimu amefutwa' });
   } catch(e) {
