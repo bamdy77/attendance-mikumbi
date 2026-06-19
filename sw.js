@@ -1,7 +1,9 @@
 // Service Worker - Mfumo wa Mahudhurio
-// Version: 2.0.0
+// Cache inabadilika automatically kila siku — Tanzania timezone
 
-const CACHE_NAME = 'mahudhurio-v2';
+const CACHE_NAME = 'mahudhurio-' + new Date().toLocaleDateString('en-CA', {
+  timeZone: 'Africa/Dar_es_Salaam'
+});
 const ASSETS = [
   '/',
   '/index.html',
