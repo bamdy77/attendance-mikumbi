@@ -396,6 +396,53 @@ app.post('/api/admin/change-password', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/attendance/my-history — Teacher personal history (no auth token, uses name lookup)
+app.post('/api/attendance/my-history', async (req, res) => {
+  const { firstName, middleName, lastName, password } = req.body;
+  if (!firstName || !middleName || !lastName || !password)
+    return res.status(400).json({ error: 'Missing required fields' });
+
+  const fn = firstName.toUpperCase().trim();
+  const mn = middleName.toUpperCase().trim();
+  const ln = lastName.toUpperCase().trim();
+
+  try {
+    // Verify teacher credentials
+    const tResult = await pool.query(
+      'SELECT * FROM teachers WHERE first_name=$1 AND middle_name=$2 AND last_name=$3 AND is_active=1',
+      [fn, mn, ln]
+    );
+    const teacher = tResult.rows[0];
+    if (!teacher || !bcrypt.compareSync(password, teacher.password_hash))
+      return res.status(401).json({ error: 'Invalid credentials' });
+
+    // Get last 30 records
+    const records = await pool.query(`
+      SELECT date, time_str, is_late, distance_m
+      FROM attendance
+      WHERE teacher_id = $1
+      ORDER BY date DESC
+      LIMIT 30
+    `, [teacher.id]);
+
+    // Summary stats
+    const total   = records.rows.length;
+    const onTime  = records.rows.filter(r => !r.is_late).length;
+    const late    = records.rows.filter(r => r.is_late).length;
+
+    res.json({
+      teacherName: `${fn} ${mn} ${ln}`,
+      subject:     teacher.subject,
+      role:        teacher.role,
+      summary:     { total, onTime, late },
+      records:     records.rows
+    });
+  } catch(e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // GET /api/attendance/today
 app.get('/api/attendance/today', authMiddleware, async (req, res) => {
   const today = getTodayDate();
