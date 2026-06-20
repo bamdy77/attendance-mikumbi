@@ -1169,19 +1169,10 @@
 // ============================================================
 // DATA
 // ============================================================
-let TEACHERS_DB = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify([
-  { id:1, firstName:'DEOGRATIUS', middleName:'ROBERT',  lastName:'MUZO',    subject:'History',    role:'Mhasibu',              password:'1234' },
-  { id:2, firstName:'OCTAVIAN',   middleName:'CONRAD',  lastName:'MILLANZI',subject:'Geography',  role:'Mkuu wa Shule',        password:'1234' },
-  { id:3, firstName:'TEOFRID',    middleName:'TIMOTEO', lastName:'KWENGA',  subject:'Economics',  role:'Mwalimu',              password:'1234' },
-  { id:4, firstName:'LINUS',      middleName:'SAMORA',  lastName:'MADAMA',  subject:'Mathematics',role:'Mtaalamu Msaidizi',    password:'1234' },
-  { id:5, firstName:'ENOCK',      middleName:'SOSPETER',lastName:'MATHAYO', subject:'Physics',    role:'Mwalimu wa Nidhamu',   password:'1234' },
-  { id:6, firstName:'IGNATIO',    middleName:'BEYANGA', lastName:'EZEKIEL', subject:'Biology',    role:'Makamu wa Shule',      password:'1234' },
-  { id:7, firstName:'CHRISTOM',   middleName:'KASIAN',  lastName:'KOMBA',   subject:'English',    role:'Mtaalamu Mwandamizi',  password:'1234' },
-  { id:8, firstName:'FELISTA',    middleName:'DONALD',  lastName:'MOHAMED', subject:'Chemistry',  role:'Mwalimu wa Afya',      password:'1234' },
-  { id:9, firstName:'AHMAD',      middleName:'MOHAMED', lastName:'VINDILI', subject:'Chemistry',  role:'Mwalimu wa Michezo',   password:'1234' },
-]));
+// Teachers data comes from API only — no local array needed
+let TEACHERS_DB = []; // populated from API in loadTeachersTable()
 
-let ADMIN_CREDS = { user: 'admin', pass: localStorage.getItem('admin_password') || 'admin123' };
+// Admin credentials verified server-side only
 
 // ============================================================
 // LOGIN
@@ -1291,7 +1282,7 @@ function getToken() {
 // TODAY DATA — from Railway API
 // ============================================================
 function getTodayAttendance() {
-  return JSON.parse(localStorage.getItem('attendance_' + new Date().toDateString()) || '[]');
+  return []; // Data comes from API only
 }
 
 async function refreshTodayData() {
@@ -1304,7 +1295,7 @@ async function refreshTodayData() {
     });
 
     if (!res.ok) {
-      // Token expired — fallback to localStorage
+      // Token expired or error
       renderTodayFromLocal();
       return;
     }
@@ -1313,7 +1304,7 @@ async function refreshTodayData() {
     renderTodayFromAPI(data);
 
   } catch(e) {
-    // Network error — fallback to localStorage
+    // Network error
     renderTodayFromLocal();
   }
 }
@@ -1368,50 +1359,8 @@ function renderTodayFromAPI(data) {
 }
 
 function renderTodayFromLocal() {
-  const records = getTodayAttendance();
-  const total   = TEACHERS_DB.length;
-  const presentIds = new Set(records.map(r => r.teacherId));
-  const present = presentIds.size;
-  const absent  = total - present;
-  const late    = records.filter(r => r.isLate).length;
-  const pct     = total > 0 ? Math.round(present/total*100) : 0;
-
-  document.getElementById('statTotal').textContent      = total;
-  document.getElementById('statPresent').textContent    = present;
-  document.getElementById('statAbsent').textContent     = absent;
-  document.getElementById('statLate').textContent       = late;
-  document.getElementById('statPresentPct').textContent = `${pct}% of total`;
-  document.getElementById('statAbsentPct').textContent  = `${100-pct}% of total`;
-  document.getElementById('presentBar').style.width     = `${pct}%`;
-
-  const tbody = document.getElementById('todayTableBody');
-  tbody.innerHTML = TEACHERS_DB.map((t, i) => {
-    const rec = records.filter(r => r.teacherId === t.id).sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp))[0];
-    if (rec) {
-      const status = rec.isLate
-        ? `<span class="badge badge-late">LATE</span>`
-        : `<span class="badge badge-present">ON TIME</span>`;
-      return `<tr>
-        <td>${i+1}</td>
-        <td><div class="teacher-name">${rec.teacherName}</div><div class="teacher-subject">${t.subject}</div></td>
-        <td>${t.subject}</td>
-        <td>${status}</td>
-        <td><span class="time-badge">${rec.timeStr}</span></td>
-        <td style="font-size:11px;color:var(--muted);">Present</td>
-        <td style="font-size:12px;color:var(--muted);">${rec.distanceM}m</td>
-      </tr>`;
-    } else {
-      return `<tr>
-        <td>${i+1}</td>
-        <td><div class="teacher-name">${t.firstName} ${t.middleName} ${t.lastName}</div><div class="teacher-subject">${t.subject}</div></td>
-        <td>${t.subject}</td>
-        <td><span class="badge badge-absent">ABSENT</span></td>
-        <td><span style="color:var(--muted);font-size:12px;">—</span></td>
-        <td style="font-size:11px;color:var(--muted);">Not signed in</td>
-        <td style="font-size:12px;color:var(--muted);">—</td>
-      </tr>`;
-    }
-  }).join('');
+  // Data comes from API — loadTodayData() handles this
+  loadTodayData();
 }
 
 // ============================================================
@@ -1724,7 +1673,7 @@ function downloadFile(content, filename, type) {
 // SETTINGS
 // ============================================================
 function saveSettings() {
-  localStorage.setItem('school_settings', JSON.stringify({
+  sessionStorage.setItem('school_settings', JSON.stringify({
     lat:      document.getElementById('setLat').value,
     lng:      document.getElementById('setLng').value,
     mac:      document.getElementById('setMAC').value,

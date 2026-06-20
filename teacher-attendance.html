@@ -43,91 +43,124 @@
 
   /* ── HEADER ── */
   .header {
-    background: linear-gradient(135deg, #1a398e 0%, #1a388e 60%, #1a398e 100%);
-    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+    background: linear-gradient(160deg, #0f2166 0%, #1a398e 50%, #1e4db7 100%);
+    box-shadow: 0 2px 20px rgba(10,25,80,0.4);
     position: sticky;
     top: 0;
     z-index: 100;
   }
 
-  /* TAMS Title Bar */
-  .header-tams {
-    text-align: center;
-    padding: 8px 16px 4px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .header-tams h1 {
-    font-size: 17px;
-    font-weight: 900;
-    color: white;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .header-tams p {
-    font-size: 10px;
-    color: rgba(255,255,255,0.65);
-    letter-spacing: 0.5px;
-    margin-top: 1px;
-  }
-
-  /* Logo + Clock Row */
+  /* Main header row */
   .header-main {
-    padding: 6px 16px 8px;
+    padding: 10px 20px 8px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 8px;
   }
 
-  .header-main .center-text {
+  /* Left — govt logo */
+  .header-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* Center — title */
+  .header-center {
+    flex: 1;
     text-align: center;
-    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .header-center .app-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .header-center .school-name {
+    font-size: 9px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Right — school logo + clock */
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .time-display { text-align: right; }
+  .time-display .time {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .time-display .date {
+    font-size: 8px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 3px;
+    white-space: nowrap;
   }
 
   .logo-box {
-    width: 48px; height: 48px;
-    background: rgba(255,255,255,0.12);
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.1);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    border: 1.5px solid rgba(255,255,255,0.25);
+    border: 1.5px solid rgba(255,255,255,0.2);
     overflow: hidden;
     flex-shrink: 0;
     padding: 4px;
+    transition: background 0.2s;
   }
+
+  .logo-box:hover { background: rgba(255,255,255,0.18); }
 
   .logo-box img {
     width: 100%; height: 100%;
     object-fit: contain;
   }
 
-  .time-display { text-align: right; }
-  .time-display .time { font-size: 17px; font-weight: 700; color: white; font-variant-numeric: tabular-nums; }
-  .time-display .date { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 1px; }
-
   /* ── STATUS BAR ── */
   .status-bar {
-    background: rgba(0,0,0,0.25);
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.06);
     padding: 5px 16px;
-    display: flex; gap: 10px;
-    justify-content: center; flex-wrap: wrap;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .status-item {
     display: flex; align-items: center; gap: 5px;
     font-size: 10px; font-weight: 500;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.2px;
   }
 
   .status-dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     border-radius: 50%; background: #555; transition: all 0.3s;
     flex-shrink: 0;
   }
 
-  .status-dot.active { background: #2ecc71; box-shadow: 0 0 5px rgba(46,204,113,0.8); }
-  .status-dot.error { background: #e74c3c; }
+  .status-dot.active { background: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.9); }
+  .status-dot.error  { background: #e74c3c; }
   .status-dot.warning { background: #f39c12; }
 
   /* ── MAIN ── */
@@ -1147,17 +1180,7 @@ function getDeviceFingerprint() {
 // ============================================================
 // TEACHERS DATA
 // ============================================================
-let TEACHERS = JSON.parse(localStorage.getItem('teachers_db') || JSON.stringify([
-  { id:1, firstName:'DEOGRATIUS', middleName:'ROBERT',  lastName:'MUZO',    password:'1234', subject:'History',    role:'Mhasibu' },
-  { id:2, firstName:'OCTAVIAN',   middleName:'CONRAD',  lastName:'MILLANZI',password:'1234', subject:'Geography',  role:'Mkuu wa Shule' },
-  { id:3, firstName:'TEOFRID',    middleName:'TIMOTEO', lastName:'KWENGA',  password:'1234', subject:'Economics',  role:'Mwalimu' },
-  { id:4, firstName:'LINUS',      middleName:'SAMORA',  lastName:'MADAMA',  password:'1234', subject:'Mathematics',role:'Mtaalamu Msaidizi' },
-  { id:5, firstName:'ENOCK',      middleName:'SOSPETER',lastName:'MATHAYO', password:'1234', subject:'Physics',    role:'Mwalimu wa Nidhamu' },
-  { id:6, firstName:'IGNATIO',    middleName:'BEYANGA', lastName:'EZEKIEL', password:'1234', subject:'Biology',    role:'Makamu wa Shule' },
-  { id:7, firstName:'CHRISTOM',   middleName:'KASIAN',  lastName:'KOMBA',   password:'1234', subject:'English',    role:'Mtaalamu Mwandamizi' },
-  { id:8, firstName:'FELISTA',    middleName:'DONALD',  lastName:'MOHAMED', password:'1234', subject:'Chemistry',  role:'Mwalimu wa Afya' },
-  { id:9, firstName:'AHMAD',      middleName:'MOHAMED', lastName:'VINDILI', password:'1234', subject:'Chemistry',  role:'Mwalimu wa Michezo' },
-]));
+// Teachers are verified server-side only — no local array needed
 
 // ============================================================
 // CLOCK & COUNTDOWN
@@ -1441,7 +1464,7 @@ async function startAttendance() {
     sessionStorage.setItem('hist_ln', ln);
     sessionStorage.setItem('hist_pw', pw);
 
-    saveAttendanceRecord(record);
+    // Record saved to database server-side
 
     const detailsHTML = `
       <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${fn} ${mn} ${ln}</span></div>
@@ -1523,12 +1546,7 @@ function hideOverlay() {
 // ============================================================
 // HISTORY
 // ============================================================
-function saveAttendanceRecord(record) {
-  const key      = 'attendance_' + new Date().toDateString();
-  const existing = JSON.parse(localStorage.getItem(key) || '[]');
-  existing.push(record);
-  localStorage.setItem(key, JSON.stringify(existing));
-}
+// saveAttendanceRecord removed — data is stored in PostgreSQL server-side
 
 function updateHistory() {
   // Today's log is updated after successful sign-in from API response

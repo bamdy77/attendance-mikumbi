@@ -422,7 +422,7 @@ app.post('/api/attendance/my-history', async (req, res) => {
       FROM attendance
       WHERE teacher_id = $1
       ORDER BY date DESC
-      LIMIT 30
+      LIMIT 10
     `, [teacher.id]);
 
     // Summary stats
