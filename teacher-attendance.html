@@ -794,26 +794,29 @@
 
 <!-- HEADER -->
 <div class="header">
-  <!-- TAMS Title -->
-  <div class="header-tams">
-    <h1>Newala District Council</h1>
-    <p>Teachers Attendance Management System - TAMS</p>
-  </div>
-
-  <!-- Logos + Clock -->
   <div class="header-main">
-    <div class="logo-box">
-      <img src="govt-logo.svg" alt="Government">
+    <!-- Left: Govt Logo -->
+    <div class="header-left">
+      <div class="logo-box">
+        <img src="govt-logo.svg" alt="Government">
+      </div>
     </div>
 
-    <div class="center-text">
-      <div style="font-size:11px; font-weight:700; color:white; letter-spacing:0.3px;">Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala</div>
-      <div class="time" id="clock" style="font-size:15px; font-weight:700; color:white; font-variant-numeric:tabular-nums;">--:--</div>
-      <div class="date" id="dateDisplay" style="font-size:9px; color:rgba(255,255,255,0.65);">---</div>
+    <!-- Center: App Name + School -->
+    <div class="header-center">
+      <div class="app-name">TAMS</div>
+      <div class="school-name">Mikumbi Secondary School &bull; Newala</div>
     </div>
 
-    <div class="logo-box">
-      <img src="school-logo.svg" alt="School">
+    <!-- Right: Clock + School Logo -->
+    <div class="header-right">
+      <div class="time-display">
+        <div class="time" id="clock">--:--:--</div>
+        <div class="date" id="dateDisplay">---</div>
+      </div>
+      <div class="logo-box">
+        <img src="school-logo.svg" alt="School">
+      </div>
     </div>
   </div>
 
