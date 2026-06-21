@@ -1241,6 +1241,17 @@ function doLogout() {
 }
 
 // ============================================================
+// TANZANIA TIMEZONE HELPERS
+// ============================================================
+function getTZDate() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
+}
+function getTZDateStr() {
+  const d = getTZDate();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ============================================================
 // INIT
 // ============================================================
 function initDashboard() {
@@ -1254,7 +1265,7 @@ function initDashboard() {
 }
 
 function updateHeaderDate() {
-  const now = new Date();
+  const now = getTZDate();
   const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('headerDate').textContent =
@@ -1262,14 +1273,14 @@ function updateHeaderDate() {
 }
 
 function setTodayDates() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTZDateStr();
   document.getElementById('historyFrom').value = today;
   document.getElementById('historyTo').value   = today;
   document.getElementById('exportFrom').value  = today;
   document.getElementById('exportTo').value    = today;
-  const now    = new Date();
+  const nowTZ  = getTZDate();
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('todayDateLabel').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('todayDateLabel').textContent = `${nowTZ.getDate()} ${months[nowTZ.getMonth()]} ${nowTZ.getFullYear()}`;
 }
 
 // ============================================================
@@ -1597,12 +1608,14 @@ function doExport() {
 
 async function getExportRecords(period) {
   const token = getToken();
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTZDateStr();
   let from = today, to = today;
   if (period === 'week') {
-    const d = new Date(); d.setDate(d.getDate()-7); from = d.toISOString().split('T')[0];
+    const d = getTZDate(); d.setDate(d.getDate()-7);
+    from = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   } else if (period === 'month') {
-    const d = new Date(); d.setDate(d.getDate()-30); from = d.toISOString().split('T')[0];
+    const d = getTZDate(); d.setDate(d.getDate()-30);
+    from = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   } else if (period === 'custom') {
     from = document.getElementById('exportFrom').value;
     to   = document.getElementById('exportTo').value;
@@ -1624,7 +1637,7 @@ async function exportToExcel(period) {
     ...records.map((r,i)=>[i+1, r.date, r.teacher_name, r.subject||'', r.time_str, r.is_late?'LATE':'ON TIME', r.distance_m||''])
   ];
   const csv = rows.map(r=>r.join(',')).join('\n');
-  downloadFile(csv, `tams-attendance-${period}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+  downloadFile(csv, `tams-attendance-${period}-${getTZDateStr()}.csv`, 'text/csv');
   showToast('File downloaded successfully','success');
 }
 
@@ -1633,7 +1646,7 @@ async function exportToPDF(period) {
   if (!records.length) { showToast('No records to export','error'); return; }
   const now = new Date();
   const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${now.toLocaleString()}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
 <!-- RESET PASSWORD MODAL -->
 <div class="modal-backdrop" id="resetPassModal">
   <div class="modal">
