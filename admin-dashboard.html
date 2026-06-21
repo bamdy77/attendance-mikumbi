@@ -419,7 +419,10 @@
   }
 
   .login-card h1 {
-    font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 4px;
+    font-size: 24px; font-weight: 900; color: #b8860b;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 2px rgba(184,134,11,0.2);
   }
 
   .login-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 26px; }
@@ -595,7 +598,7 @@
     </div>
 
     <div class="login-school-name">Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala</div>
-    <h1>Admin Dashboard</h1>
+    <h1>HOS Dashboard</h1>
     <p class="login-subtitle">Teacher Attendance Management System</p>
 
     <div class="login-field">
@@ -646,7 +649,7 @@
   </div>
 
   <div class="header-center">
-    <h1>Admin Dashboard &mdash; Attendance</h1>
+    <h1>HOS Dashboard &mdash; Attendance</h1>
     <p>Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala &nbsp;&bull;&nbsp; <span id="headerDate">---</span></p>
   </div>
 
@@ -742,7 +745,7 @@
             <tr>
               <th>#</th>
               <th>Full Name</th>
-              <th>Subject</th>
+              <th>Department</th>
               <th>Status</th>
               <th>Time Arrived</th>
               <th>Remark</th>
@@ -791,7 +794,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Subject</th><th>Status</th><th>Time Arrived</th></tr>
+            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th></tr>
           </thead>
           <tbody id="historyTableBody">
             <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">Select date range to view history</td></tr>
@@ -825,7 +828,7 @@
             <input type="text" id="newLN" placeholder="Last name">
           </div>
           <div class="field-group">
-            <label>Subject</label>
+            <label>Department</label>
             <input type="text" id="newSubject" placeholder="e.g. Mathematics">
           </div>
           <div class="field-group">
@@ -863,7 +866,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Full Name</th><th>Subject</th><th>Role</th><th>Attendance (Week)</th><th>Actions</th></tr>
+            <tr><th>#</th><th>Full Name</th><th>Department</th><th>Role</th><th>Attendance (Week)</th><th>Actions</th></tr>
           </thead>
           <tbody id="teachersTableBody"></tbody>
         </table>
@@ -1617,7 +1620,7 @@ async function exportToExcel(period) {
   const records = await getExportRecords(period);
   if (!records.length) { showToast('No records to export','error'); return; }
   const rows = [
-    ['#','Date','Full Name','Subject','Time','Status','Distance(m)'],
+    ['#','Date','Full Name','Department','Time','Status','Distance(m)'],
     ...records.map((r,i)=>[i+1, r.date, r.teacher_name, r.subject||'', r.time_str, r.is_late?'LATE':'ON TIME', r.distance_m||''])
   ];
   const csv = rows.map(r=>r.join(',')).join('\n');
@@ -1630,7 +1633,7 @@ async function exportToPDF(period) {
   if (!records.length) { showToast('No records to export','error'); return; }
   const now = new Date();
   const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${now.toLocaleString()}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Subject</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${now.toLocaleString()}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
 <!-- RESET PASSWORD MODAL -->
 <div class="modal-backdrop" id="resetPassModal">
   <div class="modal">
