@@ -583,6 +583,89 @@
   #annFormAlert.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
   #annFormAlert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
 
+
+  /* ── MONTHLY SUMMARY ── */
+  .monthly-summary-wrap { margin-top: 24px; }
+
+  .monthly-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .monthly-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: white;
+  }
+
+  .monthly-table-wrap { overflow-x: auto; }
+
+  .monthly-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .monthly-table th {
+    background: #f8fafc;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .monthly-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text);
+  }
+
+  .monthly-table tr:last-child td { border-bottom: none; }
+  .monthly-table tr:hover td { background: #f8fafc; }
+
+  .monthly-pct-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+    width: 80px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .monthly-pct-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: #16a34a;
+    transition: width 0.4s;
+  }
+
+  .monthly-pct-fill.warn { background: #f59e0b; }
+  .monthly-pct-fill.danger { background: #dc2626; }
+
+  /* ── PRINT — hide modals and UI chrome ── */
+  @media print {
+    .modal-backdrop,
+    #resetPassModal,
+    #exportModal,
+    .toast,
+    .tab-nav,
+    .header { display: none !important; }
+  }
+
 </style>
 </head>
 <body>
@@ -794,7 +877,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th></tr>
+            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th>Late Reason</th></tr>
           </thead>
           <tbody id="historyTableBody">
             <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">Select date range to view history</td></tr>
@@ -953,6 +1036,61 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- MONTHLY ATTENDANCE SUMMARY TABLE -->
+    <div class="table-card monthly-summary-wrap">
+      <div class="table-header">
+        <h2>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Monthly Attendance Summary
+        </h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-success" onclick="exportMonthlySummaryExcel()" style="font-size:12px;padding:7px 14px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Excel
+          </button>
+          <button class="btn btn-danger" onclick="exportMonthlySummaryPDF()" style="font-size:12px;padding:7px 14px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+      <div style="padding:16px 22px;">
+        <div class="monthly-controls">
+          <label style="font-size:12px;font-weight:600;color:var(--muted);">Month:</label>
+          <select id="summaryMonth">
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12">December</option>
+          </select>
+          <select id="summaryYear"></select>
+          <button class="btn btn-primary" onclick="loadMonthlySummary()" style="font-size:12px;padding:7px 14px;">View Summary</button>
+        </div>
+        <div class="monthly-table-wrap">
+          <table class="monthly-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Working Days</th>
+                <th>Present</th>
+                <th>On Time</th>
+                <th>Late</th>
+                <th>Absent</th>
+                <th>Attendance %</th>
+              </tr>
+            </thead>
+            <tbody id="monthlySummaryBody">
+              <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted);">Select a month and click View Summary</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -1388,7 +1526,7 @@ async function loadHistoryData() {
   const token         = getToken();
   const tbody         = document.getElementById('historyTableBody');
 
-  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>`;
 
   try {
     let url = API_BASE + '/api/attendance/range?from=' + from + '&to=' + to;
@@ -1406,7 +1544,7 @@ async function loadHistoryData() {
     else if (statusFilter === 'present') records = records.filter(r => !r.is_late);
 
     if (records.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>No Records Found</h3><p>No attendance records for the selected period</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>No Records Found</h3><p>No attendance records for the selected period</p></div></td></tr>`;
       return;
     }
 
@@ -1414,7 +1552,10 @@ async function loadHistoryData() {
       const badge = r.is_late
         ? `<span class="badge badge-late">LATE</span>`
         : `<span class="badge badge-ontime">ON TIME</span>`;
-      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td></tr>`;
+      const reason = r.is_late && r.late_reason
+        ? `<span style="font-size:11px;color:#92400e;background:#fffbeb;padding:2px 8px;border-radius:6px;border:1px solid #fcd34d;">${r.late_reason}</span>`
+        : `<span style="color:var(--muted);font-size:12px;">—</span>`;
+      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td><td>${reason}</td></tr>`;
     }).join('');
 
   } catch(e) {
@@ -1856,6 +1997,132 @@ async function doResetPassword() {
   } catch(e) {
     showToast('Network error. Please try again.', 'error');
   }
+}
+
+
+// ── MONTHLY SUMMARY ──
+(function initSummaryYear() {
+  const sel = document.getElementById('summaryYear');
+  if (!sel) return;
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
+  const yr  = now.getFullYear();
+  for (let y = yr; y >= yr - 3; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    sel.appendChild(opt);
+  }
+  document.getElementById('summaryMonth').value = now.getMonth() + 1;
+})();
+
+let lastMonthlySummary = null;
+
+async function loadMonthlySummary() {
+  const token = getToken();
+  const month = document.getElementById('summaryMonth').value;
+  const year  = document.getElementById('summaryYear').value;
+  const tbody = document.getElementById('monthlySummaryBody');
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/attendance/monthly-summary?year=${year}&month=${month}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Failed to load', 'error'); return; }
+
+    lastMonthlySummary = data;
+
+    if (!data.summary || data.summary.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted);">No teachers found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.summary.map((t, i) => {
+      const pct   = t.attendancePct;
+      const cls   = pct >= 80 ? '' : pct >= 60 ? 'warn' : 'danger';
+      return `<tr>
+        <td>${i+1}</td>
+        <td style="font-weight:600;">${t.name}</td>
+        <td>${t.subject}</td>
+        <td style="text-align:center;">${t.workingDays}</td>
+        <td style="text-align:center;font-weight:700;color:#16a34a;">${t.present}</td>
+        <td style="text-align:center;color:#1a398e;">${t.onTime}</td>
+        <td style="text-align:center;color:#f59e0b;">${t.late}</td>
+        <td style="text-align:center;color:#dc2626;">${t.absent}</td>
+        <td>
+          <span class="monthly-pct-bar"><span class="monthly-pct-fill ${cls}" style="width:${pct}%"></span></span>
+          <span style="font-size:12px;font-weight:700;color:${pct>=80?'#16a34a':pct>=60?'#f59e0b':'#dc2626'}">${pct}%</span>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted);">Network error. Try again.</td></tr>';
+  }
+}
+
+function exportMonthlySummaryExcel() {
+  if (!lastMonthlySummary) { showToast('Load a summary first', 'error'); return; }
+  const { year, month, workingDays, summary } = lastMonthlySummary;
+  const months = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+  const header = ['#','Full Name','Department','Role','Working Days','Present','On Time','Late','Absent','Attendance %'];
+  const rows   = summary.map((t,i) => [i+1, t.name, t.subject, t.role, workingDays, t.present, t.onTime, t.late, t.absent, t.attendancePct+'%']);
+  const csv    = [header, ...rows].map(r => r.join(',')).join('\n');
+  downloadFile(csv, `tams-monthly-summary-${months[month]}-${year}.csv`, 'text/csv');
+}
+
+function exportMonthlySummaryPDF() {
+  if (!lastMonthlySummary) { showToast('Load a summary first', 'error'); return; }
+  const { year, month, workingDays, summary } = lastMonthlySummary;
+  const months = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthName = months[month];
+  const generated = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' });
+
+  const rows = summary.map((t,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${t.name}</td>
+      <td>${t.subject}</td>
+      <td>${t.role}</td>
+      <td style="text-align:center;">${workingDays}</td>
+      <td style="text-align:center;color:#16a34a;font-weight:700;">${t.present}</td>
+      <td style="text-align:center;color:#1a398e;">${t.onTime}</td>
+      <td style="text-align:center;color:#f59e0b;">${t.late}</td>
+      <td style="text-align:center;color:#dc2626;">${t.absent}</td>
+      <td style="text-align:center;font-weight:700;color:${t.attendancePct>=80?'#16a34a':t.attendancePct>=60?'#f59e0b':'#dc2626'}">${t.attendancePct}%</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Monthly Summary — ${monthName} ${year}</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 30px; color: #1e293b; }
+      h1 { font-size: 20px; color: #1a398e; margin: 0; }
+      h2 { font-size: 14px; font-weight: normal; color: #64748b; margin: 4px 0 20px; }
+      .meta { font-size: 11px; color: #94a3b8; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      th { background: #1a398e; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+      td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+      tr:nth-child(even) td { background: #f8fafc; }
+      .footer { margin-top: 30px; font-size: 10px; color: #94a3b8; text-align: center; }
+    </style>
+  </head><body>
+    <h1>Mikumbi Secondary School — Monthly Attendance Summary</h1>
+    <h2>${monthName} ${year} &nbsp;&bull;&nbsp; Working Days: ${workingDays}</h2>
+    <div class="meta">Generated: ${generated} (Tanzania Time)</div>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Full Name</th><th>Department</th><th>Role</th>
+        <th>Working Days</th><th>Present</th><th>On Time</th>
+        <th>Late</th><th>Absent</th><th>Attendance %</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="footer">TAMS — Teacher Attendance Management System &bull; Mikumbi Secondary School, Newala</div>
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  win.print();
 }
 
 </script>

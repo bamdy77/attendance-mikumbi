@@ -118,6 +118,7 @@ async function initDB() {
     // Add device_fingerprint column if it doesn't exist (existing databases)
     await client.query(`
       ALTER TABLE attendance ADD COLUMN IF NOT EXISTS device_fingerprint TEXT;
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS late_reason TEXT;
     `);
 
     // Device registrations table — one device per day
@@ -354,11 +355,12 @@ app.post('/api/attendance', async (req, res) => {
       return res.status(409).json({ ok: false, error: `Tayari umesajili leo saa ${dupCheck.rows[0].time_str}` });
 
     // Save attendance
-    await pool.query(
-      `INSERT INTO attendance (teacher_id, teacher_name, subject, date, time_str, is_late, latitude, longitude, distance_m, ip_address, device_fingerprint)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP, deviceFingerprint || null]
+    const insertResult = await pool.query(
+      `INSERT INTO attendance (teacher_id, teacher_name, subject, date, time_str, is_late, latitude, longitude, distance_m, ip_address, device_fingerprint, late_reason)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP, deviceFingerprint || null, (late && req.body.lateReason) ? req.body.lateReason.trim().slice(0,200) : null]
     );
+    const attendanceId = insertResult.rows[0].id;
 
     // Save device registration
     if (deviceFingerprint) {
@@ -369,7 +371,7 @@ app.post('/api/attendance', async (req, res) => {
       `, [deviceFingerprint, teacher.id, teacherName, today]);
     }
 
-    res.json({ ok: true, isLate: late, teacherName, subject: teacher.subject, timeStr, dateStr, distanceM: Math.round(distance) });
+    res.json({ ok: true, isLate: late, teacherName, subject: teacher.subject, timeStr, dateStr, distanceM: Math.round(distance), attendanceId });
 
   } catch(e) {
     console.error(e);
@@ -462,6 +464,7 @@ app.get('/api/attendance/today', authMiddleware, async (req, res) => {
         role:        t.role,
         present:     !!rec,
         isLate:      rec ? !!rec.is_late : null,
+        lateReason:  rec ? rec.late_reason : null,
         timeStr:     rec ? rec.time_str : null,
         distanceM:   rec ? rec.distance_m : null,
       };
@@ -608,6 +611,76 @@ app.delete('/api/announcements/:id', authMiddleware, async (req, res) => {
     await pool.query('UPDATE announcements SET is_active=0 WHERE id=$1', [id]);
     res.json({ ok: true, message: 'Tangazo limefutwa' });
   } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/attendance/late-reason — update late reason after signing in
+app.post('/api/attendance/late-reason', async (req, res) => {
+  const { attendanceId, reason } = req.body;
+  if (!attendanceId || !reason || !reason.trim())
+    return res.status(400).json({ error: 'Missing fields' });
+  try {
+    await pool.query(
+      'UPDATE attendance SET late_reason=$1 WHERE id=$2 AND is_late=1',
+      [reason.trim().slice(0, 200), attendanceId]
+    );
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /api/attendance/monthly-summary — admin only
+app.get('/api/attendance/monthly-summary', authMiddleware, async (req, res) => {
+  const { year, month } = req.query;
+  const tz = 'Africa/Dar_es_Salaam';
+
+  // Default to current month in Tanzania
+  const now  = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+  const y    = parseInt(year)  || now.getFullYear();
+  const m    = parseInt(month) || (now.getMonth() + 1);
+  const from = `${y}-${String(m).padStart(2,'0')}-01`;
+  const to   = `${y}-${String(m).padStart(2,'0')}-${new Date(y, m, 0).getDate()}`;
+
+  try {
+    const teachers = await pool.query(
+      'SELECT id, first_name, middle_name, last_name, subject, role FROM teachers WHERE is_active=1 ORDER BY id'
+    );
+    const records = await pool.query(
+      'SELECT teacher_id, date, is_late, late_reason FROM attendance WHERE date>=$1 AND date<=$2',
+      [from, to]
+    );
+
+    // Working days in the month (Mon-Fri only)
+    const workingDays = [];
+    const d = new Date(y, m-1, 1);
+    while (d.getMonth() === m-1) {
+      if (d.getDay() !== 0 && d.getDay() !== 6) workingDays.push(d.toISOString().split('T')[0]);
+      d.setDate(d.getDate()+1);
+    }
+
+    const summary = teachers.rows.map(t => {
+      const trecs   = records.rows.filter(r => r.teacher_id === t.id);
+      const onTime  = trecs.filter(r => !r.is_late).length;
+      const late    = trecs.filter(r => r.is_late).length;
+      const present = trecs.length;
+      const absent  = workingDays.length - present;
+      const pct     = workingDays.length > 0 ? Math.round(present / workingDays.length * 100) : 0;
+      return {
+        id:          t.id,
+        name:        `${t.first_name} ${t.middle_name} ${t.last_name}`,
+        subject:     t.subject,
+        role:        t.role,
+        onTime, late, present, absent,
+        workingDays: workingDays.length,
+        attendancePct: pct,
+      };
+    });
+
+    res.json({ year: y, month: m, from, to, workingDays: workingDays.length, summary });
+  } catch(e) {
+    console.error(e);
     res.status(500).json({ error: 'Server error' });
   }
 });

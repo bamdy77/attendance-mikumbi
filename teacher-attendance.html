@@ -794,6 +794,66 @@
     font-size: 13px;
   }
 
+
+  /* ── LATE REASON ── */
+  .late-reason-wrap {
+    margin-top: 18px;
+    background: #fffbeb;
+    border: 1.5px solid #f59e0b;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .late-reason-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #b45309;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .late-reason-input {
+    width: 100%;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: #ffffff;
+    resize: none;
+    outline: none;
+    transition: border 0.2s;
+    box-sizing: border-box;
+  }
+
+  .late-reason-input:focus { border-color: #f59e0b; }
+  .late-reason-input::placeholder { color: #94a3b8; }
+
+  .late-reason-submit {
+    width: 100%;
+    margin-top: 10px;
+    background: #f59e0b;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .late-reason-submit:hover { background: #d97706; }
+  .late-reason-submitted {
+    font-size: 12px;
+    color: #16a34a;
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
 </style>
 </head>
 <body>
@@ -987,7 +1047,15 @@
       LATE
     </div>
     <div class="result-details" id="detailsLate"></div>
-    <button class="btn-reset" onclick="resetForm()">
+    <div class="late-reason-wrap" id="lateReasonWrap">
+      <div class="late-reason-label">Reason for being late</div>
+      <textarea class="late-reason-input" id="lateReasonInput" rows="3" maxlength="200" placeholder="Please explain why you were late..."></textarea>
+      <button class="late-reason-submit" onclick="submitLateReason()">Submit Reason</button>
+      <div class="late-reason-submitted" id="lateReasonDone" style="display:none;">
+        Reason submitted successfully.
+      </div>
+    </div>
+    <button class="btn-reset" onclick="resetForm()" style="margin-top:12px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Go Back
     </button>
@@ -1485,6 +1553,15 @@ async function startAttendance() {
     `;
 
     if (data.isLate) {
+      // Save attendanceId for late reason submission
+      lateAttendanceId = data.attendanceId || null;
+      // Reset late reason form
+      const input   = document.getElementById('lateReasonInput');
+      const doneMsg = document.getElementById('lateReasonDone');
+      const btn     = document.querySelector('#lateReasonWrap .late-reason-submit');
+      if (input)   { input.value = ''; input.disabled = false; input.style.borderColor = ''; }
+      if (doneMsg) doneMsg.style.display = 'none';
+      if (btn)     btn.style.display = 'block';
       document.getElementById('detailsLate').innerHTML = detailsHTML;
       showResult('resultLate');
     } else {
@@ -1530,6 +1607,37 @@ function showError(title, msg, type) {
     iconLock.style.display = 'none';
   }
   showResult('resultError');
+}
+
+// ── LATE REASON ──
+let lateAttendanceId = null;
+
+async function submitLateReason() {
+  const input  = document.getElementById('lateReasonInput');
+  const reason = input.value.trim();
+  if (!reason) {
+    input.style.borderColor = '#e74c3c';
+    return;
+  }
+  if (!lateAttendanceId) return;
+  try {
+    const res = await fetch('/api/attendance/late-reason', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ attendanceId: lateAttendanceId, reason })
+    });
+    if (res.ok) {
+      input.disabled = true;
+      const btn = document.querySelector('#lateReasonWrap .late-reason-submit');
+      if (btn) btn.style.display = 'none';
+      document.getElementById('lateReasonDone').style.display = 'block';
+      lateAttendanceId = null;
+    } else {
+      input.style.borderColor = '#e74c3c';
+    }
+  } catch(e) {
+    console.error('Failed to submit late reason', e);
+  }
 }
 
 function resetForm() {
