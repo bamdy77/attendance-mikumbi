@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a3d62">
+<meta name="theme-color" content="#0C4767">
 <title>TAMS</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #1a398e;
+    --primary: #0C4767;
     --primary-light: #08055d;
     --accent: #27ae60;
     --danger: #c0392b;
@@ -35,7 +35,7 @@
 
   /* ── HEADER ── */
   .header {
-    background: #1a398e;
+    background: #0C4767;
     padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 3px 14px rgba(0,0,0,0.3);
@@ -402,7 +402,7 @@
   .login-page {
     min-height: 100vh; display: flex;
     align-items: center; justify-content: center;
-    background: #1a398e;
+    background: #0C4767;
     padding: 20px;
   }
 
@@ -476,7 +476,7 @@
 
   .btn-login {
     width: 100%; padding: 14px;
-    background: #1a398e;
+    background: #0C4767;
     color: white; border: none; border-radius: 10px;
     font-size: 15px; font-weight: 700; font-family: 'Inter', Arial, sans-serif;
     cursor: pointer; margin-top: 6px;
@@ -485,7 +485,7 @@
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
 
-  .btn-login:hover { background: #1a398e; }
+  .btn-login:hover { background: #0C4767; }
   .btn-login:active { transform: scale(0.98); }
 
   .login-error {
@@ -690,7 +690,7 @@
     </div>
 
     <div class="login-school-name">Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala</div>
-    <h1>HOS Dashboard</h1>
+    <h1 style="color:#0C4767;">HOS Dashboard</h1>
     <p class="login-subtitle">Teacher Attendance Management System</p>
 
     <div class="login-field">
@@ -741,7 +741,7 @@
   </div>
 
   <div class="header-center">
-    <h1>HOS Dashboard &mdash; Attendance</h1>
+    <h1 style="color:#0C4767;">HOS Dashboard &mdash; Attendance</h1>
     <p>Mikumbi Secondary School &nbsp;&bull;&nbsp; Newala &nbsp;&bull;&nbsp; <span id="headerDate">---</span></p>
   </div>
 
@@ -1317,9 +1317,23 @@
 
 <script>
 // ============================================================
+// SECURITY — XSS sanitizer
+// ============================================================
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ============================================================
 // DATA
 // ============================================================
 // Teachers data comes from API only — no local array needed
+const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
 let TEACHERS_DB = []; // populated from API in loadTeachersTable()
 
 // Admin credentials verified server-side only
@@ -1370,6 +1384,7 @@ async function doLogin() {
       document.getElementById('loginPage').style.display = 'none';
       document.getElementById('dashboardPage').style.display = 'flex';
       document.getElementById('adminName').textContent = data.name || 'Head of School';
+      loadSettings();
       initDashboard();
     } else {
       errEl.className = 'login-error show';
@@ -1435,13 +1450,27 @@ function setTodayDates() {
   document.getElementById('todayDateLabel').textContent = `${nowTZ.getDate()} ${months[nowTZ.getMonth()]} ${nowTZ.getFullYear()}`;
 }
 
-// ============================================================
-// API BASE URL
-// ============================================================
-const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
 
 function getToken() {
   return sessionStorage.getItem('admin_token') || '';
+}
+
+// Fetch wrapper — ikigonga 401 (token imeisha), rudisha login moja kwa moja
+async function authFetch(url, options = {}) {
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + getToken(),
+      ...(options.headers || {}),
+    }
+  });
+  if (res.status === 401) {
+    showToast('Muda wa kikao umeisha. Ingia tena.', 'error');
+    setTimeout(() => doLogout(), 1500);
+    throw new Error('Unauthorized');
+  }
+  return res;
 }
 
 // ============================================================
@@ -1456,7 +1485,7 @@ async function refreshTodayData() {
   if (!token) return;
 
   try {
-    const res = await fetch(`${API_BASE}/api/attendance/today`, {
+    const res = await authFetch(`${API_BASE}/api/attendance/today`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -1503,18 +1532,18 @@ function renderTodayFromAPI(data) {
         : `<span class="badge badge-present">ON TIME</span>`;
       return `<tr>
         <td>${i+1}</td>
-        <td><div class="teacher-name">${t.teacherName}</div><div class="teacher-subject">${t.subject}</div></td>
-        <td>${t.subject}</td>
+        <td><div class="teacher-name">${esc(t.teacherName)}</div><div class="teacher-subject">${esc(t.subject)}</div></td>
+        <td>${esc(t.subject)}</td>
         <td>${status}</td>
-        <td><span class="time-badge">${t.timeStr}</span></td>
+        <td><span class="time-badge">${esc(t.timeStr)}</span></td>
         <td style="font-size:11px;color:var(--muted);">Present</td>
         <td style="font-size:12px;color:var(--muted);">${t.distanceM ? t.distanceM+'m' : '—'}</td>
       </tr>`;
     } else {
       return `<tr>
         <td>${i+1}</td>
-        <td><div class="teacher-name">${t.teacherName}</div><div class="teacher-subject">${t.subject}</div></td>
-        <td>${t.subject}</td>
+        <td><div class="teacher-name">${esc(t.teacherName)}</div><div class="teacher-subject">${esc(t.subject)}</div></td>
+        <td>${esc(t.subject)}</td>
         <td><span class="badge badge-absent">ABSENT</span></td>
         <td><span style="color:var(--muted);font-size:12px;">—</span></td>
         <td style="font-size:11px;color:var(--muted);">Not signed in</td>
@@ -1569,7 +1598,7 @@ async function loadHistoryData() {
       const badge = r.is_late
         ? `<span class="badge badge-late">LATE</span>`
         : `<span class="badge badge-ontime">ON TIME</span>`;
-      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${esc(r.date)}</td><td>${esc(r.teacher_name)}</td><td>${esc(r.subject)||'—'}</td><td>${badge}</td><td><span class="time-badge">${esc(r.time_str)}</span></td></tr>`;
     }).join('');
 
   } catch(e) {
@@ -1585,7 +1614,7 @@ async function loadTeachersTable() {
   const tbody = document.getElementById('teachersTableBody');
 
   try {
-    const res = await fetch(`${API_BASE}/api/teachers`, {
+    const res = await authFetch(`${API_BASE}/api/teachers`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -1606,13 +1635,13 @@ async function loadTeachersTable() {
     tbody.innerHTML = teachers.map((t, i) => `
       <tr>
         <td>${i+1}</td>
-        <td><div class="teacher-name">${t.first_name} ${t.middle_name} ${t.last_name}</div></td>
-        <td>${t.subject}</td>
-        <td>${t.role || 'Teacher'}</td>
+        <td><div class="teacher-name">${esc(t.first_name)} ${esc(t.middle_name)} ${esc(t.last_name)}</div></td>
+        <td>${esc(t.subject)}</td>
+        <td>${esc(t.role) || 'Teacher'}</td>
         <td><span style="color:var(--accent);font-weight:700;">—</span></td>
         <td>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn" style="padding:5px 10px;font-size:11px;background:#eff6ff;color:#1a398e;border:1px solid #bfdbfe;" onclick="openResetModal(${t.id}, '${t.first_name} ${t.middle_name} ${t.last_name}')">
+            <button class="btn" style="padding:5px 10px;font-size:11px;background:#eff6ff;color:#0C4767;border:1px solid #bfdbfe;" onclick="openResetModal(${t.id}, '${esc(t.first_name)} ${esc(t.middle_name)} ${esc(t.last_name)}')">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Reset
             </button>
@@ -1644,7 +1673,7 @@ async function addTeacher() {
 
   const token = getToken();
   try {
-    const res = await fetch(`${API_BASE}/api/teachers`, {
+    const res = await authFetch(`${API_BASE}/api/teachers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1661,6 +1690,7 @@ async function addTeacher() {
     showToast(`${fn} ${mn} ${ln} added successfully`,'success');
 
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     showToast('Network error. Please try again.','error');
   }
 }
@@ -1669,7 +1699,7 @@ async function deleteTeacher(id) {
   if (!confirm('Are you sure you want to delete this teacher?')) return;
   const token = getToken();
   try {
-    const res = await fetch(`${API_BASE}/api/teachers/${id}`, {
+    const res = await authFetch(`${API_BASE}/api/teachers/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -1679,6 +1709,7 @@ async function deleteTeacher(id) {
     showToast('Teacher deleted','error');
 
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     showToast('Network error. Please try again.','error');
   }
 }
@@ -1712,7 +1743,7 @@ async function changeAdminPassword() {
 
   try {
     const token = sessionStorage.getItem('admin_token');
-    const res = await fetch(`${API_BASE}/api/admin/change-password`, {
+    const res = await authFetch(`${API_BASE}/api/admin/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1733,6 +1764,7 @@ async function changeAdminPassword() {
       showPwAlert(data.error || 'Failed to change password.','error');
     }
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     showPwAlert('Network error. Please try again.','error');
   }
 }
@@ -1776,7 +1808,7 @@ async function getExportRecords(period) {
     to   = document.getElementById('exportTo').value;
   }
   try {
-    const res = await fetch(`${API_BASE}/api/attendance/range?from=${from}&to=${to}`, {
+    const res = await authFetch(`${API_BASE}/api/attendance/range?from=${from}&to=${to}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) return [];
@@ -1801,7 +1833,7 @@ async function exportToPDF(period) {
   if (!records.length) { showToast('No records to export','error'); return; }
   const now = new Date();
   const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p></body></html>`;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0C4767;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0C4767;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p></body></html>`;
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.print();
   showToast('PDF ready to print','success');
@@ -1817,7 +1849,8 @@ function downloadFile(content, filename, type) {
 // SETTINGS
 // ============================================================
 function saveSettings() {
-  sessionStorage.setItem('school_settings', JSON.stringify({
+  // localStorage inahifadhi data hata browser ikifungwa — tofauti na sessionStorage
+  localStorage.setItem('tams_school_settings', JSON.stringify({
     lat:      document.getElementById('setLat').value,
     lng:      document.getElementById('setLng').value,
     mac:      document.getElementById('setMAC').value,
@@ -1825,7 +1858,21 @@ function saveSettings() {
     start:    document.getElementById('setStart').value,
     deadline: document.getElementById('setDeadline').value,
   }));
-  showToast('Settings saved successfully','success');
+  showToast('Settings saved','success');
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem('tams_school_settings');
+    if (!saved) return;
+    const s = JSON.parse(saved);
+    if (s.lat)      document.getElementById('setLat').value      = s.lat;
+    if (s.lng)      document.getElementById('setLng').value      = s.lng;
+    if (s.mac)      document.getElementById('setMAC').value      = s.mac;
+    if (s.ssid)     document.getElementById('setSSID').value     = s.ssid;
+    if (s.start)    document.getElementById('setStart').value    = s.start;
+    if (s.deadline) document.getElementById('setDeadline').value = s.deadline;
+  } catch(e) { /* ignore */ }
 }
 
 // ============================================================
@@ -1856,7 +1903,7 @@ function showToast(msg, type='') {
 async function loadAdminAnnouncements() {
   const token = sessionStorage.getItem('admin_token');
   try {
-    const res  = await fetch(`${API_BASE}/api/announcements`, {
+    const res  = await authFetch(`${API_BASE}/api/announcements`, {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     const data = await res.json();
@@ -1876,8 +1923,8 @@ async function loadAdminAnnouncements() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           </div>
           <div class="ann-list-content">
-            <div class="ann-list-title">${a.title}</div>
-            <div class="ann-list-msg">${a.message}</div>
+            <div class="ann-list-title">${esc(a.title)}</div>
+            <div class="ann-list-msg">${esc(a.message)}</div>
             <div class="ann-list-meta">Imetumwa: ${dateStr} &bull; Inaisha: ${expStr}</div>
           </div>
           <button class="ann-del-btn" onclick="deleteAnnouncement(${a.id})">
@@ -1908,7 +1955,7 @@ async function sendAnnouncement() {
   }
 
   try {
-    const res  = await fetch(`${API_BASE}/api/announcements`, {
+    const res  = await authFetch(`${API_BASE}/api/announcements`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body:    JSON.stringify({ title, message })
@@ -1928,17 +1975,15 @@ async function sendAnnouncement() {
 }
 
 async function deleteAnnouncement(id) {
-  const token = sessionStorage.getItem('admin_token');
   if (!confirm('Una uhakika unataka kufuta tangazo hili?')) return;
   try {
-    const res = await fetch(`${API_BASE}/api/announcements/` + id, {
-      method:  'DELETE',
-      headers: { 'Authorization': 'Bearer ' + token }
+    const res = await authFetch(`${API_BASE}/api/announcements/` + id, {
+      method: 'DELETE',
     });
     if (res.ok) loadAdminAnnouncements();
     else showToast('Imeshindwa kufuta. Jaribu tena.', 'error');
   } catch(e) {
-    showToast('Imeshindwa kufuta. Jaribu tena.', 'error');
+    if (e.message !== 'Unauthorized') showToast('Imeshindwa kufuta. Jaribu tena.', 'error');
   }
 }
 
@@ -1972,7 +2017,7 @@ async function doResetPassword() {
 
   const token = getToken();
   try {
-    const res = await fetch(`${API_BASE}/api/teachers/${resetTeacherId}/reset-password`, {
+    const res = await authFetch(`${API_BASE}/api/teachers/${resetTeacherId}/reset-password`, {
       method:  'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body:    JSON.stringify({ newPassword: newPass })
@@ -1982,6 +2027,7 @@ async function doResetPassword() {
     closeResetModal();
     showToast('Password reset successfully', 'success');
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     showToast('Network error. Please try again.', 'error');
   }
 }
@@ -2011,7 +2057,7 @@ async function loadMonthlySummary() {
   tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
 
   try {
-    const res  = await fetch(`${API_BASE}/api/attendance/monthly-summary?year=${year}&month=${month}`, {
+    const res  = await authFetch(`${API_BASE}/api/attendance/monthly-summary?year=${year}&month=${month}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
@@ -2033,7 +2079,7 @@ async function loadMonthlySummary() {
         <td>${t.subject}</td>
         <td style="text-align:center;">${t.workingDays}</td>
         <td style="text-align:center;font-weight:700;color:#16a34a;">${t.present}</td>
-        <td style="text-align:center;color:#1a398e;">${t.onTime}</td>
+        <td style="text-align:center;color:#0C4767;">${t.onTime}</td>
         <td style="text-align:center;color:#f59e0b;">${t.late}</td>
         <td style="text-align:center;color:#dc2626;">${t.absent}</td>
         <td>
@@ -2043,6 +2089,7 @@ async function loadMonthlySummary() {
       </tr>`;
     }).join('');
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted);">Network error. Try again.</td></tr>';
   }
 }
@@ -2072,7 +2119,7 @@ function exportMonthlySummaryPDF() {
       <td>${t.role}</td>
       <td style="text-align:center;">${workingDays}</td>
       <td style="text-align:center;color:#16a34a;font-weight:700;">${t.present}</td>
-      <td style="text-align:center;color:#1a398e;">${t.onTime}</td>
+      <td style="text-align:center;color:#0C4767;">${t.onTime}</td>
       <td style="text-align:center;color:#f59e0b;">${t.late}</td>
       <td style="text-align:center;color:#dc2626;">${t.absent}</td>
       <td style="text-align:center;font-weight:700;color:${t.attendancePct>=80?'#16a34a':t.attendancePct>=60?'#f59e0b':'#dc2626'}">${t.attendancePct}%</td>
@@ -2082,11 +2129,11 @@ function exportMonthlySummaryPDF() {
     <title>Monthly Summary — ${monthName} ${year}</title>
     <style>
       body { font-family: Arial, sans-serif; padding: 30px; color: #1e293b; }
-      h1 { font-size: 20px; color: #1a398e; margin: 0; }
+      h1 { font-size: 20px; color: #0C4767; margin: 0; }
       h2 { font-size: 14px; font-weight: normal; color: #64748b; margin: 4px 0 20px; }
       .meta { font-size: 11px; color: #94a3b8; margin-bottom: 20px; }
       table { width: 100%; border-collapse: collapse; font-size: 12px; }
-      th { background: #1a398e; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+      th { background: #0C4767; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
       td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
       tr:nth-child(even) td { background: #f8fafc; }
       .footer { margin-top: 30px; font-size: 10px; color: #94a3b8; text-align: center; }

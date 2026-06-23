@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a398e">
+<meta name="theme-color" content="#0C4767">
 <title>TAMS</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #1a398e;
-    --primary-light: #1a398e;
+    --primary: #0C4767;
+    --primary-light: #0C4767;
     --accent: #27ae60;
     --accent-dark: #1e8449;
     --danger: #c0392b;
@@ -43,7 +43,7 @@
 
   /* ── HEADER ── */
   .header {
-    background: linear-gradient(160deg, #0f2166 0%, #1a398e 50%, #1e4db7 100%);
+    background: linear-gradient(160deg, #0a2e47 0%, #0C4767 50%, #0d5a8a 100%);
     box-shadow: 0 2px 20px rgba(10,25,80,0.4);
     position: sticky;
     top: 0;
@@ -248,7 +248,7 @@
 
   /* ── DEADLINE CARD ── */
   .deadline-notice {
-    background: linear-gradient(135deg, #1a398e, #1a398e);
+    background: linear-gradient(135deg, #0C4767, #0C4767);
     color: white; border-radius: 14px;
     padding: 12px 16px; margin-bottom: 14px;
     display: flex; align-items: center; gap: 12px;
@@ -291,7 +291,7 @@
 
   .form-card-header .card-icon {
     width: 38px; height: 38px;
-    background: linear-gradient(135deg, #1a398e, #1a398e);
+    background: linear-gradient(135deg, #0C4767, #0C4767);
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
@@ -343,7 +343,7 @@
     align-items: flex-start; gap: 9px; line-height: 1.5;
   }
 
-  .alert-info { background: #eaf4fb; color: #1a398e; border: 1px solid #aed6f1; }
+  .alert-info { background: #eaf4fb; color: #0C4767; border: 1px solid #aed6f1; }
   .alert-icon { flex-shrink: 0; margin-top: 1px; }
 
   /* ── FORGOT PASSWORD ── */
@@ -392,7 +392,7 @@
   /* ── SUBMIT BUTTON ── */
   .btn-submit {
     width: 100%; padding: 14px;
-    background: #1a398e;
+    background: #0C4767;
     color: white; border: none; border-radius: 12px;
     font-size: 15px; font-weight: 700;
     font-family: 'Roboto', sans-serif;
@@ -401,10 +401,8 @@
     box-shadow: 0 4px 14px rgba(10,61,98,0.3);
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  button:hover {
-    background:#1e8449;
-  }
 
+  .btn-submit:hover { background: #093d57; }
   .btn-submit:active { transform: scale(0.97); }
   .btn-submit:disabled { background: #b0bec5; box-shadow: none; cursor: not-allowed; }
 
@@ -538,7 +536,7 @@
   /* ── OVERLAY ── */
   .overlay {
     display: none; position: fixed; inset: 0;
-    background: #1a398e; z-index: 200;
+    background: #0C4767; z-index: 200;
     align-items: center; justify-content: center;
     flex-direction: column; gap: 16px;
   }
@@ -616,7 +614,7 @@
 
   .btn-modal-next {
     padding: 9px 18px;
-    background:#1a398e;
+    background:#0C4767;
     color: white; border: none; border-radius: 8px;
     font-size: 13px; font-weight: 700;
     cursor: pointer; font-family: 'Roboto', sans-serif;
@@ -1621,7 +1619,7 @@ async function submitLateReason() {
   }
   if (!lateAttendanceId) return;
   try {
-    const res = await fetch('/api/attendance/late-reason', {
+    const res = await fetch('https://attendance-mikumbi-production.up.railway.app/api/attendance/late-reason', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ attendanceId: lateAttendanceId, reason })
@@ -1692,7 +1690,7 @@ async function openHistoryModal() {
   content.innerHTML = '<div class="hist-loading">Loading your records...</div>';
 
   try {
-    const res  = await fetch('/api/attendance/my-history', {
+    const res  = await fetch('https://attendance-mikumbi-production.up.railway.app/api/attendance/my-history', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ firstName: fn, middleName: mn, lastName: ln, password: pw })

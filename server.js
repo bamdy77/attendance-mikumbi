@@ -265,11 +265,53 @@ function authMiddleware(req, res, next) {
 }
 
 // ============================================================
+// RATE LIMITING — in-memory, no extra package needed
+// ============================================================
+const rateLimitStore = new Map();
+
+function rateLimit({ windowMs, max, keyFn }) {
+  return (req, res, next) => {
+    const key  = keyFn(req);
+    const now  = Date.now();
+    const hits = (rateLimitStore.get(key) || []).filter(t => now - t < windowMs);
+    hits.push(now);
+    rateLimitStore.set(key, hits);
+    if (hits.length > max) {
+      const retryAfter = Math.ceil((hits[0] + windowMs - now) / 1000);
+      return res.status(429).json({ error: `Majaribio mengi sana. Jaribu tena baada ya sekunde ${retryAfter}.` });
+    }
+    next();
+  };
+}
+
+// Safisha rateLimitStore kila dakika 5 ili kumbukumbu isijae
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, hits] of rateLimitStore.entries()) {
+    const fresh = hits.filter(t => now - t < 15 * 60 * 1000);
+    if (fresh.length === 0) rateLimitStore.delete(key);
+    else rateLimitStore.set(key, fresh);
+  }
+}, 5 * 60 * 1000);
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // dakika 15
+  max: 10,                   // majaribio 10 kwa dakika 15 kwa IP
+  keyFn: req => 'login:' + (req.headers['x-forwarded-for'] || req.socket.remoteAddress),
+});
+
+const attendanceLimiter = rateLimit({
+  windowMs: 60 * 1000, // dakika 1
+  max: 5,              // majaribio 5 kwa dakika kwa IP
+  keyFn: req => 'att:' + (req.headers['x-forwarded-for'] || req.socket.remoteAddress),
+});
+
+// ============================================================
 // API ROUTES
 // ============================================================
 
 // Admin Login
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Jaza sehemu zote' });
   try {
@@ -285,7 +327,7 @@ app.post('/api/admin/login', async (req, res) => {
 });
 
 // POST /api/attendance — Weka Mahudhurio
-app.post('/api/attendance', async (req, res) => {
+app.post('/api/attendance', attendanceLimiter, async (req, res) => {
   const { firstName, middleName, lastName, password, lat, lng, deviceFingerprint } = req.body;
 
   if (!firstName || !middleName || !lastName || !password)
