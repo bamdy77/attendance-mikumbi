@@ -373,6 +373,15 @@
   .empty-state h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .empty-state p { font-size: 13px; }
 
+  /* ── PRINT ── */
+  @media print {
+    .modal-backdrop { display: none !important; }
+    .header, .nav-tabs, .btn-group, .filter-bar, .toast { display: none !important; }
+    .content { padding: 0 !important; max-width: 100% !important; }
+    .tab-panel { display: block !important; }
+    .tab-panel:not(.active) { display: none !important; }
+  }
+
   /* ── TOAST ── */
   .toast {
     position: fixed; bottom: 24px; right: 24px;
@@ -489,7 +498,7 @@
 
   /* ── ANNOUNCEMENTS ── */
   .ann-form-card {
-    background: var(--white);
+    background: var(--card);
     border-radius: 14px;
     border: 1px solid var(--border);
     overflow: hidden;
@@ -877,7 +886,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th>Late Reason</th></tr>
+            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th></tr>
           </thead>
           <tbody id="historyTableBody">
             <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">Select date range to view history</td></tr>
@@ -1346,7 +1355,7 @@ async function doLogin() {
   btn.disabled = true;
 
   try {
-    const res = await fetch('/api/admin/login', {
+    const res = await fetch(`${API_BASE}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: u, password: p })
@@ -1374,6 +1383,11 @@ async function doLogin() {
 }
 
 function doLogout() {
+  sessionStorage.removeItem('admin_token');
+  sessionStorage.removeItem('admin_name');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').className = 'login-error';
   document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('dashboardPage').style.display = 'none';
 }
@@ -1511,8 +1525,11 @@ function renderTodayFromAPI(data) {
 }
 
 function renderTodayFromLocal() {
-  // Data comes from API — loadTodayData() handles this
-  loadTodayData();
+  // API unavailable — show empty state gracefully
+  const tbody = document.getElementById('todayTableBody');
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">Hakuna muunganisho. Jaribu tena.</td></tr>`;
+  }
 }
 
 // ============================================================
@@ -1526,7 +1543,7 @@ async function loadHistoryData() {
   const token         = getToken();
   const tbody         = document.getElementById('historyTableBody');
 
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>`;
 
   try {
     let url = API_BASE + '/api/attendance/range?from=' + from + '&to=' + to;
@@ -1544,7 +1561,7 @@ async function loadHistoryData() {
     else if (statusFilter === 'present') records = records.filter(r => !r.is_late);
 
     if (records.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>No Records Found</h3><p>No attendance records for the selected period</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="es-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>No Records Found</h3><p>No attendance records for the selected period</p></div></td></tr>`;
       return;
     }
 
@@ -1552,10 +1569,7 @@ async function loadHistoryData() {
       const badge = r.is_late
         ? `<span class="badge badge-late">LATE</span>`
         : `<span class="badge badge-ontime">ON TIME</span>`;
-      const reason = r.is_late && r.late_reason
-        ? `<span style="font-size:11px;color:#92400e;background:#fffbeb;padding:2px 8px;border-radius:6px;border:1px solid #fcd34d;">${r.late_reason}</span>`
-        : `<span style="color:var(--muted);font-size:12px;">—</span>`;
-      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td><td>${reason}</td></tr>`;
+      return `<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||'—'}</td><td>${badge}</td><td><span class="time-badge">${r.time_str}</span></td></tr>`;
     }).join('');
 
   } catch(e) {
@@ -1636,7 +1650,7 @@ async function addTeacher() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ firstName: fn, middleName: mn, lastName: ln, subject: sub, role: role||'Teacher', password: pass })
+      body: JSON.stringify({ firstName: fn, middleName: mn, lastName: ln, subject: sub, role: role||'Mwalimu', password: pass })
     });
 
     const data = await res.json();
@@ -1698,7 +1712,7 @@ async function changeAdminPassword() {
 
   try {
     const token = sessionStorage.getItem('admin_token');
-    const res = await fetch('/api/admin/change-password', {
+    const res = await fetch(`${API_BASE}/api/admin/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1787,34 +1801,7 @@ async function exportToPDF(period) {
   if (!records.length) { showToast('No records to export','error'); return; }
   const now = new Date();
   const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
-<!-- RESET PASSWORD MODAL -->
-<div class="modal-backdrop" id="resetPassModal">
-  <div class="modal">
-    <h2>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Reset Password
-    </h2>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Mwalimu: <strong id="resetTeacherName"></strong></p>
-    <div class="field-group">
-      <label>Password Mpya</label>
-      <input type="password" id="resetNewPass" placeholder="Weka password mpya" minlength="4">
-    </div>
-    <div class="field-group">
-      <label>Thibitisha Password</label>
-      <input type="password" id="resetConfPass" placeholder="Rudia password mpya">
-    </div>
-    <div style="display:flex;gap:10px;margin-top:8px;">
-      <button class="btn btn-primary" onclick="doResetPassword()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Badilisha
-      </button>
-      <button class="btn" onclick="closeResetModal()">Ghairi</button>
-    </div>
-  </div>
-</div>
-
-</body></html>`;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0a3d62;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0a3d62;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p></body></html>`;
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.print();
   showToast('PDF ready to print','success');
@@ -1869,7 +1856,7 @@ function showToast(msg, type='') {
 async function loadAdminAnnouncements() {
   const token = sessionStorage.getItem('admin_token');
   try {
-    const res  = await fetch('/api/announcements', {
+    const res  = await fetch(`${API_BASE}/api/announcements`, {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     const data = await res.json();
@@ -1921,7 +1908,7 @@ async function sendAnnouncement() {
   }
 
   try {
-    const res  = await fetch('/api/announcements', {
+    const res  = await fetch(`${API_BASE}/api/announcements`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body:    JSON.stringify({ title, message })
@@ -1944,7 +1931,7 @@ async function deleteAnnouncement(id) {
   const token = sessionStorage.getItem('admin_token');
   if (!confirm('Una uhakika unataka kufuta tangazo hili?')) return;
   try {
-    const res = await fetch('/api/announcements/' + id, {
+    const res = await fetch(`${API_BASE}/api/announcements/` + id, {
       method:  'DELETE',
       headers: { 'Authorization': 'Bearer ' + token }
     });

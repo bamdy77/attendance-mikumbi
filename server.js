@@ -35,7 +35,7 @@ app.use(cors({
     'https://attendance-mikumbi-production.up.railway.app',
     'http://localhost:8080',
   ],
-  methods: ['GET','POST','DELETE'],
+  methods: ['GET','POST','PUT','DELETE'],
   allowedHeaders: ['Content-Type','Authorization'],
 }));
 app.set('trust proxy', 1);
