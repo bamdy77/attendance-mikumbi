@@ -1120,92 +1120,17 @@
 <!-- RESET PASSWORD MODAL -->
 <div class="modal-backdrop" id="resetModal">
   <div class="modal">
-    <div class="modal-steps">
-      <div class="modal-step active" id="step1bar"></div>
-      <div class="modal-step" id="step2bar"></div>
-      <div class="modal-step" id="step3bar"></div>
+    <h3>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Forgot Password?
+    </h3>
+    <p class="modal-sub" style="margin-bottom:16px;">Password reset inafanywa na Admin wa shule peke yake. Wasiliana na Head of School kukuruhusu password yako mpya kupitia Admin Dashboard.</p>
+    <div class="modal-alert error show" style="margin-bottom:16px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Huwezi kubadilisha password yako mwenyewe. Tafadhali wasiliana na Admin.</span>
     </div>
-
-    <div id="resetStep1">
-      <h3>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Reset Password
-      </h3>
-      <p class="modal-sub">Step 1 of 3 — Verify your identity</p>
-      <div class="modal-alert error" id="resetErr1">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="resetErr1Msg">Name not found. Check spelling.</span>
-      </div>
-      <div class="modal-field">
-        <label>First Name</label>
-        <div class="input-wrap"><input type="text" id="rFN" placeholder="Your first name"></div>
-      </div>
-      <div class="modal-field">
-        <label>Middle Name</label>
-        <div class="input-wrap"><input type="text" id="rMN" placeholder="Your middle name"></div>
-      </div>
-      <div class="modal-field">
-        <label>Last Name</label>
-        <div class="input-wrap"><input type="text" id="rLN" placeholder="Your last name"></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-modal-cancel" onclick="closeResetModal()">Cancel</button>
-        <button class="btn-modal-next" onclick="resetStep1Next()">
-          Continue
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div id="resetStep2" style="display:none;">
-      <h3>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        New Password
-      </h3>
-      <p class="modal-sub">Step 2 of 3 — Set your new password</p>
-      <div class="modal-alert error" id="resetErr2">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="resetErr2Msg">Passwords do not match.</span>
-      </div>
-      <div class="modal-field">
-        <label>New Password</label>
-        <div class="input-wrap">
-          <input type="password" id="rNewPass" placeholder="At least 4 characters">
-          <button class="toggle-pw" type="button" onclick="togglePw('rNewPass','eyeR1','eyeOffR1')" tabindex="-1">
-            <svg id="eyeR1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eyeOffR1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="modal-field">
-        <label>Confirm Password</label>
-        <div class="input-wrap">
-          <input type="password" id="rConfPass" placeholder="Repeat new password">
-          <button class="toggle-pw" type="button" onclick="togglePw('rConfPass','eyeR2','eyeOffR2')" tabindex="-1">
-            <svg id="eyeR2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eyeOffR2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-modal-cancel" onclick="resetGoBack()">Back</button>
-        <button class="btn-modal-next" onclick="resetStep2Next()">
-          Save
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div id="resetStep3" style="display:none; text-align:center; padding:8px 0;">
-      <div class="success-circle">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <h3 style="justify-content:center; color:var(--accent); margin-bottom:6px;">Password Changed!</h3>
-      <p class="modal-sub" style="margin-bottom:18px;">Your new password has been saved.</p>
-      <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Done
-      </button>
+    <div class="modal-footer" style="justify-content:flex-end;">
+      <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">Sawa, Nimeelewa</button>
     </div>
   </div>
 </div>
@@ -1777,62 +1702,11 @@ function openResetModal() {
   ['rFN','rMN','rLN','rNewPass','rConfPass'].forEach(id =>
     document.getElementById(id).value = ''
   );
-  document.getElementById('resetErr1').className = 'modal-alert error';
-  document.getElementById('resetErr2').className = 'modal-alert error';
-  document.getElementById('resetStep1').style.display = 'block';
-  document.getElementById('resetStep2').style.display = 'none';
-  document.getElementById('resetStep3').style.display = 'none';
-  document.getElementById('step1bar').className = 'modal-step active';
-  document.getElementById('step2bar').className = 'modal-step';
-  document.getElementById('step3bar').className = 'modal-step';
   document.getElementById('resetModal').className = 'modal-backdrop show';
 }
 
 function closeResetModal() {
   document.getElementById('resetModal').className = 'modal-backdrop';
-}
-
-function resetGoBack() {
-  document.getElementById('resetStep2').style.display = 'none';
-  document.getElementById('resetStep1').style.display = 'block';
-  document.getElementById('step1bar').className = 'modal-step active';
-  document.getElementById('step2bar').className = 'modal-step';
-}
-
-function resetStep1Next() {
-  const fn = document.getElementById('rFN').value.trim().toUpperCase();
-  const mn = document.getElementById('rMN').value.trim().toUpperCase();
-  const ln = document.getElementById('rLN').value.trim().toUpperCase();
-  if (!fn || !mn || !ln) {
-    document.getElementById('resetErr1Msg').textContent = 'Please fill in all three names.';
-    document.getElementById('resetErr1').className = 'modal-alert error show';
-    return;
-  }
-  // Password reset must be handled by Admin — inform the teacher
-  document.getElementById('resetErr1Msg').textContent =
-    'To reset your password, please contact the school Admin. The administrator can reset it from the admin dashboard.';
-  document.getElementById('resetErr1').className = 'modal-alert error show';
-}
-
-function resetStep2Next() {
-  const np = document.getElementById('rNewPass').value.trim();
-  const cp = document.getElementById('rConfPass').value.trim();
-  if (np.length < 4) {
-    document.getElementById('resetErr2Msg').textContent = 'Password must be at least 4 characters.';
-    document.getElementById('resetErr2').className = 'modal-alert error show';
-    return;
-  }
-  if (np !== cp) {
-    document.getElementById('resetErr2Msg').textContent = 'Passwords do not match. Try again.';
-    document.getElementById('resetErr2').className = 'modal-alert error show';
-    return;
-  }
-  // NOTE: Password reset for teachers must be done by Admin via admin-dashboard.
-  // Teachers cannot reset their own password from this page — it would not update
-  // the PostgreSQL database. Show a friendly message instead.
-  document.getElementById('resetErr2Msg').textContent =
-    'Password reset must be done by the school Admin. Please contact the administrator.';
-  document.getElementById('resetErr2').className = 'modal-alert error show';
 }
 
 // ============================================================

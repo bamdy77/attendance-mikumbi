@@ -310,6 +310,58 @@
     .content { padding: 14px 12px; }
     .header { padding: 10px 12px; }
     .header-center h1 { font-size: 14px; }
+
+    /* Stats grid — 2 columns on phone */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { padding: 14px 12px; }
+    .stat-value { font-size: 22px; }
+
+    /* Nav tabs — scroll horizontally, don't wrap */
+    .nav-tabs { gap: 0; padding: 0 4px; }
+    .nav-tab { font-size: 11px; padding: 12px 10px; white-space: nowrap; flex-shrink: 0; }
+
+    /* Filter bar — stack vertically */
+    .filter-bar { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 12px; }
+    .filter-bar label { margin-bottom: 0; }
+    .filter-bar input[type="date"],
+    .filter-bar select { width: 100%; font-size: 13px; }
+
+    /* Btn group — stack on mobile */
+    .btn-group { flex-direction: column; gap: 6px; }
+    .btn-group .btn { width: 100%; justify-content: center; font-size: 12px; }
+
+    /* Tables — reduce font and padding */
+    table th, table td { font-size: 11px; padding: 8px 6px; }
+
+    /* Hide less important table columns on phone */
+    table th:nth-child(7), table td:nth-child(7),  /* Distance */
+    table th:nth-child(6), table td:nth-child(6) { display: none; } /* Remark */
+
+    /* Header — hide date on very small screens */
+    #headerDate { display: none; }
+
+    /* Section headers */
+    .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .section-header .btn-group { width: 100%; }
+
+    /* Monthly summary controls — wrap */
+    .monthly-controls { flex-wrap: wrap; gap: 8px; }
+    .monthly-controls select,
+    .monthly-controls button { flex: 1; min-width: 120px; }
+
+    /* Card padding */
+    .card { padding: 14px 12px; }
+    .ann-form-card { padding: 14px 12px; }
+
+    /* Modal full width on phone */
+    .modal { padding: 18px 14px; border-radius: 12px; }
+  }
+
+  @media (max-width: 400px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .stat-value { font-size: 20px; }
+    .nav-tab { font-size: 10px; padding: 10px 8px; }
+    table th, table td { font-size: 10px; padding: 6px 4px; }
   }
 
   /* ── SETTINGS SECTION ── */
@@ -1319,6 +1371,16 @@
 // ============================================================
 // SECURITY — XSS sanitizer
 // ============================================================
+// Sanitize strings for CSV — kuzuia formula injection kwenye Excel
+function csvSafe(val) {
+  const s = String(val === null || val === undefined ? '' : val);
+  // Ikiwa inaanza na = + - @ au TAB/CR, ongeza apostrophe mbele
+  if (/^[=+\-@\t\r]/.test(s)) return `'${s}`;
+  // Quote fields zenye comma, quote, au newline
+  if (/[,"\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
 function esc(str) {
   if (str === null || str === undefined) return '';
   return String(str)
@@ -1334,9 +1396,11 @@ function esc(str) {
 // ============================================================
 // Teachers data comes from API only — no local array needed
 const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
-let TEACHERS_DB = []; // populated from API in loadTeachersTable()
+let TEACHERS_DB = [];
 
-// Admin credentials verified server-side only
+// Interval handles — kuzuia leak wakati admin akiingia mara nyingi
+let _refreshInterval = null;
+let _clockInterval   = null;
 
 // ============================================================
 // LOGIN
@@ -1427,8 +1491,11 @@ function initDashboard() {
   loadTeachersTable();
   setTodayDates();
   populateTeacherSelects();
-  setInterval(refreshTodayData, 30000);
-  setInterval(updateHeaderDate, 1000);
+  // Futa intervals za zamani kwanza — kuzuia leak kwa login nyingi
+  clearInterval(_refreshInterval);
+  clearInterval(_clockInterval);
+  _refreshInterval = setInterval(refreshTodayData, 30000);
+  _clockInterval   = setInterval(updateHeaderDate, 1000);
 }
 
 function updateHeaderDate() {
@@ -1460,7 +1527,6 @@ async function authFetch(url, options = {}) {
   const res = await fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + getToken(),
       ...(options.headers || {}),
     }
@@ -1485,9 +1551,7 @@ async function refreshTodayData() {
   if (!token) return;
 
   try {
-    const res = await authFetch(`${API_BASE}/api/attendance/today`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await authFetch(`${API_BASE}/api/attendance/today`);
 
     if (!res.ok) {
       // Token expired or error
@@ -1578,9 +1642,7 @@ async function loadHistoryData() {
     let url = API_BASE + '/api/attendance/range?from=' + from + '&to=' + to;
     if (teacherFilter) url += '&teacher_id=' + teacherFilter;
 
-    const res = await fetch(url, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
+    const res = await authFetch(url);
 
     if (!res.ok) throw new Error('API error');
 
@@ -1614,9 +1676,7 @@ async function loadTeachersTable() {
   const tbody = document.getElementById('teachersTableBody');
 
   try {
-    const res = await authFetch(`${API_BASE}/api/teachers`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await authFetch(`${API_BASE}/api/teachers`);
 
     if (!res.ok) throw new Error('API error');
     const teachers = await res.json();
@@ -1675,10 +1735,6 @@ async function addTeacher() {
   try {
     const res = await authFetch(`${API_BASE}/api/teachers`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
       body: JSON.stringify({ firstName: fn, middleName: mn, lastName: ln, subject: sub, role: role||'Mwalimu', password: pass })
     });
 
@@ -1701,7 +1757,6 @@ async function deleteTeacher(id) {
   try {
     const res = await authFetch(`${API_BASE}/api/teachers/${id}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (!res.ok) { showToast('Failed to delete teacher','error'); return; }
@@ -1745,10 +1800,6 @@ async function changeAdminPassword() {
     const token = sessionStorage.getItem('admin_token');
     const res = await authFetch(`${API_BASE}/api/admin/change-password`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
       body: JSON.stringify({ currentPassword: current, newPassword: newPw })
     });
 
@@ -1808,9 +1859,7 @@ async function getExportRecords(period) {
     to   = document.getElementById('exportTo').value;
   }
   try {
-    const res = await authFetch(`${API_BASE}/api/attendance/range?from=${from}&to=${to}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await authFetch(`${API_BASE}/api/attendance/range?from=${from}&to=${to}`);
     if (!res.ok) return [];
     return await res.json();
   } catch(e) { return []; }
@@ -1821,7 +1870,7 @@ async function exportToExcel(period) {
   if (!records.length) { showToast('No records to export','error'); return; }
   const rows = [
     ['#','Date','Full Name','Department','Time','Status','Distance(m)'],
-    ...records.map((r,i)=>[i+1, r.date, r.teacher_name, r.subject||'', r.time_str, r.is_late?'LATE':'ON TIME', r.distance_m||''])
+    ...records.map((r,i)=>[i+1, csvSafe(r.date), csvSafe(r.teacher_name), csvSafe(r.subject||''), csvSafe(r.time_str), r.is_late?'LATE':'ON TIME', r.distance_m||''])
   ];
   const csv = rows.map(r=>r.join(',')).join('\n');
   downloadFile(csv, `tams-attendance-${period}-${getTZDateStr()}.csv`, 'text/csv');
@@ -1834,7 +1883,11 @@ async function exportToPDF(period) {
   const now = new Date();
   const rows = records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.date}</td><td>${r.teacher_name}</td><td>${r.subject||''}</td><td>${r.time_str}</td><td class="${r.is_late?'late':'ontime'}">${r.is_late?'LATE':'ON TIME'}</td></tr>`).join('');
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TAMS Report</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1a2a3a;}h1{color:#0C4767;font-size:18px;}p.sub{color:#666;font-size:12px;margin-bottom:16px;}table{width:100%;border-collapse:collapse;font-size:12px;}th{background:#0C4767;color:white;padding:8px 10px;text-align:left;}td{padding:7px 10px;border-bottom:1px solid #e8edf2;}tr:nth-child(even)td{background:#f5f8fb;}.late{color:#c0392b;font-weight:700;}.ontime{color:#27ae60;font-weight:700;}.footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}</style></head><body><h1>TAMS — Attendance Report</h1><p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p><table><thead><tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Time</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p></body></html>`;
-  const w = window.open('','_blank');
+  const w = window.open('', '_blank');
+  if (!w) {
+    showToast('Popup imezuiwa. Ruhusu popups kwenye browser yako kisha jaribu tena.', 'error');
+    return;
+  }
   w.document.write(html); w.document.close(); w.print();
   showToast('PDF ready to print','success');
 }
@@ -1903,9 +1956,7 @@ function showToast(msg, type='') {
 async function loadAdminAnnouncements() {
   const token = sessionStorage.getItem('admin_token');
   try {
-    const res  = await authFetch(`${API_BASE}/api/announcements`, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
+    const res  = await authFetch(`${API_BASE}/api/announcements`);
     const data = await res.json();
     const list = document.getElementById('annList');
     if (!data || data.length === 0) {
@@ -1957,7 +2008,6 @@ async function sendAnnouncement() {
   try {
     const res  = await authFetch(`${API_BASE}/api/announcements`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body:    JSON.stringify({ title, message })
     });
     const data = await res.json();
@@ -2019,7 +2069,6 @@ async function doResetPassword() {
   try {
     const res = await authFetch(`${API_BASE}/api/teachers/${resetTeacherId}/reset-password`, {
       method:  'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body:    JSON.stringify({ newPassword: newPass })
     });
     const data = await res.json();
@@ -2057,9 +2106,7 @@ async function loadMonthlySummary() {
   tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
 
   try {
-    const res  = await authFetch(`${API_BASE}/api/attendance/monthly-summary?year=${year}&month=${month}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res  = await authFetch(`${API_BASE}/api/attendance/monthly-summary?year=${year}&month=${month}`);
     const data = await res.json();
     if (!res.ok) { showToast(data.error || 'Failed to load', 'error'); return; }
 
@@ -2099,7 +2146,7 @@ function exportMonthlySummaryExcel() {
   const { year, month, workingDays, summary } = lastMonthlySummary;
   const months = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
   const header = ['#','Full Name','Department','Role','Working Days','Present','On Time','Late','Absent','Attendance %'];
-  const rows   = summary.map((t,i) => [i+1, t.name, t.subject, t.role, workingDays, t.present, t.onTime, t.late, t.absent, t.attendancePct+'%']);
+  const rows   = summary.map((t,i) => [i+1, csvSafe(t.name), csvSafe(t.subject), csvSafe(t.role), workingDays, t.present, t.onTime, t.late, t.absent, t.attendancePct+'%']);
   const csv    = [header, ...rows].map(r => r.join(',')).join('\n');
   downloadFile(csv, `tams-monthly-summary-${months[month]}-${year}.csv`, 'text/csv');
 }
@@ -2154,6 +2201,10 @@ function exportMonthlySummaryPDF() {
   </body></html>`;
 
   const win = window.open('', '_blank');
+  if (!win) {
+    showToast('Popup imezuiwa. Ruhusu popups kwenye browser yako kisha jaribu tena.', 'error');
+    return;
+  }
   win.document.write(html);
   win.document.close();
   win.print();

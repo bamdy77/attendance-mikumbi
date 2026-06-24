@@ -39,25 +39,49 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch - serve from cache, fallback to network
+// Fetch strategy:
+// - HTML files → Network First (mabadiliko yanaonekana mara moja)
+// - Static assets (svg, json, icons) → Cache First (haraka)
 self.addEventListener('fetch', event => {
-  // Skip API calls - always go to network
+  // Skip API calls — always network
   if (event.request.url.includes('/api/')) return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response.ok && event.request.method === 'GET') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('/index.html');
-        }
-      });
-    })
-  );
+  const url = new URL(event.request.url);
+  const isHTML = event.request.destination === 'document' ||
+                 url.pathname.endsWith('.html') ||
+                 url.pathname === '/';
+
+  if (isHTML) {
+    // Network First — pata mpya kutoka server, cache kama backup
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => {
+          // Network imeshindwa — tumia cache kama backup (offline)
+          return caches.match(event.request).then(cached =>
+            cached || caches.match('/index.html')
+          );
+        })
+    );
+  } else {
+    // Cache First kwa assets (svg, icons, manifest)
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(response => {
+          if (response.ok && event.request.method === 'GET') {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        }).catch(() => null);
+      })
+    );
+  }
 });
