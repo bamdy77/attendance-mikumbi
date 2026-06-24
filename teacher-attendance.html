@@ -1124,13 +1124,13 @@
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       Forgot Password?
     </h3>
-    <p class="modal-sub" style="margin-bottom:16px;">Password reset inafanywa na Admin wa shule peke yake. Wasiliana na Head of School kukuruhusu password yako mpya kupitia Admin Dashboard.</p>
+    <p class="modal-sub" style="margin-bottom:16px;">Password reset inafanywa na Admin peke yake. Wasiliana na <strong>MKUU WA SHULE</strong> kukuruhusu password yako mpya.</p>
     <div class="modal-alert error show" style="margin-bottom:16px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>Huwezi kubadilisha password yako mwenyewe. Tafadhali wasiliana na Admin.</span>
+      <span>Huwezi kubadilisha password yako mwenyewe. Tafadhali wasiliana na Mkuu wa Shule.</span>
     </div>
     <div class="modal-footer" style="justify-content:flex-end;">
-      <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">Sawa, Nimeelewa</button>
+      <button class="btn-modal-next" style="width:100%; justify-content:center;" onclick="closeResetModal()">OK!</button>
     </div>
   </div>
 </div>
@@ -1642,31 +1642,31 @@ async function openHistoryModal() {
       <div class="hist-stats">
         <div class="hist-stat">
           <div class="hs-num">${summary.total}</div>
-          <div class="hs-label">Total Days</div>
+          <div class="hs-label">Siku 5 za Mwisho</div>
         </div>
         <div class="hist-stat">
           <div class="hs-num ontime">${summary.onTime}</div>
-          <div class="hs-label">On Time</div>
+          <div class="hs-label">Kwa Wakati</div>
         </div>
         <div class="hist-stat">
           <div class="hs-num late">${summary.late}</div>
-          <div class="hs-label">Late</div>
+          <div class="hs-label">Kuchelewa</div>
         </div>
       </div>
       <div id="histRecordsList">
         ${records.length === 0
-          ? '<div class="hist-empty">No attendance records found.</div>'
+          ? '<div class="hist-empty">Hakuna rekodi za mahudhurio bado.</div>'
           : records.map(r => {
               const [y,m,d] = r.date.split('-');
-              const dateStr = new Date(+y, +m-1, +d).toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+              const dateStr = new Date(`${y}-${m}-${d}T12:00:00+03:00`).toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
               return `
                 <div class="hist-record">
                   <div>
                     <div class="hist-record-date">${dateStr}</div>
                     <div class="hist-record-time">${r.time_str}</div>
-                    <div class="hist-record-dist">${r.distance_m}m from school</div>
+                    <div class="hist-record-dist">${r.distance_m}m kutoka shuleni</div>
                   </div>
-                  <span class="hist-badge ${r.is_late ? 'late' : 'ontime'}">${r.is_late ? 'LATE' : 'ON TIME'}</span>
+                  <span class="hist-badge ${r.is_late ? 'late' : 'ontime'}">${r.is_late ? 'KUCHELEWA' : 'KWA WAKATI'}</span>
                 </div>
               `;
             }).join('')
@@ -1713,9 +1713,6 @@ let resetTeacherFound = null;
 
 function openResetModal() {
   resetTeacherFound = null;
-  ['rFN','rMN','rLN','rNewPass','rConfPass'].forEach(id =>
-    document.getElementById(id).value = ''
-  );
   document.getElementById('resetModal').className = 'modal-backdrop show';
 }
 

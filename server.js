@@ -460,13 +460,13 @@ app.post('/api/attendance/my-history', async (req, res) => {
     if (!teacher || !bcrypt.compareSync(password, teacher.password_hash))
       return res.status(401).json({ error: 'Invalid credentials' });
 
-    // Get last 30 records
+    // Get last 5 records
     const records = await pool.query(`
       SELECT date, time_str, is_late, distance_m
       FROM attendance
       WHERE teacher_id = $1
       ORDER BY date DESC
-      LIMIT 10
+      LIMIT 5
     `, [teacher.id]);
 
     // Summary stats
