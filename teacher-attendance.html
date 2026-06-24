@@ -1152,6 +1152,15 @@ const CONFIG = {
   API_URL: 'https://attendance-mikumbi-production.up.railway.app/api/attendance',
 };
 
+// ============================================================
+// TIMEZONE — Tanzania (EAT, UTC+3) — simu zote zitatumia hii
+// ============================================================
+function getTZNow() {
+  // Rejesha Date iliyosahihishwa kwa Africa/Dar_es_Salaam
+  // bila kujali timezone ya simu ya mwalimu
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
+}
+
 
 // ============================================================
 // DEVICE FINGERPRINT — kifaa kimoja, mwalimu mmoja kwa siku
@@ -1186,7 +1195,7 @@ function getDeviceFingerprint() {
 // CLOCK & COUNTDOWN
 // ============================================================
 function updateClock() {
-  const now = new Date();
+  const now = getTZNow();
   document.getElementById('clock').textContent =
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1321,7 +1330,7 @@ function updateRequirements() {
   const mn  = document.getElementById('middleName').value.trim();
   const ln  = document.getElementById('lastName').value.trim();
   const pw  = document.getElementById('password').value.trim();
-  const now = new Date();
+  const now = getTZNow();
   const { start, close } = getTimePoints(now);
 
   setReq('req-names', fn && mn && ln);
@@ -1358,7 +1367,7 @@ async function startAttendance() {
   if (!fn || !mn || !ln) { showError('Incomplete Name','Please enter all three names.'); return; }
   if (!pw) { showError('Password Required','Please enter your password.'); return; }
 
-  const now = new Date();
+  const now = getTZNow();
   const { start, deadline, close } = getTimePoints(now);
 
   // Too early
@@ -1683,13 +1692,18 @@ document.getElementById('historyModal').addEventListener('click', function(e) {
 // FORMAT HELPERS
 // ============================================================
 function formatTime(d) {
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+  // Tumia Tanzania timezone — siyo local time ya device
+  return new Date(d).toLocaleString('en-GB', {
+    timeZone: 'Africa/Dar_es_Salaam',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  });
 }
 
 function formatDate(d) {
+  const tz  = new Date(new Date(d).toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
   const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  return `${days[tz.getDay()]}, ${tz.getDate()} ${months[tz.getMonth()]} ${tz.getFullYear()}`;
 }
 
 // ============================================================
