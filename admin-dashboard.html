@@ -307,45 +307,40 @@
 
   /* ── TABLET (641px – 1024px) ── */
   @media (min-width: 641px) and (max-width: 1024px) {
-    .content { padding: 18px 20px; }
-    .header { padding: 12px 20px; }
-    .header-center h1 { font-size: 16px; }
+    /* Content spacing */
+    .content { padding: 16px 18px; }
+    .header { padding: 12px 18px; }
+    .header-center h1 { font-size: 15px; }
     #headerDate { font-size: 11px; }
 
-    /* Stats — 2x2 grid kwa tablet */
-    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .stat-card { padding: 16px 14px; }
-    .stat-value { font-size: 26px; }
+    /* Stats — auto-fit handles this but ensure gap is comfortable */
+    .stats-grid { gap: 12px; }
+    .stat-card { padding: 14px 12px; }
+    .stat-value { font-size: 24px; }
 
-    /* Nav tabs — scroll bila kufikana mwisho */
+    /* Nav tabs — ensure horizontal scroll works */
     .nav-tabs { gap: 0; }
-    .nav-tab { font-size: 12px; padding: 14px 16px; white-space: nowrap; flex-shrink: 0; }
+    .nav-tab { font-size: 12px; padding: 13px 14px; white-space: nowrap; flex-shrink: 0; }
 
-    /* Filter bar — wrap kwa mistari miwili */
-    .filter-bar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+    /* Filter bar — wrap to two rows comfortably */
+    .filter-bar { flex-wrap: wrap; gap: 10px; padding: 12px 14px; }
     .filter-bar input[type="date"],
-    .filter-bar select { font-size: 13px; }
+    .filter-bar select { font-size: 13px; min-width: 140px; }
 
-    /* Tables — font kidogo ndogo */
+    /* Tables — comfortable on tablet */
     table th, table td { font-size: 12px; padding: 10px 8px; }
 
-    /* Section headers */
-    .section-header { flex-wrap: wrap; gap: 10px; }
-
-    /* Add teacher grid — 2 columns */
-    .add-grid { grid-template-columns: 1fr 1fr; }
-
-    /* Monthly controls wrap */
+    /* Monthly controls */
     .monthly-controls { flex-wrap: wrap; gap: 10px; }
 
-    /* Card padding */
-    .card { padding: 18px 16px; }
-    .ann-form-card { padding: 18px 16px; }
+    /* Cards */
+    .card { padding: 16px 14px; }
+    .ann-form-card { padding: 16px 14px; }
 
-    /* Modal narrower on tablet */
-    .modal { width: 520px; }
+    /* Modal */
+    .modal { width: 500px; }
 
-    /* Btn group stay horizontal */
+    /* Btn groups stay horizontal but wrap if needed */
     .btn-group { flex-wrap: wrap; }
   }
 
