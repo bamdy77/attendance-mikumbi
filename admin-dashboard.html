@@ -305,6 +305,50 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
   }
 
+  /* ── TABLET (641px – 1024px) ── */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .content { padding: 18px 20px; }
+    .header { padding: 12px 20px; }
+    .header-center h1 { font-size: 16px; }
+    #headerDate { font-size: 11px; }
+
+    /* Stats — 2x2 grid kwa tablet */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .stat-card { padding: 16px 14px; }
+    .stat-value { font-size: 26px; }
+
+    /* Nav tabs — scroll bila kufikana mwisho */
+    .nav-tabs { gap: 0; }
+    .nav-tab { font-size: 12px; padding: 14px 16px; white-space: nowrap; flex-shrink: 0; }
+
+    /* Filter bar — wrap kwa mistari miwili */
+    .filter-bar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+    .filter-bar input[type="date"],
+    .filter-bar select { font-size: 13px; }
+
+    /* Tables — font kidogo ndogo */
+    table th, table td { font-size: 12px; padding: 10px 8px; }
+
+    /* Section headers */
+    .section-header { flex-wrap: wrap; gap: 10px; }
+
+    /* Add teacher grid — 2 columns */
+    .add-grid { grid-template-columns: 1fr 1fr; }
+
+    /* Monthly controls wrap */
+    .monthly-controls { flex-wrap: wrap; gap: 10px; }
+
+    /* Card padding */
+    .card { padding: 18px 16px; }
+    .ann-form-card { padding: 18px 16px; }
+
+    /* Modal narrower on tablet */
+    .modal { width: 520px; }
+
+    /* Btn group stay horizontal */
+    .btn-group { flex-wrap: wrap; }
+  }
+
   @media (max-width: 640px) {
     .add-grid { grid-template-columns: 1fr; }
     .content { padding: 14px 12px; }

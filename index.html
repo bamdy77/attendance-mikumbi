@@ -819,6 +819,29 @@
     text-align: center;
   }
 
+  /* ── TABLET (641px – 1024px) ── */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .navbar { padding: 0 24px; }
+    .navbar-links { gap: 20px; }
+    .navbar-links a { font-size: 13px; }
+
+    .hero { padding: 70px 32px; }
+    .hero h1 { font-size: 36px; }
+    .hero p { font-size: 16px; }
+    .hero-stats { gap: 28px; }
+    .hero-stat-num { font-size: 26px; }
+
+    .features-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .access-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .about-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    section { padding: 56px 32px; }
+    .section-inner { padding: 0 8px; }
+
+    .footer-inner { padding: 28px 32px; }
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     .navbar-links { display: none; }
