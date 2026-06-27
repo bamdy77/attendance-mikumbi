@@ -979,7 +979,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th class="no-print">Sababu ya Kuchelewa</th></tr>
+            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th class="no-print">Late Reason</th></tr>
           </thead>
           <tbody id="historyTableBody">
             <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">Select date range to view history</td></tr>
@@ -1164,10 +1164,10 @@
           <label style="font-size:12px;font-weight:600;color:var(--muted);">Month:</label>
           <select id="summaryMonth">
             <option value="1">January</option><option value="2">February</option>
-            <option value="3">March</option><option value="4">April</option>
-            <option value="5">May</option><option value="6">June</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
             <option value="7">July</option><option value="8">August</option>
-            <option value="9">September</option><option value="10">October</option>
+          <option value="9">September</option><option value="10">October</option>
             <option value="11">November</option><option value="12">December</option>
           </select>
           <select id="summaryYear"></select>
@@ -1230,9 +1230,9 @@
           <div class="field-group">
             <label>New Password</label>
             <div class="input-wrap-pw">
-              <input type="password" id="pwNew" placeholder="Enter new password">
+            <input type="password" id="pwNew" placeholder="Enter new password">
               <button class="toggle-pw-admin" type="button" onclick="toggleField('pwNew','eyeN','eyeOffN')" tabindex="-1">
-                <svg id="eyeN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+               <svg id="eyeN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 <svg id="eyeOffN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               </button>
             </div>
@@ -1268,22 +1268,6 @@
               <label>Longitude</label>
               <input type="text" id="setLng" value="37.3333310">
             </div>
-          </div>
-        </div>
-
-        <!-- WIFI -->
-        <div class="settings-section">
-          <h3>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M10.54 16a3 3 0 0 1 2.92 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-            School WiFi
-          </h3>
-          <div class="field-group">
-            <label>Router MAC Address</label>
-            <input type="text" id="setMAC" value="d8:93:d4:2a:ac:bc" style="font-family:monospace;">
-          </div>
-          <div class="field-group">
-            <label>WiFi Name (SSID)</label>
-            <input type="text" id="setSSID" value="m2pa49">
           </div>
         </div>
 
@@ -1409,9 +1393,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
+
 // SECURITY — XSS sanitizer
-// ============================================================
 // Sanitize strings for CSV — kuzuia formula injection kwenye Excel
 function csvSafe(val) {
   const s = String(val === null || val === undefined ? '' : val);
@@ -1432,10 +1415,10 @@ function esc(str) {
     .replace(/'/g, '&#39;');
 }
 
-// ============================================================
+
 // DATA
-// ============================================================
-// Teachers data comes from API only — no local array needed
+// Data za Mwalimu zije kutoka API pekee — no local array needed
+
 const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
 let TEACHERS_DB = [];
 
@@ -1443,9 +1426,8 @@ let TEACHERS_DB = [];
 let _refreshInterval = null;
 let _clockInterval   = null;
 
-// ============================================================
+
 // LOGIN
-// ============================================================
 function toggleLoginPw() {
   const inp = document.getElementById('loginPass');
   const on  = document.getElementById('loginEye');
@@ -1512,9 +1494,7 @@ function doLogout() {
   document.getElementById('dashboardPage').style.display = 'none';
 }
 
-// ============================================================
 // TANZANIA TIMEZONE HELPERS
-// ============================================================
 function getTZDate() {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
 }
@@ -1523,9 +1503,7 @@ function getTZDateStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-// ============================================================
 // INIT
-// ============================================================
 function initDashboard() {
   updateHeaderDate();
   refreshTodayData();
@@ -1581,9 +1559,9 @@ async function authFetch(url, options = {}) {
   return res;
 }
 
-// ============================================================
-// TODAY DATA — from Railway API
-// ============================================================
+
+// DATA  ZA LEO — from Railway API
+
 function getTodayAttendance() {
   return []; // Data comes from API only
 }
@@ -1667,9 +1645,9 @@ function renderTodayFromLocal() {
   }
 }
 
-// ============================================================
+
 // HISTORY — from Railway API
-// ============================================================
+
 async function loadHistoryData() {
   const from          = document.getElementById('historyFrom').value;
   const to            = document.getElementById('historyTo').value;
@@ -1710,9 +1688,9 @@ async function loadHistoryData() {
   }
 }
 
-// ============================================================
+
 // TEACHERS — from Railway API
-// ============================================================
+
 async function loadTeachersTable() {
   const token = getToken();
   const tbody = document.getElementById('teachersTableBody');
@@ -1818,9 +1796,9 @@ function populateTeacherSelects() {
   document.getElementById('exportTeacher').innerHTML  = opts;
 }
 
-// ============================================================
+
 // CHANGE ADMIN PASSWORD
-// ============================================================
+
 async function changeAdminPassword() {
   const current  = document.getElementById('pwCurrent').value.trim();
   const newPw    = document.getElementById('pwNew').value.trim();
@@ -1861,9 +1839,9 @@ async function changeAdminPassword() {
   }
 }
 
-// ============================================================
+
 // EXPORT
-// ============================================================
+
 function openExportModal(type) {
   document.getElementById('exportPeriod').value = type==='today' ? 'today' : 'custom';
   toggleCustomDates();
@@ -1939,9 +1917,9 @@ function downloadFile(content, filename, type) {
   a.download = filename; a.click();
 }
 
-// ============================================================
+
 // SETTINGS
-// ============================================================
+
 function saveSettings() {
   // localStorage inahifadhi data hata browser ikifungwa — tofauti na sessionStorage
   localStorage.setItem('tams_school_settings', JSON.stringify({
@@ -1969,9 +1947,9 @@ function loadSettings() {
   } catch(e) { /* ignore */ }
 }
 
-// ============================================================
+
 // TAB SWITCHING
-// ============================================================
+
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.className = 'tab-panel');
   document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
@@ -1982,9 +1960,9 @@ function switchTab(tab, btn) {
   if (tab==='announcements') loadAdminAnnouncements();
 }
 
-// ============================================================
+
 // TOAST
-// ============================================================
+
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   t.textContent = msg;
