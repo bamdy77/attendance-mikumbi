@@ -979,7 +979,7 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th class="no-print">Late Reason</th></tr>
+            <tr><th>#</th><th>Date</th><th>Full Name</th><th>Department</th><th>Status</th><th>Time Arrived</th><th class="no-print">Reason for Late</th></tr>
           </thead>
           <tbody id="historyTableBody">
             <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">Select date range to view history</td></tr>
@@ -1164,10 +1164,10 @@
           <label style="font-size:12px;font-weight:600;color:var(--muted);">Month:</label>
           <select id="summaryMonth">
             <option value="1">January</option><option value="2">February</option>
-          <option value="3">March</option><option value="4">April</option>
-          <option value="5">May</option><option value="6">June</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
             <option value="7">July</option><option value="8">August</option>
-          <option value="9">September</option><option value="10">October</option>
+            <option value="9">September</option><option value="10">October</option>
             <option value="11">November</option><option value="12">December</option>
           </select>
           <select id="summaryYear"></select>
@@ -1230,9 +1230,9 @@
           <div class="field-group">
             <label>New Password</label>
             <div class="input-wrap-pw">
-            <input type="password" id="pwNew" placeholder="Enter new password">
+              <input type="password" id="pwNew" placeholder="Enter new password">
               <button class="toggle-pw-admin" type="button" onclick="toggleField('pwNew','eyeN','eyeOffN')" tabindex="-1">
-               <svg id="eyeN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="eyeN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 <svg id="eyeOffN" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               </button>
             </div>
@@ -1393,8 +1393,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-
+// ============================================================
 // SECURITY — XSS sanitizer
+// ============================================================
 // Sanitize strings for CSV — kuzuia formula injection kwenye Excel
 function csvSafe(val) {
   const s = String(val === null || val === undefined ? '' : val);
@@ -1415,10 +1416,10 @@ function esc(str) {
     .replace(/'/g, '&#39;');
 }
 
-
+// ============================================================
 // DATA
-// Data za Mwalimu zije kutoka API pekee — no local array needed
-
+// ============================================================
+// Teachers data comes from API only — no local array needed
 const API_BASE = 'https://attendance-mikumbi-production.up.railway.app';
 let TEACHERS_DB = [];
 
@@ -1426,8 +1427,9 @@ let TEACHERS_DB = [];
 let _refreshInterval = null;
 let _clockInterval   = null;
 
-
+// ============================================================
 // LOGIN
+// ============================================================
 function toggleLoginPw() {
   const inp = document.getElementById('loginPass');
   const on  = document.getElementById('loginEye');
@@ -1494,7 +1496,9 @@ function doLogout() {
   document.getElementById('dashboardPage').style.display = 'none';
 }
 
+// ============================================================
 // TANZANIA TIMEZONE HELPERS
+// ============================================================
 function getTZDate() {
   return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Dar_es_Salaam' }));
 }
@@ -1503,7 +1507,9 @@ function getTZDateStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
+// ============================================================
 // INIT
+// ============================================================
 function initDashboard() {
   updateHeaderDate();
   refreshTodayData();
@@ -1559,9 +1565,9 @@ async function authFetch(url, options = {}) {
   return res;
 }
 
-
-// DATA  ZA LEO — from Railway API
-
+// ============================================================
+// TODAY DATA — from Railway API
+// ============================================================
 function getTodayAttendance() {
   return []; // Data comes from API only
 }
@@ -1620,7 +1626,7 @@ function renderTodayFromAPI(data) {
         <td>${esc(t.subject)}</td>
         <td>${status}</td>
         <td><span class="time-badge">${esc(t.timeStr)}</span></td>
-        <td class="no-print" style="font-size:11px;">${t.isLate && t.lateReason ? `<span style="color:var(--danger);font-weight:500;">${esc(t.lateReason)}</span>` : t.isLate ? '<span style="color:var(--danger);font-style:italic;">Hakuna sababu</span>' : '—'}</td>
+        <td class="no-print" style="font-size:11px;">${t.isLate && t.lateReason ? `<span style="color:var(--danger);font-weight:500;">${esc(t.lateReason)}</span>` : t.isLate ? '<span style="color:var(--danger);font-style:italic;">No reason given</span>' : '—'}</td>
         <td style="font-size:12px;color:var(--muted);">${t.distanceM ? t.distanceM+'m' : '—'}</td>
       </tr>`;
     } else {
@@ -1645,9 +1651,9 @@ function renderTodayFromLocal() {
   }
 }
 
-
+// ============================================================
 // HISTORY — from Railway API
-
+// ============================================================
 async function loadHistoryData() {
   const from          = document.getElementById('historyFrom').value;
   const to            = document.getElementById('historyTo').value;
@@ -1680,7 +1686,7 @@ async function loadHistoryData() {
       const badge = r.is_late
         ? `<span class="badge badge-late">LATE</span>`
         : `<span class="badge badge-ontime">ON TIME</span>`;
-      return `<tr><td>${i+1}</td><td>${esc(r.date)}</td><td>${esc(r.teacher_name)}</td><td>${esc(r.subject)||'—'}</td><td>${badge}</td><td><span class="time-badge">${esc(r.time_str)}</span></td><td class="no-print" style="font-size:11px;">${r.is_late && r.late_reason ? `<span style="color:var(--danger);font-weight:500;">${esc(r.late_reason)}</span>` : r.is_late ? '<span style="color:var(--muted);font-style:italic;">Hakuna sababu</span>' : '—'}</td></tr>`;
+      return `<tr><td>${i+1}</td><td>${esc(r.date)}</td><td>${esc(r.teacher_name)}</td><td>${esc(r.subject)||'—'}</td><td>${badge}</td><td><span class="time-badge">${esc(r.time_str)}</span></td><td class="no-print" style="font-size:11px;">${r.is_late && r.late_reason ? `<span style="color:var(--danger);font-weight:500;">${esc(r.late_reason)}</span>` : r.is_late ? '<span style="color:var(--muted);font-style:italic;">No reason given</span>' : '—'}</td></tr>`;
     }).join('');
 
   } catch(e) {
@@ -1688,9 +1694,9 @@ async function loadHistoryData() {
   }
 }
 
-
+// ============================================================
 // TEACHERS — from Railway API
-
+// ============================================================
 async function loadTeachersTable() {
   const token = getToken();
   const tbody = document.getElementById('teachersTableBody');
@@ -1796,9 +1802,9 @@ function populateTeacherSelects() {
   document.getElementById('exportTeacher').innerHTML  = opts;
 }
 
-
+// ============================================================
 // CHANGE ADMIN PASSWORD
-
+// ============================================================
 async function changeAdminPassword() {
   const current  = document.getElementById('pwCurrent').value.trim();
   const newPw    = document.getElementById('pwNew').value.trim();
@@ -1839,9 +1845,9 @@ async function changeAdminPassword() {
   }
 }
 
-
+// ============================================================
 // EXPORT
-
+// ============================================================
 function openExportModal(type) {
   document.getElementById('exportPeriod').value = type==='today' ? 'today' : 'custom';
   toggleCustomDates();
@@ -1917,16 +1923,14 @@ function downloadFile(content, filename, type) {
   a.download = filename; a.click();
 }
 
-
+// ============================================================
 // SETTINGS
-
+// ============================================================
 function saveSettings() {
   // localStorage inahifadhi data hata browser ikifungwa — tofauti na sessionStorage
   localStorage.setItem('tams_school_settings', JSON.stringify({
     lat:      document.getElementById('setLat').value,
     lng:      document.getElementById('setLng').value,
-    mac:      document.getElementById('setMAC').value,
-    ssid:     document.getElementById('setSSID').value,
     start:    document.getElementById('setStart').value,
     deadline: document.getElementById('setDeadline').value,
   }));
@@ -1940,16 +1944,14 @@ function loadSettings() {
     const s = JSON.parse(saved);
     if (s.lat)      document.getElementById('setLat').value      = s.lat;
     if (s.lng)      document.getElementById('setLng').value      = s.lng;
-    if (s.mac)      document.getElementById('setMAC').value      = s.mac;
-    if (s.ssid)     document.getElementById('setSSID').value     = s.ssid;
     if (s.start)    document.getElementById('setStart').value    = s.start;
     if (s.deadline) document.getElementById('setDeadline').value = s.deadline;
   } catch(e) { /* ignore */ }
 }
 
-
+// ============================================================
 // TAB SWITCHING
-
+// ============================================================
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.className = 'tab-panel');
   document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
@@ -1960,9 +1962,9 @@ function switchTab(tab, btn) {
   if (tab==='announcements') loadAdminAnnouncements();
 }
 
-
+// ============================================================
 // TOAST
-
+// ============================================================
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   t.textContent = msg;
