@@ -1,187 +1,177 @@
-# 🏫 Teacher Attendance Management System
-### S.S. Mikumbi Secondary School — Newala, Tanzania
+# Teachers Attendance Management System (TAMS)
 
-A modern, GPS and WiFi-verified digital attendance system for teachers, built as a Progressive Web App (PWA) installable on any Android or iOS device.
+**Mikumbi Secondary School — Newala, Tanzania**
 
----
+TAMS is a GPS-verified digital attendance platform built for Mikumbi Secondary School. It replaces paper-based registers with a real-time, location-aware system that works on any smartphone without requiring an app download.
 
-## 📸 Overview
-
-This system replaces paper-based attendance registers with a secure, location-aware digital solution. Teachers mark their attendance directly from their smartphones, while the headmaster monitors everything in real time from a dedicated admin dashboard — from anywhere in the world.
+The system has two sides: a teacher-facing portal where staff mark their daily attendance, and an admin dashboard where the Head of School monitors attendance, manages staff, and exports reports.
 
 ---
 
-## ✨ Key Features
+## How It Works
 
-### Teacher Portal
-- 📍 **GPS Verification** — Teacher must be within 70 metres of the school to mark attendance
-- 📶 **WiFi Verification** — Must be connected to the school's WiFi network
-- ⏰ **Time Window** — Registration opens at 12:00 AM and closes at 7:30 AM
-- 🟢 **ON TIME / 🔴 LATE** — Automatic status based on arrival time
-- 🔐 **Password Reset** — 3-step identity verification before resetting password
-- 📱 **PWA** — Installable as a native-like app on Android and iOS
+A teacher opens the system on their phone each morning within the registration window (6:00 AM to 8:00 AM). The system verifies their GPS location — they must be within 45 metres of the school. If they are inside the allowed zone and within the time window, they enter their full name and password to sign in. The system records the exact time and marks them as on time or late depending on whether they signed in before 7:30 AM.
 
-### Admin Dashboard
-- 📊 **Real-Time Overview** — See all teachers present, absent, and late at a glance
-- 🕐 **Live Timestamps** — Exact time each teacher signed in
-- 📅 **Attendance History** — Filter by date range, teacher, or status
-- 📥 **Export Reports** — Download Excel (CSV) or PDF for today, week, month, or custom period
-- ➕ **Manage Teachers** — Add or remove staff at any time
-- 🔑 **Change Password** — Admin can update their own password from the Settings tab
+If a teacher arrives after 7:30 AM, they are required to provide a reason for being late before the submission is accepted.
+
+The Head of School logs into the admin dashboard from any device. The dashboard shows who is present, who is absent, and who arrived late — updated in real time. The admin can filter attendance by date range, export reports as PDF or Excel, add and remove teachers, and reset teacher passwords.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|------------|
 | Frontend | HTML5, CSS3, Vanilla JavaScript |
 | Backend | Node.js, Express.js |
-| Database | SQLite3 |
-| Auth | JWT (JSON Web Tokens), bcryptjs |
-| Security | express-rate-limit |
+| Database | PostgreSQL (via Railway) |
+| Authentication | JWT (8-hour expiry), bcryptjs |
 | Deployment | Railway.app |
-| Mobile | PWA (Progressive Web App) |
+| Mobile | Progressive Web App (PWA) |
 
 ---
 
-## 🚀 Getting Started
+## Features
 
-### Prerequisites
-- Node.js v18 or higher
-- npm
+**Teacher Portal**
 
-### Installation
+- GPS verification using the Haversine formula — server-side distance calculation
+- Time window enforcement using Tanzania timezone (Africa/Dar_es_Salaam) regardless of device timezone
+- Late reason submission required for arrivals after 7:30 AM
+- Device fingerprinting to prevent duplicate submissions on the same day
+- Attendance history showing the last 5 sign-ins
+- Installable as a PWA on Android and iOS
+
+**Admin Dashboard**
+
+- Live attendance overview with present, absent, and late counts
+- Full attendance history with filters by date range, teacher, and status
+- Monthly summary with attendance percentage per teacher
+- Export to PDF and Excel (CSV) with CSV injection protection
+- Add and remove teachers
+- Reset any teacher's password
+- Automatic session expiry with redirect to login after 8 hours
+- Rate limiting on login and attendance endpoints
+
+---
+
+## Security
+
+- Passwords hashed with bcryptjs (10 salt rounds)
+- JWT tokens expire after 8 hours
+- Rate limiting: 10 login attempts per 15 minutes per IP, 5 attendance submissions per minute per IP
+- GPS coordinates verified server-side — the frontend cannot bypass the distance check
+- All API responses involving user data require a valid JWT token
+- XSS protection on all innerHTML rendering through an escape function
+- CSV injection protection on all exported data
+
+---
+
+## Installation
+
+**Requirements:** Node.js v18 or higher, PostgreSQL database
 
 ```bash
-# Clone the repository
 git clone https://github.com/bamdy77/attendance-mikumbi.git
 cd attendance-mikumbi
-
-# Install dependencies
 npm install
+```
 
-# Start the server
+Set the following environment variables before starting:
+
+```
+DATABASE_URL      = your PostgreSQL connection string
+JWT_SECRET        = a long random secret key
+ADMIN_DEFAULT_PASSWORD = your chosen admin password
+PORT              = 3000
+```
+
+Then start the server:
+
+```bash
 npm start
 ```
 
-The server will run at `http://localhost:3000`
-
 | Page | URL |
 |------|-----|
-| Teacher Portal | `http://localhost:3000/teacher-attendance.html` |
-| Admin Dashboard | `http://localhost:3000/admin-dashboard.html` |
+| Landing Page | http://localhost:3000 |
+| Teacher Portal | http://localhost:3000/teacher-attendance.html |
+| Admin Dashboard | http://localhost:3000/admin-dashboard.html |
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
-Before deploying, update the following constants in `teacher-attendance.html` and `server.js`:
+The school's GPS coordinates, allowed radius, and time window are set in `teacher-attendance.html` inside the `CONFIG` object:
 
 ```javascript
 const CONFIG = {
-  SCHOOL_LAT: -3.3086295,        // School latitude (from Google Maps)
-  SCHOOL_LNG: 37.3333310,        // School longitude
-  SCHOOL_RADIUS_M: 70,           // Allowed radius in metres
-  DEADLINE_HOUR: 7,              // Late after 7:30 AM
-  DEADLINE_MIN: 30,
-  START_HOUR: 0,                 // Opens at 12:00 AM
-  START_MIN: 0,
-  SCHOOL_WIFI_SSID: 'SchoolWiFi', // School WiFi name
-  SCHOOL_WIFI_MAC: 'XX:XX:XX:XX:XX:XX', // Router MAC address
+  SCHOOL_LAT:      -10.561915,  // Latitude ya shule
+  SCHOOL_LNG:       39.178560,  // Longitude ya shule
+  SCHOOL_RADIUS_M:  45,         // Mita 45 kutoka shuleni
+  START_HOUR:       6,          // Usajili unaanza saa 12:00 asubuhi
+  START_MIN:        0,
+  DEADLINE_HOUR:    7,          // Kuchelewa baada ya 7:30 asubuhi
+  DEADLINE_MIN:     30,
+  CLOSE_HOUR:       8,          // Usajili unafungwa 8:00 asubuhi
+  CLOSE_MIN:        0,
 };
 ```
 
-### Environment Variables (for production)
+---
 
-Set these in your Railway/Render dashboard:
+## Installing as a Mobile App
 
-```
-JWT_SECRET = your-long-random-secret-key
-PORT = 3000
-```
+**Android (Chrome)**
+1. Open Chrome and navigate to the deployment URL
+2. Tap the menu and select "Add to Home Screen" or "Install App"
+
+**iOS (Safari)**
+1. Open Safari and navigate to the deployment URL
+2. Tap the Share button, then "Add to Home Screen"
+
+GPS verification requires HTTPS. Railway provides HTTPS automatically on all deployments.
 
 ---
 
-## 📱 Installing as a Mobile App
-
-### Android (Chrome)
-1. Open Chrome and navigate to your deployment URL
-2. Tap the menu (⋮) → **"Add to Home Screen"** or **"Install App"**
-3. The app appears on your home screen like a native app
-
-### iOS (Safari)
-1. Open Safari and navigate to your deployment URL
-2. Tap the **Share** button → **"Add to Home Screen"**
-3. Tap **"Add"**
-
-> **Note:** GPS requires HTTPS. When deployed on Railway, HTTPS is provided automatically.
-
----
-
-## 🔐 Default Credentials
-
-> ⚠️ **Change these immediately after first login**
-
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | `admin` | `admin123` |
-| Teachers | Full name (3 parts) | `1234` |
-
----
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 attendance-mikumbi/
-├── teacher-attendance.html   # Teacher PWA (mobile-first)
+├── server.js                 # Express backend, PostgreSQL, API routes
+├── teacher-attendance.html   # Teacher PWA — mobile-first
 ├── admin-dashboard.html      # Admin dashboard
-├── server.js                 # Express backend + SQLite
-├── package.json              # Project metadata & scripts
+├── index.html                # Landing page
+├── sw.js                     # Service worker — offline support, network-first caching
 ├── manifest.json             # PWA manifest
-├── sw.js                     # Service worker (offline support)
-├── favicon.ico               # Browser icon
-├── govt-logo.png             # Government logo (header)
-└── school-logo.png           # School logo (header)
+├── package.json              # Dependencies
+├── govt-logo.svg             # Government of Tanzania logo
+├── school-logo.svg           # Mikumbi Secondary School logo
+└── app-icon.svg              # Home screen app icon
 ```
 
 ---
 
-## 🛡️ Security Features
+## Deployment
 
-- Passwords hashed with **bcryptjs** (salt rounds: 10)
-- API sessions protected with **JWT tokens** (8-hour expiry)
-- Rate limiting on attendance endpoint (20 requests / 15 minutes)
-- GPS coordinates verified server-side using Haversine formula
-- WiFi subnet verification prevents off-network submissions
+This project runs on Railway.app with a PostgreSQL database. The database schema is created automatically on first run — no manual migration is needed.
 
----
-
-## 🌍 Deployment
-
-This project is deployed on **Railway.app**.
-
-Live URL:
-```
-https://attendance-mikumbi-production.up.railway.app
-```
+Live deployment: https://attendance-mikumbi-production.up.railway.app
 
 To deploy your own instance:
+
 1. Fork this repository
-2. Sign up at [railway.app](https://railway.app) with GitHub
-3. Create a new project → Deploy from GitHub repo
-4. Add environment variables (`JWT_SECRET`, `PORT`)
-5. Generate a domain under Settings → Networking
+2. Create an account at railway.app and connect your GitHub
+3. Create a new project and deploy from the forked repository
+4. Add a PostgreSQL database plugin inside Railway
+5. Set the environment variables listed above
+6. Railway will assign a public URL automatically
 
 ---
 
-## 👨‍💻 Author
+## Author
 
-**Bamdy** — Student, Mwenge Catholic University (MWECAU)
-Registration: T/DEG/2025/1846
+Bamdy — Student, Mwenge Catholic University (MWECAU), Tanzania
+Registration No. T/DEG/2025/1846
 
----
-
-## 📄 License
-
-This project was built for S.S. Mikumbi Secondary School, Newala, Tanzania.
+Built for Mikumbi Secondary School, Newala, Mtwara Region, Tanzania.
