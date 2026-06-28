@@ -14,7 +14,8 @@ const { Pool } = require('pg');
 
 const app        = express();
 const PORT       = process.env.PORT || 8080;
-const JWT_SECRET = process.env.JWT_SECRET || 'tams-mikumbi-2025-secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET environment variable is required');
 
 // ============================================================
 // CONFIGURATION
@@ -147,7 +148,8 @@ async function initDB() {
     `);
 
     // Seed admin
-    const adminHash = bcrypt.hashSync('admin123', 10);
+    const defaultPass = process.env.ADMIN_DEFAULT_PASSWORD || 'changeme';
+    const adminHash = bcrypt.hashSync(defaultPass, 10);
     await client.query(`
       INSERT INTO admins (username, password_hash, name)
       VALUES ($1, $2, $3)
@@ -195,7 +197,7 @@ async function initDB() {
       SELECT 'Taarifa kwa Walimu Wote',
              'Habari walimu! Mara baada ya kufungua Shule, ufundishaji utaanza mara moja. Hakikisha unaandaa lesson plan na unajaza majukumu yako ya siku kupitia mfumo wa ESS.',
              'Admin',
-             (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '7 days'
+             (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '3 days'
       WHERE NOT EXISTS (SELECT 1 FROM announcements LIMIT 1)
     `);
 
@@ -630,16 +632,16 @@ app.get('/api/announcements', async (req, res) => {
 app.post('/api/announcements', authMiddleware, async (req, res) => {
   const { title, message } = req.body;
   if (!title || !message)
-    return res.status(400).json({ error: 'Jaza kichwa na ujumbe wa tangazo' });
+    return res.status(400).json({ error: 'Please fill in both title and message.' });
   try {
     const result = await pool.query(`
       INSERT INTO announcements (title, message, created_by, expires_at)
-      VALUES ($1, $2, $3, (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '7 days')
+      VALUES ($1, $2, $3, (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '3 days')
       RETURNING id, title, message, created_at, expires_at
     `, [title.trim(), message.trim(), req.user.name]);
     res.json({ ok: true, announcement: result.rows[0] });
   } catch(e) {
-    res.status(500).json({ error: 'Imeshindwa kutuma tangazo. Jaribu tena.' });
+    res.status(500).json({ error: 'Failed to send announcement. Please try again.' });
   }
 });
 
@@ -653,6 +655,37 @@ app.delete('/api/announcements/:id', authMiddleware, async (req, res) => {
     await pool.query('UPDATE announcements SET is_active=0 WHERE id=$1', [id]);
     res.json({ ok: true, message: 'Tangazo limefutwa' });
   } catch(e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /api/announcements/history — admin only, all announcements with filters
+app.get('/api/announcements/history', authMiddleware, async (req, res) => {
+  const { range } = req.query; // day | week | month | all
+  const tz = 'Africa/Dar_es_Salaam';
+  let whereClause = '';
+
+  if (range === 'day') {
+    whereClause = `AND created_at::date = (NOW() AT TIME ZONE '${tz}')::date`;
+  } else if (range === 'week') {
+    whereClause = `AND created_at >= (NOW() AT TIME ZONE '${tz}') - INTERVAL '7 days'`;
+  } else if (range === 'month') {
+    whereClause = `AND created_at >= (NOW() AT TIME ZONE '${tz}') - INTERVAL '30 days'`;
+  }
+  // 'all' — no filter
+
+  try {
+    const result = await pool.query(`
+      SELECT id, title, message, created_by,
+             (created_at AT TIME ZONE '${tz}') AS created_at,
+             is_active
+      FROM announcements
+      WHERE 1=1 ${whereClause}
+      ORDER BY created_at DESC
+    `);
+    res.json(result.rows);
+  } catch(e) {
+    console.error(e);
     res.status(500).json({ error: 'Server error' });
   }
 });

@@ -1304,36 +1304,66 @@
       <div class="table-header">
         <h2>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          Tuma Tangazo Jipya
+          Send New Announcement
         </h2>
       </div>
       <div class="ann-form-body">
         <div id="annFormAlert"></div>
         <div class="field-group">
-          <label>Kichwa cha Tangazo</label>
-          <input type="text" id="annTitle" placeholder="Mfano: Taarifa kwa Walimu Wote" maxlength="100">
+          <label>Announcement Title</label>
+          <input type="text" id="annTitle" placeholder="e.g. Notice to All Teachers" maxlength="100">
         </div>
         <div class="field-group">
-          <label>Ujumbe</label>
-          <textarea id="annMessage" placeholder="Andika tangazo hapa..." rows="4" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
+          <label>Message</label>
+          <textarea id="annMessage" placeholder="Type your announcement here..." rows="4" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
         </div>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Tangazo litaonekana kwa walimu kwenye landing page kwa siku 7 kuanzia linatumwa.</p>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Announcement will be visible to teachers on the landing page for 3 days.</p>
         <button class="btn btn-primary" onclick="sendAnnouncement()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Tuma Tangazo
+          Send Announcement
         </button>
       </div>
     </div>
 
+    <!-- ACTIVE ANNOUNCEMENTS -->
     <div class="table-card">
       <div class="table-header">
         <h2>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          Matangazo Yaliyopo
+          Active Announcements
         </h2>
       </div>
       <div id="annList">
-        <div class="ann-empty">Hakuna matangazo kwa sasa.</div>
+        <div class="ann-empty">No active announcements.</div>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENT HISTORY -->
+    <div class="table-card" style="margin-top:18px;">
+      <div class="table-header" style="flex-wrap:wrap;gap:10px;">
+        <h2>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Announcement History
+        </h2>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="annHistoryRange" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card);">
+            <option value="day">Today</option>
+            <option value="week" selected>This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+          <button class="btn btn-outline" onclick="loadAnnouncementHistory()" style="font-size:12px;padding:6px 14px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Load
+          </button>
+          <button class="btn btn-danger" onclick="printAnnouncementHistory()" style="font-size:12px;padding:6px 14px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print PDF
+          </button>
+        </div>
+      </div>
+      <div id="annHistoryList">
+        <div class="ann-empty">Select a period and click Load.</div>
       </div>
     </div>
   </div>
@@ -1980,14 +2010,12 @@ async function loadAdminAnnouncements() {
     const data = await res.json();
     const list = document.getElementById('annList');
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="ann-empty">Hakuna matangazo yaliyopo kwa sasa.</div>';
+      list.innerHTML = '<div class="ann-empty">No active announcements.</div>';
       return;
     }
     list.innerHTML = data.map(a => {
-      const d       = new Date(a.created_at);
-      const exp     = new Date(a.expires_at);
-      const dateStr = d.toLocaleDateString('sw-TZ', { day:'2-digit', month:'long', year:'numeric' });
-      const expStr  = exp.toLocaleDateString('sw-TZ', { day:'2-digit', month:'long', year:'numeric' });
+      const dateStr = new Date(a.created_at).toLocaleDateString('en-GB', { timeZone: 'Africa/Dar_es_Salaam', day:'2-digit', month:'short', year:'numeric' });
+      const expStr  = new Date(a.expires_at).toLocaleDateString('en-GB', { timeZone: 'Africa/Dar_es_Salaam', day:'2-digit', month:'short', year:'numeric' });
       return `
         <div class="ann-list-item">
           <div class="ann-list-icon">
@@ -1996,18 +2024,113 @@ async function loadAdminAnnouncements() {
           <div class="ann-list-content">
             <div class="ann-list-title">${esc(a.title)}</div>
             <div class="ann-list-msg">${esc(a.message)}</div>
-            <div class="ann-list-meta">Imetumwa: ${dateStr} &bull; Inaisha: ${expStr}</div>
+            <div class="ann-list-meta">Sent: ${dateStr} &bull; Expires: ${expStr}</div>
           </div>
           <button class="ann-del-btn" onclick="deleteAnnouncement(${a.id})">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-            Futa
+            Delete
           </button>
         </div>
       `;
     }).join('');
   } catch(e) {
+    if (e.message === 'Unauthorized') return;
     console.error('Failed to load announcements', e);
   }
+}
+
+// ── ANNOUNCEMENT HISTORY ──
+let annHistoryData = [];
+
+async function loadAnnouncementHistory() {
+  const range     = document.getElementById('annHistoryRange').value;
+  const container = document.getElementById('annHistoryList');
+  container.innerHTML = '<div class="ann-empty">Loading...</div>';
+  try {
+    const res  = await authFetch(`${API_BASE}/api/announcements/history?range=${range}`);
+    const data = await res.json();
+    annHistoryData = data;
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="ann-empty">No announcements found for this period.</div>';
+      return;
+    }
+    container.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:4px;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">#</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Title</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Message</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Sent By</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Date Sent</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map((a, i) => `
+            <tr style="background:${i%2===0?'var(--card)':'var(--bg)'};">
+              <td style="padding:9px 12px;color:var(--muted);">${i+1}</td>
+              <td style="padding:9px 12px;font-weight:600;">${esc(a.title)}</td>
+              <td style="padding:9px 12px;color:var(--muted);">${esc(a.message)}</td>
+              <td style="padding:9px 12px;">${esc(a.created_by)}</td>
+              <td style="padding:9px 12px;white-space:nowrap;">${new Date(a.created_at).toLocaleDateString('en-GB', { timeZone: 'Africa/Dar_es_Salaam', day:'2-digit', month:'short', year:'numeric' })}</td>
+              <td style="padding:9px 12px;"><span style="font-size:11px;font-weight:600;color:${a.is_active ? 'var(--accent)' : 'var(--muted)'};">${a.is_active ? 'Active' : 'Deleted'}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch(e) {
+    if (e.message === 'Unauthorized') return;
+    container.innerHTML = '<div class="ann-empty">Failed to load history. Try again.</div>';
+  }
+}
+
+function printAnnouncementHistory() {
+  if (!annHistoryData || annHistoryData.length === 0) {
+    showToast('Load announcements first before printing.', 'error');
+    return;
+  }
+  const range = document.getElementById('annHistoryRange');
+  const label = range.options[range.selectedIndex].text;
+  const rows  = annHistoryData.map((a, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${esc(a.title)}</td>
+      <td>${esc(a.message)}</td>
+      <td>${esc(a.created_by)}</td>
+      <td>${new Date(a.created_at).toLocaleDateString('en-GB', { timeZone: 'Africa/Dar_es_Salaam', day:'2-digit', month:'short', year:'numeric' })}</td>
+      <td>${a.is_active ? 'Active' : 'Deleted'}</td>
+    </tr>
+  `).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Announcement History — ${label}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:28px;color:#1e293b;}
+      h1{font-size:18px;color:#0C4767;margin:0;}
+      p.sub{font-size:12px;color:#666;margin:4px 0 18px;}
+      table{width:100%;border-collapse:collapse;font-size:12px;}
+      th{background:#0C4767;color:white;padding:8px 10px;text-align:left;}
+      td{padding:7px 10px;border-bottom:1px solid #e2e8f0;vertical-align:top;}
+      tr:nth-child(even) td{background:#f8fafc;}
+      .footer{margin-top:20px;font-size:10px;color:#999;text-align:center;}
+    </style>
+  </head><body>
+    <h1>Announcement History — ${label}</h1>
+    <p class="sub">Mikumbi Secondary School | Newala | Generated: ${new Date().toLocaleString('en-GB', { timeZone: 'Africa/Dar_es_Salaam' })}</p>
+    <table>
+      <thead><tr><th>#</th><th>Title</th><th>Message</th><th>Sent By</th><th>Date Sent</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="footer">Teachers Attendance Management System — Mikumbi Secondary School, Newala</p>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { showToast('Popup blocked. Allow popups and try again.', 'error'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.print();
 }
 
 async function sendAnnouncement() {
@@ -2021,7 +2144,7 @@ async function sendAnnouncement() {
 
   if (!title || !message) {
     alertEl.className   = 'error';
-    alertEl.textContent = 'Jaza kichwa na ujumbe wa tangazo.';
+    alertEl.textContent = 'Please fill in both title and message.';
     return;
   }
 
@@ -2034,7 +2157,7 @@ async function sendAnnouncement() {
     if (!res.ok) throw new Error(data.error);
 
     alertEl.className   = 'success';
-    alertEl.textContent = 'Tangazo limetumwa! Litaonekana kwa walimu mara moja.';
+    alertEl.textContent = 'Announcement sent! It will be visible to teachers immediately.';
     document.getElementById('annTitle').value   = '';
     document.getElementById('annMessage').value = '';
     loadAdminAnnouncements();
@@ -2045,7 +2168,7 @@ async function sendAnnouncement() {
 }
 
 async function deleteAnnouncement(id) {
-  if (!confirm('Una uhakika unataka kufuta tangazo hili?')) return;
+  if (!confirm('Are you sure you want to delete this announcement?')) return;
   try {
     const res = await authFetch(`${API_BASE}/api/announcements/` + id, {
       method: 'DELETE',
