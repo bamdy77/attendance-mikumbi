@@ -402,7 +402,7 @@ app.post('/api/attendance', attendanceLimiter, async (req, res) => {
     const insertResult = await pool.query(
       `INSERT INTO attendance (teacher_id, teacher_name, subject, date, time_str, is_late, latitude, longitude, distance_m, ip_address, device_fingerprint, late_reason)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
-      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP, deviceFingerprint || null, (late && req.body.lateReason) ? req.body.lateReason.trim().slice(0,200) : null]
+      [teacher.id, teacherName, teacher.subject, today, timeStr, late?1:0, lat, lng, Math.round(distance), clientIP, deviceFingerprint || null, (late && req.body.lateReason) ? req.body.lateReason.trim().slice(0,75) : null]
     );
     const attendanceId = insertResult.rows[0].id;
 
@@ -710,7 +710,7 @@ app.post('/api/attendance/late-reason', async (req, res) => {
   try {
     await pool.query(
       'UPDATE attendance SET late_reason=$1 WHERE id=$2 AND is_late=1',
-      [reason.trim().slice(0, 200), attendanceId]
+      [reason.trim().slice(0, 75), attendanceId]
     );
     res.json({ ok: true });
   } catch(e) {
