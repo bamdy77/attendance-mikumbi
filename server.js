@@ -197,7 +197,7 @@ async function initDB() {
       SELECT 'Taarifa kwa Walimu Wote',
              'Habari walimu! Mara baada ya kufungua Shule, ufundishaji utaanza mara moja. Hakikisha unaandaa lesson plan na unajaza majukumu yako ya siku kupitia mfumo wa ESS.',
              'Admin',
-             (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '3 days'
+             NOW() + INTERVAL '3 days'
       WHERE NOT EXISTS (SELECT 1 FROM announcements LIMIT 1)
     `);
 
@@ -619,7 +619,7 @@ app.get('/api/announcements', async (req, res) => {
       SELECT id, title, message, created_by, created_at, expires_at
       FROM announcements
       WHERE is_active = 1
-        AND expires_at > (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam')
+        AND expires_at > NOW()
       ORDER BY created_at DESC
     `);
     res.json(result.rows);
@@ -636,7 +636,7 @@ app.post('/api/announcements', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(`
       INSERT INTO announcements (title, message, created_by, expires_at)
-      VALUES ($1, $2, $3, (NOW() AT TIME ZONE 'Africa/Dar_es_Salaam') + INTERVAL '3 days')
+      VALUES ($1, $2, $3, NOW() + INTERVAL '3 days')
       RETURNING id, title, message, created_at, expires_at
     `, [title.trim(), message.trim(), req.user.name]);
     res.json({ ok: true, announcement: result.rows[0] });
@@ -686,6 +686,18 @@ app.get('/api/announcements/history', authMiddleware, async (req, res) => {
     res.json(result.rows);
   } catch(e) {
     console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// DELETE /api/announcements/:id/permanent — admin only, removes from DB completely
+app.delete('/api/announcements/:id/permanent', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+  try {
+    await pool.query('DELETE FROM announcements WHERE id=$1', [id]);
+    res.json({ ok: true });
+  } catch(e) {
     res.status(500).json({ error: 'Server error' });
   }
 });

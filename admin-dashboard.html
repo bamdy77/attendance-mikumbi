@@ -1356,6 +1356,10 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Load
           </button>
+          <button class="btn" onclick="cancelAnnouncementHistory()" style="font-size:12px;padding:6px 14px;background:#f1f5f9;color:var(--muted);border:1px solid var(--border);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Cancel
+          </button>
           <button class="btn btn-danger" onclick="printAnnouncementHistory()" style="font-size:12px;padding:6px 14px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             Print PDF
@@ -2064,6 +2068,7 @@ async function loadAnnouncementHistory() {
             <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Sent By</th>
             <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Date Sent</th>
             <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Status</th>
+            <th style="text-align:left;padding:10px 12px;background:var(--primary);color:#fff;">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -2075,6 +2080,11 @@ async function loadAnnouncementHistory() {
               <td style="padding:9px 12px;">${esc(a.created_by)}</td>
               <td style="padding:9px 12px;white-space:nowrap;">${new Date(a.created_at).toLocaleDateString('en-GB', { timeZone: 'Africa/Dar_es_Salaam', day:'2-digit', month:'short', year:'numeric' })}</td>
               <td style="padding:9px 12px;"><span style="font-size:11px;font-weight:600;color:${a.is_active ? 'var(--accent)' : 'var(--muted)'};">${a.is_active ? 'Active' : 'Deleted'}</span></td>
+              <td style="padding:9px 12px;">
+                <button onclick="deleteAnnouncementPermanent(${a.id})" style="background:#fee2e2;color:#991b1b;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;">
+                  Delete
+                </button>
+              </td>
             </tr>
           `).join('')}
         </tbody>
@@ -2083,6 +2093,31 @@ async function loadAnnouncementHistory() {
   } catch(e) {
     if (e.message === 'Unauthorized') return;
     container.innerHTML = '<div class="ann-empty">Failed to load history. Try again.</div>';
+  }
+}
+
+function cancelAnnouncementHistory() {
+  annHistoryData = [];
+  document.getElementById('annHistoryList').innerHTML =
+    '<div class="ann-empty">Select a period and click Load.</div>';
+  document.getElementById('annHistoryRange').value = 'week';
+}
+
+async function deleteAnnouncementPermanent(id) {
+  if (!confirm('This will permanently delete the announcement from the database. Continue?')) return;
+  try {
+    const res = await authFetch(`${API_BASE}/api/announcements/${id}/permanent`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      showToast('Announcement deleted permanently.', 'success');
+      loadAnnouncementHistory();
+    } else {
+      showToast('Failed to delete. Try again.', 'error');
+    }
+  } catch(e) {
+    if (e.message === 'Unauthorized') return;
+    showToast('Network error. Try again.', 'error');
   }
 }
 
