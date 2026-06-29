@@ -172,4 +172,4 @@ To deploy your own instance:
 Baraka A Martine — Student, Mwenge Catholic University (MWECAU), Tanzania
 
 
-Built for Mikumbi Secondary School, Newala, Mtwara Region, Tanzania.
+Built for Mikumbi Secondary School, Newala, Mtwara - Tanzania.
