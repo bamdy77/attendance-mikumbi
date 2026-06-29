@@ -165,11 +165,11 @@ To deploy your own instance:
 5. Set the environment variables listed above
 6. Railway will assign a public URL automatically
 
----
+
 
 ## Author
 
-Bamdy — Student, Mwenge Catholic University (MWECAU), Tanzania
-Registration No. T/DEG/2025/1846
+Baraka A Martine — Student, Mwenge Catholic University (MWECAU), Tanzania
+
 
 Built for Mikumbi Secondary School, Newala, Mtwara Region, Tanzania.
