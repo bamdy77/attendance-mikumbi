@@ -137,19 +137,17 @@ GPS verification requires HTTPS. Railway provides HTTPS automatically on all dep
 ## Project Structure
 
 ```
-attendance-mikumbi/
-├── server.js                 # Express backend, PostgreSQL, API routes
-├── teacher-attendance.html   # Teacher PWA — mobile-first
-├── admin-dashboard.html      # Admin dashboard
-├── index.html                # Landing page
-├── sw.js                     # Service worker — offline support, network-first caching
-├── manifest.json             # PWA manifest
-├── package.json              # Dependencies
-├── govt-logo.svg             # Government of Tanzania logo
-├── school-logo.svg           # Mikumbi Secondary School logo
-└── app-icon.svg              # Home screen app icon
-```
-
+> attendance-mikumbi/
+> server.js                 # Express backend, PostgreSQL, API routes
+> teacher-attendance.html   # Teacher PWA — mobile-first
+> admin-dashboard.html      # Admin dashboard
+> index.html                # Landing page
+> sw.js                     # Service worker — offline support, network-first caching
+> manifest.json             # PWA manifest
+> package.json              # Dependencies
+> govt-logo.svg             # Government of Tanzania logo
+> school-logo.svg           # Mikumbi Secondary School logo
+> app-icon.svg              # Home screen app icon
 ---
 
 ## Deployment
