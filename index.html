@@ -1371,11 +1371,116 @@
 </section>
 
 <!-- ACCESS -->
+<section id="gallery" style="padding:64px 24px;background:var(--white);overflow:hidden;">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:36px;">
+      <div class="section-label">Our School</div>
+      <h2 class="section-title">School Gallery</h2>
+      <p class="section-desc">A glimpse of Mikumbi Secondary School, Newala — where this system is in active use.</p>
+    </div>
+
+    <!-- CAROUSEL WRAPPER -->
+    <div id="galleryWrapper" style="position:relative;overflow:hidden;border-radius:14px;box-shadow:0 8px 40px rgba(12,71,103,0.13);">
+
+      <!-- SLIDES TRACK -->
+      <div id="galleryTrack" style="display:flex;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);will-change:transform;">
+
+
+        <!-- SLIDE 1 — Main Building -->
+        <div style="min-width:100%;position:relative;">
+          <img src="images/formOne-classes.png"
+               alt="Form One Classrooms"
+               style="width:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:rgba(12,71,103,0.82);">
+            <p style="margin:0;color:white;font-size:14px;font-weight:600;font-family:Arial,sans-serif;">Form One Classrooms — Mikumbi Secondary School, Newala</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 2 — Girls Dormitory / Bweni la Wasichana -->
+        <div style="min-width:100%;position:relative;">
+          <img src="images/girls-Domitory.png"
+               alt="Girls Dormitory"
+               style="width:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:rgba(12,71,103,0.82);">
+            <p style="margin:0;color:white;font-size:14px;font-weight:600;font-family:Arial,sans-serif;">Girls Dormitory — Bweni la Wanafunzi wa Kike</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 3 — Chemistry Lab -->
+        <div style="min-width:100%;position:relative;">
+          <img src="images/Chemistry-Lab.png"
+               alt="Chemistry Laboratory"
+               style="width:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:rgba(12,71,103,0.82);">
+            <p style="margin:0;color:white;font-size:14px;font-weight:600;font-family:Arial,sans-serif;">Chemistry Laboratory — Maabara ya Chemistry</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 4 — HOS Office / Jengo la Mkuu wa Shule -->
+        <div style="min-width:100%;position:relative;">
+          <img src="images/FormII-IV-classes.png"
+               alt="Form II and IV Classrooms"
+               style="width:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:rgba(12,71,103,0.82);">
+            <p style="margin:0;color:white;font-size:14px;font-weight:600;font-family:Arial,sans-serif;">Form II & IV Classroom Block</p>
+          </div>
+        </div>
+
+        <!-- SLIDE 5 — Staff Room & Form III Classroom Block -->
+        <div style="min-width:100%;position:relative;">
+          <img src="images/Staff.png"
+               alt="Staff Room"
+               style="width:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:rgba(12,71,103,0.82);">
+            <p style="margin:0;color:white;font-size:14px;font-weight:600;font-family:Arial,sans-serif;">Staff Room — Mikumbi Secondary School</p>
+          </div>
+        </div>
+
+      </div><!-- end galleryTrack -->
+
+      <!-- DOTS -->
+      <div id="galleryDots" style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;">
+        <button onclick="goToSlide(0)" class="g-dot" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:1;padding:0;transition:opacity 0.3s;"></button>
+        <button onclick="goToSlide(1)" class="g-dot" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:0.4;padding:0;transition:opacity 0.3s;"></button>
+        <button onclick="goToSlide(2)" class="g-dot" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:0.4;padding:0;transition:opacity 0.3s;"></button>
+        <button onclick="goToSlide(3)" class="g-dot" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:0.4;padding:0;transition:opacity 0.3s;"></button>
+        <button onclick="goToSlide(4)" class="g-dot" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:0.4;padding:0;transition:opacity 0.3s;"></button>
+      </div>
+
+      <!-- ARROWS -->
+      <button onclick="prevSlide()" aria-label="Previous" style="position:absolute;left:12px;top:50%;transform:translateY(-60%);background:rgba(255,255,255,0.88);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:10;transition:background 0.2s;" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,0.88)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0C4767" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button onclick="nextSlide()" aria-label="Next" style="position:absolute;right:12px;top:50%;transform:translateY(-60%);background:rgba(255,255,255,0.88);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:10;transition:background 0.2s;" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,0.88)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0C4767" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+    </div><!-- end carousel wrapper -->
+  </div>
+
+  <style>
+    #gallery .section-inner { max-width: 1100px; }
+    #galleryWrapper img { height: 420px; }
+    @media (max-width: 640px) {
+      #gallery { padding: 44px 12px; }
+      #gallery .section-title { font-size: 22px; }
+      #gallery .section-desc { font-size: 13px; }
+      #galleryWrapper img { height: 240px; }
+      #galleryWrapper div[style*="position:absolute"] p { font-size: 12px; }
+    }
+    @media (min-width: 641px) and (max-width: 1024px) {
+      #gallery { padding: 52px 20px; }
+      #galleryWrapper img { height: 340px; }
+    }
+  </style>
+</section>
+
 <section id="access">
   <div class="section-inner">
     <div class="section-label">Get Started</div>
     <h2 class="section-title">Access the System</h2>
     <p class="section-desc">Two separate portals — one for teachers to mark attendance, one for the Head of School to monitor and manage records.</p>
+
 
     <div class="access-grid">
       <a href="teacher-attendance.html" class="access-card primary">
@@ -1463,6 +1568,46 @@
     }, delays[i]);
   });
 })();
+
+// ── SCHOOL GALLERY CAROUSEL ──
+let currentSlide  = 0;
+const totalSlides = 5;
+let galleryTimer  = null;
+
+function goToSlide(n) {
+  currentSlide = (n + totalSlides) % totalSlides;
+  const track = document.getElementById('galleryTrack');
+  if (track) track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  document.querySelectorAll('.g-dot').forEach((dot, i) => {
+    dot.style.opacity = i === currentSlide ? '1' : '0.45';
+  });
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); resetGalleryTimer(); }
+function prevSlide() { goToSlide(currentSlide - 1); resetGalleryTimer(); }
+
+function resetGalleryTimer() {
+  clearInterval(galleryTimer);
+  galleryTimer = setInterval(() => goToSlide(currentSlide + 1), 5000);
+}
+
+// Pause on hover
+function initGallery() {
+  const wrapper = document.getElementById('galleryTrack');
+  if (!wrapper) return;
+  wrapper.parentElement.addEventListener('mouseenter', () => clearInterval(galleryTimer));
+  wrapper.parentElement.addEventListener('mouseleave', () => resetGalleryTimer());
+  // Touch swipe support
+  let touchStartX = 0;
+  wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  wrapper.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) diff > 0 ? nextSlide() : prevSlide();
+  }, { passive: true });
+  resetGalleryTimer();
+}
+
+window.addEventListener('load', initGallery);
 
 function toggleMenu() {
   const menu = document.getElementById('mobileMenu');
