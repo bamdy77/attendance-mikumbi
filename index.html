@@ -839,6 +839,8 @@
 
     section { padding: 52px 32px; }
     .footer-inner { padding: 28px 32px; }
+    .ticker-text { font-size: 13px; animation-duration: 22s; }
+    #announcementBar.visible { display: block !important; }
   }
 
   /* ── RESPONSIVE ── */
@@ -924,7 +926,8 @@
     white-space: nowrap;
     cursor: pointer;
     letter-spacing: 0.1px;
-    animation: tickerScroll 18s linear infinite;
+    padding-right: 60px;
+    animation: tickerScroll 22s linear infinite;
   }
 
   .ticker-text:hover {
@@ -933,8 +936,21 @@
   }
 
   @keyframes tickerScroll {
-    0%   { transform: translateX(100%); }
+    0%   { transform: translateX(100vw); }
     100% { transform: translateX(-100%); }
+  }
+
+  /* Tablet — onyesha Read More */
+  @media (max-width: 640px) {
+    .ticker-read-more { display: none; }
+    .ticker-label { font-size: 9px; padding: 3px 7px; margin-right: 10px; letter-spacing: 1px; }
+    .ticker-text  { font-size: 12px; animation-duration: 20s; }
+    .ticker-inner { padding: 0 12px; min-height: 40px; }
+    #announcementBar.visible { display: block !important; }
+  }
+
+  @media (max-width: 480px) {
+    .ticker-text { font-size: 11px; animation-duration: 18s; }
   }
 
   .ticker-read-more {
@@ -956,13 +972,6 @@
     background: rgba(255,255,255,0.12);
     color: #ffffff;
     border-color: rgba(255,255,255,0.5);
-  }
-
-  @media (max-width: 480px) {
-    .ticker-inner   { padding: 6px 10px; min-height: 40px; gap: 0; }
-    .ticker-label   { font-size: 8px; padding: 3px 7px; margin-right: 8px; letter-spacing: 1px; }
-    .ticker-text    { font-size: 11px; }
-    .ticker-read-more { font-size: 10px; padding: 4px 8px; margin-left: 6px; }
   }
 
   /* ── ANNOUNCEMENT MODAL ── */
