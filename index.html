@@ -1688,12 +1688,6 @@ async function loadAnnouncements() {
 
     bar.classList.add('visible');
 
-    if (allAnnouncements.length > 1) {
-      setInterval(() => {
-        currentAnnIdx = (currentAnnIdx + 1) % allAnnouncements.length;
-        updateTicker();
-      }, 5000);
-    }
   } catch(e) {
     console.log('Announcements unavailable');
   }
