@@ -169,7 +169,7 @@ To deploy your own instance:
 
 ## Author
 
-Baraka A Martine — Student, Mwenge Catholic University (MWECAU), Tanzania
+Martine Baraka A — Student, Mwenge Catholic University (MWECAU) - Tanzania
 
 
 Built for Mikumbi Secondary School, Newala, Mtwara - Tanzania.
