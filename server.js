@@ -304,7 +304,7 @@ const loginLimiter = rateLimit({
 
 const attendanceLimiter = rateLimit({
   windowMs: 60 * 1000, // dakika 1
-  max: 5,              // majaribio 5 kwa dakika kwa IP
+  max: 60,             // majaribio 60 kwa dakika kwa IP (walimu wengi wanaweza kushiriki IP moja ya shule)
   keyFn: req => 'att:' + (req.headers['x-forwarded-for'] || req.socket.remoteAddress),
 });
 
